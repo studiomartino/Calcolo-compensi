@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import type { CompensoRecord, InsertCompensoRecord, ColumnMapping, InsertColumnMapping } from "@shared/schema";
+import type { CompensoRecord, InsertCompensoRecord, ColumnMapping, InsertColumnMapping, Analysis, InsertAnalysis } from "@shared/schema";
 
 export interface IStorage {
   getRecords(): Promise<CompensoRecord[]>;
@@ -7,6 +7,7 @@ export interface IStorage {
   createRecord(record: InsertCompensoRecord): Promise<CompensoRecord>;
   createRecords(records: InsertCompensoRecord[]): Promise<CompensoRecord[]>;
   updateRecord(id: string, updates: Partial<CompensoRecord>): Promise<CompensoRecord | undefined>;
+  updateRecords(ids: string[], updates: Partial<CompensoRecord>): Promise<CompensoRecord[]>;
   deleteRecord(id: string): Promise<boolean>;
   clearRecords(): Promise<void>;
   
@@ -14,15 +15,22 @@ export interface IStorage {
   getMapping(id: string): Promise<ColumnMapping | undefined>;
   createMapping(mapping: InsertColumnMapping): Promise<ColumnMapping>;
   deleteMapping(id: string): Promise<boolean>;
+
+  getAnalyses(): Promise<Analysis[]>;
+  getAnalysis(id: string): Promise<Analysis | undefined>;
+  createAnalysis(analysis: InsertAnalysis): Promise<Analysis>;
+  deleteAnalysis(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
   private records: Map<string, CompensoRecord>;
   private mappings: Map<string, ColumnMapping>;
+  private analyses: Map<string, Analysis>;
 
   constructor() {
     this.records = new Map();
     this.mappings = new Map();
+    this.analyses = new Map();
   }
 
   private checkAnomaly(prezzoAlPaziente: number, compensoOperatore: number): boolean {
@@ -44,6 +52,7 @@ export class MemStorage implements IStorage {
       ...record, 
       id,
       hasAnomaly,
+      categoriaCompenso: record.categoriaCompenso || "card",
     };
     this.records.set(id, newRecord);
     return newRecord;
@@ -75,6 +84,17 @@ export class MemStorage implements IStorage {
     return updatedRecord;
   }
 
+  async updateRecords(ids: string[], updates: Partial<CompensoRecord>): Promise<CompensoRecord[]> {
+    const updatedRecords: CompensoRecord[] = [];
+    for (const id of ids) {
+      const updated = await this.updateRecord(id, updates);
+      if (updated) {
+        updatedRecords.push(updated);
+      }
+    }
+    return updatedRecords;
+  }
+
   async deleteRecord(id: string): Promise<boolean> {
     return this.records.delete(id);
   }
@@ -104,6 +124,31 @@ export class MemStorage implements IStorage {
 
   async deleteMapping(id: string): Promise<boolean> {
     return this.mappings.delete(id);
+  }
+
+  async getAnalyses(): Promise<Analysis[]> {
+    return Array.from(this.analyses.values()).sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async getAnalysis(id: string): Promise<Analysis | undefined> {
+    return this.analyses.get(id);
+  }
+
+  async createAnalysis(analysis: InsertAnalysis): Promise<Analysis> {
+    const id = randomUUID();
+    const newAnalysis: Analysis = {
+      ...analysis,
+      id,
+      createdAt: new Date().toISOString(),
+    };
+    this.analyses.set(id, newAnalysis);
+    return newAnalysis;
+  }
+
+  async deleteAnalysis(id: string): Promise<boolean> {
+    return this.analyses.delete(id);
   }
 }
 

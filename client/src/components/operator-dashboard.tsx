@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Users, TrendingUp, AlertTriangle, Calculator, Download, FileSpreadsheet } from "lucide-react";
+import { Users, TrendingUp, AlertTriangle, Calculator, Download, FileSpreadsheet, CreditCard, Banknote } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,20 +38,22 @@ export function OperatorDashboard({
         (sum, r) => sum + r.compensoOperatore,
         0
       );
-      const compensoCategoria = operatorRecords
-        .filter((r) => r.categoriaCompenso)
+      const compensoCard = operatorRecords
+        .filter((r) => r.categoriaCompenso === "card")
         .reduce((sum, r) => sum + r.compensoOperatore, 0);
-      const differenza = compensoTotale - compensoCategoria;
+      const compensoCash = operatorRecords
+        .filter((r) => r.categoriaCompenso === "cash")
+        .reduce((sum, r) => sum + r.compensoOperatore, 0);
       const numeroAnomalie = operatorRecords.filter((r) => r.hasAnomaly).length;
 
       return {
         operatore,
         compensoTotale,
-        compensoCategoria,
-        differenza,
+        compensoCard,
+        compensoCash,
         compensoTotaleArrotondato: roundToTen(compensoTotale),
-        compensoCategoriaArrotondato: roundToTen(compensoCategoria),
-        differenzaArrotondata: roundToTen(differenza),
+        compensoCardArrotondato: roundToTen(compensoCard),
+        compensoCashArrotondato: roundToTen(compensoCash),
         numeroAnomalie,
         numeroRecord: operatorRecords.length,
       };
@@ -60,8 +62,11 @@ export function OperatorDashboard({
 
   const globalStats = useMemo(() => {
     const totalCompenso = records.reduce((sum, r) => sum + r.compensoOperatore, 0);
-    const totalCategoria = records
-      .filter((r) => r.categoriaCompenso)
+    const totalCard = records
+      .filter((r) => r.categoriaCompenso === "card")
+      .reduce((sum, r) => sum + r.compensoOperatore, 0);
+    const totalCash = records
+      .filter((r) => r.categoriaCompenso === "cash")
       .reduce((sum, r) => sum + r.compensoOperatore, 0);
     const totalAnomalie = records.filter((r) => r.hasAnomaly).length;
 
@@ -69,10 +74,11 @@ export function OperatorDashboard({
       totalRecords: records.length,
       totalOperators: operatorReports.length,
       totalCompenso: roundToTen(totalCompenso),
-      totalCategoria: roundToTen(totalCategoria),
-      totalDifferenza: roundToTen(totalCompenso - totalCategoria),
+      totalCard: roundToTen(totalCard),
+      totalCash: roundToTen(totalCash),
       totalAnomalie,
-      categoriaPercentage: totalCompenso > 0 ? (totalCategoria / totalCompenso) * 100 : 0,
+      cardPercentage: totalCompenso > 0 ? (totalCard / totalCompenso) * 100 : 0,
+      cashPercentage: totalCompenso > 0 ? (totalCash / totalCompenso) * 100 : 0,
     };
   }, [records, operatorReports]);
 
@@ -120,29 +126,36 @@ export function OperatorDashboard({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
-            <CardTitle className="text-sm font-medium">Categoria Selezionata</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium flex items-center gap-1">
+              <span role="img" aria-label="carta">💳</span> Carta
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCategoria)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCard)}</div>
             <div className="mt-2">
-              <Progress value={globalStats.categoriaPercentage} className="h-2" />
+              <Progress value={globalStats.cardPercentage} className="h-2" />
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {globalStats.categoriaPercentage.toFixed(1)}% del totale
+              {globalStats.cardPercentage.toFixed(1)}% del totale
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
-            <CardTitle className="text-sm font-medium">Differenza</CardTitle>
-            <FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium flex items-center gap-1">
+              <span role="img" aria-label="contanti">💵</span> Contanti
+            </CardTitle>
+            <Banknote className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(globalStats.totalDifferenza)}</div>
-            <p className="text-xs text-muted-foreground">
-              Compensi non categorizzati
+            <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCash)}</div>
+            <div className="mt-2">
+              <Progress value={globalStats.cashPercentage} className="h-2" />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {globalStats.cashPercentage.toFixed(1)}% del totale
             </p>
           </CardContent>
         </Card>
@@ -178,9 +191,9 @@ export function OperatorDashboard({
             <div className="space-y-2">
               {operatorReports.map((report) => {
                 const isSelected = selectedOperator === report.operatore;
-                const categoryPercentage =
+                const cardPercentage =
                   report.compensoTotale > 0
-                    ? (report.compensoCategoria / report.compensoTotale) * 100
+                    ? (report.compensoCard / report.compensoTotale) * 100
                     : 0;
 
                 return (
@@ -226,11 +239,15 @@ export function OperatorDashboard({
                       <p className="font-semibold">
                         {formatCurrency(report.compensoTotaleArrotondato)}
                       </p>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <span className="text-primary">
-                          {formatCurrency(report.compensoCategoriaArrotondato)}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <span role="img" aria-label="carta">💳</span>
+                          {formatCurrency(report.compensoCardArrotondato)}
                         </span>
-                        <span>({categoryPercentage.toFixed(0)}%)</span>
+                        <span className="flex items-center gap-1">
+                          <span role="img" aria-label="contanti">💵</span>
+                          {formatCurrency(report.compensoCashArrotondato)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -262,45 +279,49 @@ export function OperatorDashboard({
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Categoria Selezionata</span>
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      <span role="img" aria-label="carta">💳</span> Carta
+                    </span>
                     <span className="font-semibold text-primary">
-                      {formatCurrency(selectedReport.compensoCategoriaArrotondato)}
+                      {formatCurrency(selectedReport.compensoCardArrotondato)}
                     </span>
                   </div>
-                  <div className="border-t pt-4">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">Differenza</span>
-                      <span className="font-bold text-lg">
-                        {formatCurrency(selectedReport.differenzaArrotondata)}
-                      </span>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      <span role="img" aria-label="contanti">💵</span> Contanti
+                    </span>
+                    <span className="font-semibold">
+                      {formatCurrency(selectedReport.compensoCashArrotondato)}
+                    </span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Percentuale categorizzata
+                    Distribuzione per categoria
                   </p>
-                  <Progress
-                    value={
-                      selectedReport.compensoTotale > 0
-                        ? (selectedReport.compensoCategoria /
-                            selectedReport.compensoTotale) *
-                          100
-                        : 0
-                    }
-                    className="h-3"
-                  />
-                  <p className="text-sm font-medium text-right">
-                    {selectedReport.compensoTotale > 0
-                      ? (
-                          (selectedReport.compensoCategoria /
-                            selectedReport.compensoTotale) *
-                          100
-                        ).toFixed(1)
-                      : 0}
-                    %
-                  </p>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span>💳 Carta</span>
+                        <span>{selectedReport.compensoTotale > 0 ? ((selectedReport.compensoCard / selectedReport.compensoTotale) * 100).toFixed(0) : 0}%</span>
+                      </div>
+                      <Progress
+                        value={selectedReport.compensoTotale > 0 ? (selectedReport.compensoCard / selectedReport.compensoTotale) * 100 : 0}
+                        className="h-2"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span>💵 Contanti</span>
+                        <span>{selectedReport.compensoTotale > 0 ? ((selectedReport.compensoCash / selectedReport.compensoTotale) * 100).toFixed(0) : 0}%</span>
+                      </div>
+                      <Progress
+                        value={selectedReport.compensoTotale > 0 ? (selectedReport.compensoCash / selectedReport.compensoTotale) * 100 : 0}
+                        className="h-2"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {selectedReport.numeroAnomalie > 0 && (

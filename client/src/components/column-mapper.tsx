@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowRight, Check, Save, Trash2, FileText } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Check, Save, Trash2, FileText, Calendar } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,7 +15,7 @@ interface ColumnMapperProps {
   sourceColumns: string[];
   rawData: Record<string, string>[];
   savedMappings: ColumnMapping[];
-  onMappingComplete: (mappings: Record<string, string>) => void;
+  onMappingComplete: (mappings: Record<string, string>, dateRange: string) => void;
   onSaveMapping: (name: string, mappings: Record<string, string>) => void;
   onDeleteMapping: (id: string) => void;
 }
@@ -36,6 +36,8 @@ export function ColumnMapper({
     prezzoAlPaziente: "",
     compensoOperatore: "",
   });
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [newMappingName, setNewMappingName] = useState("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
@@ -53,16 +55,25 @@ export function ColumnMapper({
     setMappings(newMappings);
   };
 
-  const isComplete = appFieldNames.every((field) => mappings[field] !== "");
+  const isMappingComplete = appFieldNames.every((field) => mappings[field] !== "");
+  const isDateComplete = dateFrom !== "" && dateTo !== "";
+  const isComplete = isMappingComplete && isDateComplete;
+
+  const formatDateRange = () => {
+    if (!dateFrom || !dateTo) return "";
+    const from = new Date(dateFrom).toLocaleDateString("it-IT");
+    const to = new Date(dateTo).toLocaleDateString("it-IT");
+    return `${from} - ${to}`;
+  };
 
   const handleConfirm = () => {
     if (isComplete) {
-      onMappingComplete(mappings);
+      onMappingComplete(mappings, formatDateRange());
     }
   };
 
   const handleSaveMapping = () => {
-    if (newMappingName.trim() && isComplete) {
+    if (newMappingName.trim() && isMappingComplete) {
       onSaveMapping(newMappingName.trim(), mappings);
       setNewMappingName("");
       setShowSaveDialog(false);
@@ -111,7 +122,7 @@ export function ColumnMapper({
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    disabled={!isComplete}
+                    disabled={!isMappingComplete}
                     data-testid="button-save-mapping-dialog"
                   >
                     <Save className="mr-2 h-4 w-4" />
@@ -154,6 +165,40 @@ export function ColumnMapper({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
+          <div className="p-4 rounded-lg border bg-muted/30">
+            <div className="flex items-center gap-2 mb-3">
+              <Calendar className="h-4 w-4 text-primary" />
+              <Label className="font-medium">Periodo di riferimento dell'analisi</Label>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="date-from" className="text-sm text-muted-foreground">Data inizio</Label>
+                <Input
+                  id="date-from"
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  data-testid="input-date-from"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date-to" className="text-sm text-muted-foreground">Data fine</Label>
+                <Input
+                  id="date-to"
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  data-testid="input-date-to"
+                />
+              </div>
+            </div>
+            {isDateComplete && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                L'analisi sara identificata come: <strong>{formatDateRange()}</strong>
+              </p>
+            )}
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {appFieldNames.map((field) => (
               <div key={field} className="space-y-2">
@@ -189,7 +234,7 @@ export function ColumnMapper({
             ))}
           </div>
 
-          {isComplete && previewData.length > 0 && (
+          {isMappingComplete && previewData.length > 0 && (
             <div className="space-y-3">
               <h4 className="font-medium text-sm text-muted-foreground">
                 Anteprima dati mappati (prime 3 righe)
@@ -226,6 +271,7 @@ export function ColumnMapper({
             <FileText className="h-4 w-4" />
             <span>
               {Object.values(mappings).filter(Boolean).length} di {appFieldNames.length} campi mappati
+              {!isDateComplete && " • Inserire il periodo"}
             </span>
           </div>
           <Button
@@ -244,7 +290,7 @@ export function ColumnMapper({
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">Mappature Salvate</CardTitle>
             <CardDescription>
-              Clicca su una mappatura per caricarla, o eliminala se non più necessaria
+              Clicca su una mappatura per caricarla, o eliminala se non piu necessaria
             </CardDescription>
           </CardHeader>
           <CardContent>

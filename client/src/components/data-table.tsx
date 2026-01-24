@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { AlertTriangle, Search, Filter, CheckCircle2, XCircle, Edit2, Check, X } from "lucide-react";
+import { AlertTriangle, Search, Filter, CheckCircle2, Edit2, Check, X, CreditCard, Banknote } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,12 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import type { CompensoRecord } from "@shared/schema";
+import type { CompensoRecord, CategoriaCompenso } from "@shared/schema";
 
 interface DataTableProps {
   records: CompensoRecord[];
   operators: string[];
-  onCategoryChange: (id: string, checked: boolean) => void;
+  onCategoryChange: (ids: string[], category: CategoriaCompenso) => void;
   onRecordEdit: (id: string, field: keyof CompensoRecord, value: string | number) => void;
 }
 
@@ -25,6 +25,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [editingCell, setEditingCell] = useState<{ id: string; field: string } | null>(null);
   const [editValue, setEditValue] = useState<string>("");
+  const [selectedRecords, setSelectedRecords] = useState<Set<string>>(new Set());
 
   const filteredRecords = useMemo(() => {
     return records.filter((record) => {
@@ -44,8 +45,8 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
 
       const matchesCategory =
         categoryFilter === "all" ||
-        (categoryFilter === "selected" && record.categoriaCompenso) ||
-        (categoryFilter === "unselected" && !record.categoriaCompenso);
+        (categoryFilter === "card" && record.categoriaCompenso === "card") ||
+        (categoryFilter === "cash" && record.categoriaCompenso === "cash");
 
       return matchesSearch && matchesOperator && matchesAnomaly && matchesCategory;
     });
@@ -54,8 +55,9 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
   const stats = useMemo(() => {
     const total = records.length;
     const anomalies = records.filter((r) => r.hasAnomaly).length;
-    const selected = records.filter((r) => r.categoriaCompenso).length;
-    return { total, anomalies, selected };
+    const cardCount = records.filter((r) => r.categoriaCompenso === "card").length;
+    const cashCount = records.filter((r) => r.categoriaCompenso === "cash").length;
+    return { total, anomalies, cardCount, cashCount };
   }, [records]);
 
   const formatCurrency = (amount: number) => {
@@ -86,6 +88,36 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
   const handleCancelEdit = () => {
     setEditingCell(null);
     setEditValue("");
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedRecords(new Set(filteredRecords.map(r => r.id)));
+    } else {
+      setSelectedRecords(new Set());
+    }
+  };
+
+  const handleSelectRecord = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedRecords);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedRecords(newSelected);
+  };
+
+  const handleBulkCategoryChange = (category: CategoriaCompenso) => {
+    if (selectedRecords.size > 0) {
+      onCategoryChange(Array.from(selectedRecords), category);
+      setSelectedRecords(new Set());
+    }
+  };
+
+  const handleSingleCategoryToggle = (record: CompensoRecord) => {
+    const newCategory: CategoriaCompenso = record.categoriaCompenso === "card" ? "cash" : "card";
+    onCategoryChange([record.id], newCategory);
   };
 
   const renderEditableCell = (
@@ -146,6 +178,9 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
     );
   };
 
+  const allFilteredSelected = filteredRecords.length > 0 && filteredRecords.every(r => selectedRecords.has(r.id));
+  const someFilteredSelected = filteredRecords.some(r => selectedRecords.has(r.id));
+
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -153,7 +188,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           <div>
             <CardTitle className="text-xl">Dati Importati</CardTitle>
             <CardDescription className="mt-1">
-              {stats.total} record totali • {stats.anomalies} anomalie • {stats.selected} categorizzati
+              {stats.total} record totali | {stats.anomalies} anomalie | Carta: {stats.cardCount} | Contanti: {stats.cashCount}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -207,16 +242,59 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tutte le categorie</SelectItem>
-              <SelectItem value="selected">Categoria selezionata</SelectItem>
-              <SelectItem value="unselected">Categoria non selezionata</SelectItem>
+              <SelectItem value="card">Carta</SelectItem>
+              <SelectItem value="cash">Contanti</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
+        {selectedRecords.size > 0 && (
+          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
+            <span className="text-sm font-medium">
+              {selectedRecords.size} record selezionati
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleBulkCategoryChange("card")}
+                data-testid="button-bulk-card"
+              >
+                <CreditCard className="mr-1 h-4 w-4" />
+                Imposta Carta
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleBulkCategoryChange("cash")}
+                data-testid="button-bulk-cash"
+              >
+                <Banknote className="mr-1 h-4 w-4" />
+                Imposta Contanti
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setSelectedRecords(new Set())}
+                data-testid="button-clear-selection"
+              >
+                Annulla selezione
+              </Button>
+            </div>
+          </div>
+        )}
 
         <ScrollArea className="rounded-lg border">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[50px]">
+                  <Checkbox
+                    checked={allFilteredSelected}
+                    onCheckedChange={handleSelectAll}
+                    data-testid="checkbox-select-all"
+                  />
+                </TableHead>
                 <TableHead className="w-[100px]">Categoria</TableHead>
                 <TableHead>Operatore</TableHead>
                 <TableHead>Paziente</TableHead>
@@ -230,7 +308,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             <TableBody>
               {filteredRecords.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-32 text-center">
+                  <TableCell colSpan={9} className="h-32 text-center">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Filter className="h-8 w-8" />
                       <p>Nessun record trovato con i filtri selezionati</p>
@@ -246,10 +324,35 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   >
                     <TableCell>
                       <Checkbox
-                        checked={record.categoriaCompenso}
-                        onCheckedChange={(checked) => onCategoryChange(record.id, checked as boolean)}
-                        data-testid={`checkbox-category-${record.id}`}
+                        checked={selectedRecords.has(record.id)}
+                        onCheckedChange={(checked) => handleSelectRecord(record.id, checked as boolean)}
+                        data-testid={`checkbox-select-${record.id}`}
                       />
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSingleCategoryToggle(record)}
+                            className="text-xl hover-elevate"
+                            data-testid={`button-category-${record.id}`}
+                          >
+                            {record.categoriaCompenso === "card" ? (
+                              <span role="img" aria-label="carta">💳</span>
+                            ) : (
+                              <span role="img" aria-label="contanti">💵</span>
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Clicca per cambiare categoria</p>
+                          <p className="text-xs text-muted-foreground">
+                            Attuale: {record.categoriaCompenso === "card" ? "Carta" : "Contanti"}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                     <TableCell className="font-medium">
                       {renderEditableCell(record, "operatore", record.operatore)}

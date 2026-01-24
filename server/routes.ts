@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { appFieldNames, type AppFieldName } from "@shared/schema";
+import { categoriaCompensoEnum } from "@shared/schema";
 
 const importRecordsSchema = z.object({
   records: z.array(z.record(z.string(), z.string())),
@@ -14,16 +14,22 @@ const importRecordsSchema = z.object({
     prezzoAlPaziente: z.string().min(1, "Mappatura 'prezzoAlPaziente' richiesta"),
     compensoOperatore: z.string().min(1, "Mappatura 'compensoOperatore' richiesta"),
   }),
+  dateRange: z.string().min(1, "Range date richiesto"),
 });
 
 const updateRecordSchema = z.object({
-  categoriaCompenso: z.boolean().optional(),
+  categoriaCompenso: categoriaCompensoEnum.optional(),
   operatore: z.string().optional(),
   paziente: z.string().optional(),
   prestazione: z.string().optional(),
   elementiDentali: z.string().optional(),
   prezzoAlPaziente: z.number().optional(),
   compensoOperatore: z.number().optional(),
+});
+
+const updateMultipleRecordsSchema = z.object({
+  ids: z.array(z.string()),
+  updates: updateRecordSchema,
 });
 
 const createMappingSchema = z.object({
@@ -66,12 +72,21 @@ export async function registerRoutes(
 
   app.post("/api/records/import", async (req, res) => {
     try {
-      const { records: rawRecords, mappings } = importRecordsSchema.parse(req.body);
+      const { records: rawRecords, mappings, dateRange } = importRecordsSchema.parse(req.body);
+
+      const existingRecords = await storage.getRecords();
+      if (existingRecords.length > 0) {
+        await storage.createAnalysis({
+          name: `Analisi ${dateRange}`,
+          dateRange,
+          records: existingRecords,
+        });
+      }
 
       await storage.clearRecords();
 
       const recordsToCreate = rawRecords.map((rawRecord) => ({
-        categoriaCompenso: false,
+        categoriaCompenso: "card" as const,
         operatore: rawRecord[mappings.operatore] || "",
         paziente: rawRecord[mappings.paziente] || "",
         prestazione: rawRecord[mappings.prestazione] || "",
@@ -110,6 +125,19 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Dati non validi", details: error.errors });
       }
       res.status(500).json({ error: "Errore nell'aggiornamento del record" });
+    }
+  });
+
+  app.patch("/api/records/bulk/update", async (req, res) => {
+    try {
+      const { ids, updates } = updateMultipleRecordsSchema.parse(req.body);
+      const updatedRecords = await storage.updateRecords(ids, updates);
+      res.json({ updated: updatedRecords.length, records: updatedRecords });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Dati non validi", details: error.errors });
+      }
+      res.status(500).json({ error: "Errore nell'aggiornamento dei record" });
     }
   });
 
@@ -156,6 +184,39 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Errore nell'eliminazione della mappatura" });
+    }
+  });
+
+  app.get("/api/analyses", async (req, res) => {
+    try {
+      const analyses = await storage.getAnalyses();
+      res.json(analyses);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero delle analisi" });
+    }
+  });
+
+  app.get("/api/analyses/:id", async (req, res) => {
+    try {
+      const analysis = await storage.getAnalysis(req.params.id);
+      if (!analysis) {
+        return res.status(404).json({ error: "Analisi non trovata" });
+      }
+      res.json(analysis);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero dell'analisi" });
+    }
+  });
+
+  app.delete("/api/analyses/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteAnalysis(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Analisi non trovata" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Errore nell'eliminazione dell'analisi" });
     }
   });
 

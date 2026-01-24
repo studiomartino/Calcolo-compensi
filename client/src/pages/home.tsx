@@ -4,13 +4,14 @@ import { FileUpload } from "@/components/file-upload";
 import { ColumnMapper } from "@/components/column-mapper";
 import { DataTable } from "@/components/data-table";
 import { OperatorDashboard } from "@/components/operator-dashboard";
+import { AnalysisArchive } from "@/components/analysis-archive";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive } from "lucide-react";
 import * as XLSX from "xlsx";
-import type { CompensoRecord, ColumnMapping, AppFieldName } from "@shared/schema";
+import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
 
 type AppStep = "upload" | "mapping" | "data";
 
@@ -18,6 +19,7 @@ export default function Home() {
   const [step, setStep] = useState<AppStep>("upload");
   const [rawData, setRawData] = useState<Record<string, string>[]>([]);
   const [sourceColumns, setSourceColumns] = useState<string[]>([]);
+  const [currentDateRange, setCurrentDateRange] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("table");
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const { toast } = useToast();
@@ -27,16 +29,22 @@ export default function Home() {
     queryKey: ["/api/records"],
   });
 
-  const { data: mappings = [], isLoading: isLoadingMappings } = useQuery<ColumnMapping[]>({
+  const { data: mappings = [] } = useQuery<ColumnMapping[]>({
     queryKey: ["/api/mappings"],
   });
 
+  const { data: analyses = [], isLoading: isLoadingAnalyses } = useQuery<Analysis[]>({
+    queryKey: ["/api/analyses"],
+  });
+
   const importMutation = useMutation({
-    mutationFn: async (data: { records: Record<string, string>[]; mappings: Record<string, string> }) => {
+    mutationFn: async (data: { records: Record<string, string>[]; mappings: Record<string, string>; dateRange: string }) => {
       return apiRequest("POST", "/api/records/import", data);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/records"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      setCurrentDateRange(variables.dateRange);
       setStep("data");
       setActiveTab("table");
       toast({
@@ -54,8 +62,8 @@ export default function Home() {
   });
 
   const updateCategoryMutation = useMutation({
-    mutationFn: async ({ id, categoriaCompenso }: { id: string; categoriaCompenso: boolean }) => {
-      return apiRequest("PATCH", `/api/records/${id}`, { categoriaCompenso });
+    mutationFn: async ({ ids, category }: { ids: string[]; category: CategoriaCompenso }) => {
+      return apiRequest("PATCH", "/api/records/bulk/update", { ids, updates: { categoriaCompenso: category } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/records"] });
@@ -101,6 +109,19 @@ export default function Home() {
     },
   });
 
+  const deleteAnalysisMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/analyses/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      toast({
+        title: "Analisi eliminata",
+        description: "L'analisi è stata rimossa dall'archivio",
+      });
+    },
+  });
+
   const operators = useMemo(() => {
     const uniqueOperators = new Set(records.map((r) => r.operatore));
     return Array.from(uniqueOperators).sort();
@@ -112,15 +133,16 @@ export default function Home() {
     setStep("mapping");
   }, []);
 
-  const handleMappingComplete = useCallback((fieldMappings: Record<string, string>) => {
+  const handleMappingComplete = useCallback((fieldMappings: Record<string, string>, dateRange: string) => {
     importMutation.mutate({
       records: rawData,
       mappings: fieldMappings,
+      dateRange,
     });
   }, [rawData, importMutation]);
 
-  const handleCategoryChange = useCallback((id: string, checked: boolean) => {
-    updateCategoryMutation.mutate({ id, categoriaCompenso: checked });
+  const handleCategoryChange = useCallback((ids: string[], category: CategoriaCompenso) => {
+    updateCategoryMutation.mutate({ ids, category });
   }, [updateCategoryMutation]);
 
   const handleRecordEdit = useCallback((id: string, field: keyof CompensoRecord, value: string | number) => {
@@ -134,6 +156,10 @@ export default function Home() {
   const handleDeleteMapping = useCallback((id: string) => {
     deleteMappingMutation.mutate(id);
   }, [deleteMappingMutation]);
+
+  const handleDeleteAnalysis = useCallback((id: string) => {
+    deleteAnalysisMutation.mutate(id);
+  }, [deleteAnalysisMutation]);
 
   const roundToTen = (value: number): number => {
     return Math.round(value / 10) * 10;
@@ -149,31 +175,33 @@ export default function Home() {
 
     const reportData = Array.from(operatorMap.entries()).map(([operatore, operatorRecords]) => {
       const compensoTotale = operatorRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
-      const compensoCategoria = operatorRecords
-        .filter((r) => r.categoriaCompenso)
+      const compensoCard = operatorRecords
+        .filter((r) => r.categoriaCompenso === "card")
         .reduce((sum, r) => sum + r.compensoOperatore, 0);
-      const differenza = compensoTotale - compensoCategoria;
+      const compensoCash = operatorRecords
+        .filter((r) => r.categoriaCompenso === "cash")
+        .reduce((sum, r) => sum + r.compensoOperatore, 0);
       const numeroAnomalie = operatorRecords.filter((r) => r.hasAnomaly).length;
 
       return {
         Operatore: operatore,
         "Numero Prestazioni": operatorRecords.length,
         "Compenso Totale": roundToTen(compensoTotale),
-        "Compenso Categoria": roundToTen(compensoCategoria),
-        Differenza: roundToTen(differenza),
+        "Compenso Carta": roundToTen(compensoCard),
+        "Compenso Contanti": roundToTen(compensoCash),
         "Anomalie": numeroAnomalie,
       };
     });
 
     const detailData = records.map((r) => ({
-      "Categoria Compenso": r.categoriaCompenso ? "Sì" : "No",
+      "Categoria": r.categoriaCompenso === "card" ? "Carta" : "Contanti",
       Operatore: r.operatore,
       Paziente: r.paziente,
       Prestazione: r.prestazione,
       "Elementi Dentali": r.elementiDentali,
       "Prezzo Paziente": r.prezzoAlPaziente,
       "Compenso Operatore": r.compensoOperatore,
-      Anomalia: r.hasAnomaly ? "Sì" : "No",
+      Anomalia: r.hasAnomaly ? "Si" : "No",
     }));
 
     const workbook = XLSX.utils.book_new();
@@ -229,6 +257,14 @@ export default function Home() {
               </Button>
             </div>
           ) : null}
+
+          {analyses.length > 0 && (
+            <AnalysisArchive
+              analyses={analyses}
+              onDeleteAnalysis={handleDeleteAnalysis}
+              isLoading={isLoadingAnalyses}
+            />
+          )}
         </div>
       </div>
     );
@@ -268,7 +304,7 @@ export default function Home() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Gestione Compensi</h1>
           <p className="text-muted-foreground">
-            {records.length} record importati
+            {records.length} record importati {currentDateRange && `| Periodo: ${currentDateRange}`}
           </p>
         </div>
         <Button variant="outline" onClick={handleNewImport} data-testid="button-new-import">
@@ -286,6 +322,10 @@ export default function Home() {
           <TabsTrigger value="dashboard" data-testid="tab-dashboard">
             <BarChart3 className="mr-2 h-4 w-4" />
             Dashboard
+          </TabsTrigger>
+          <TabsTrigger value="archive" data-testid="tab-archive">
+            <Archive className="mr-2 h-4 w-4" />
+            Archivio ({analyses.length})
           </TabsTrigger>
         </TabsList>
 
@@ -319,6 +359,14 @@ export default function Home() {
               onSelectOperator={setSelectedOperator}
             />
           )}
+        </TabsContent>
+
+        <TabsContent value="archive" className="mt-6">
+          <AnalysisArchive
+            analyses={analyses}
+            onDeleteAnalysis={handleDeleteAnalysis}
+            isLoading={isLoadingAnalyses}
+          />
         </TabsContent>
       </Tabs>
     </div>

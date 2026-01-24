@@ -2,15 +2,21 @@
 
 ## Overview
 
-Applicazione web fullstack per la gestione e il calcolo dei compensi dei collaboratori. Permette l'importazione di dati da file CSV/Excel, la mappatura delle colonne, la gestione di record con categorie, il rilevamento di anomalie e la generazione di report dettagliati per operatore.
+Applicazione web fullstack per la gestione e il calcolo dei compensi dei collaboratori. Permette l'importazione di dati da file CSV/Excel, la mappatura delle colonne, la gestione di record con categorie (carta/contanti), il rilevamento di anomalie e la generazione di report dettagliati per operatore.
 
 ## Funzionalità Principali
 
 - **Importazione File**: Supporto per CSV ed Excel (.xlsx, .xls) con drag-and-drop
 - **Mappatura Colonne**: Interfaccia visuale per associare le colonne del file ai campi dell'applicazione
-- **Gestione Dati**: Tabella interattiva con checkbox per categorizzazione, celle modificabili e filtri
+- **Periodo di Riferimento**: Ogni importazione richiede un range di date che identifica l'analisi
+- **Archiviazione Automatica**: Le analisi precedenti vengono archiviate automaticamente ad ogni nuova importazione
+- **Categorie Compenso**: Due categorie esclusive per ogni record:
+  - 💳 Carta (default per nuove importazioni)
+  - 💵 Contanti
+- **Modifica Categorie**: Toggle singolo o selezione multipla con azioni bulk
 - **Rilevamento Anomalie**: Evidenziazione automatica quando compenso operatore = prezzo paziente
-- **Dashboard Operatori**: Report con compensi arrotondati alla decina, statistiche e grafici
+- **Dashboard Operatori**: Report con compensi arrotondati alla decina, statistiche carta/contanti
+- **Archivio Analisi**: Storico delle analisi precedenti con dettagli espandibili
 - **Esportazione Excel**: Export completo con report e dettaglio prestazioni
 
 ## Architettura
@@ -38,9 +44,10 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 client/src/
 ├── components/
 │   ├── file-upload.tsx        # Upload file CSV/Excel
-│   ├── column-mapper.tsx      # Mappatura colonne
-│   ├── data-table.tsx         # Tabella dati interattiva
-│   ├── operator-dashboard.tsx # Dashboard e report
+│   ├── column-mapper.tsx      # Mappatura colonne + date range
+│   ├── data-table.tsx         # Tabella dati con toggle categoria
+│   ├── operator-dashboard.tsx # Dashboard e report carta/contanti
+│   ├── analysis-archive.tsx   # Archivio analisi storiche
 │   ├── theme-provider.tsx     # Provider tema dark/light
 │   └── theme-toggle.tsx       # Toggle tema
 ├── pages/
@@ -58,17 +65,21 @@ shared/
 ## API Endpoints
 
 - `GET /api/records` - Lista tutti i record
-- `POST /api/records/import` - Importa nuovi record
+- `POST /api/records/import` - Importa nuovi record (archivia automaticamente i precedenti)
 - `PATCH /api/records/:id` - Aggiorna un record
+- `PATCH /api/records/bulk/update` - Aggiorna più record contemporaneamente
 - `GET /api/mappings` - Lista mappature salvate
 - `POST /api/mappings` - Salva una mappatura
 - `DELETE /api/mappings/:id` - Elimina una mappatura
+- `GET /api/analyses` - Lista analisi archiviate
+- `GET /api/analyses/:id` - Dettaglio singola analisi
+- `DELETE /api/analyses/:id` - Elimina un'analisi
 
 ## Campi Dati
 
 | Campo | Descrizione |
 |-------|-------------|
-| categoriaCompenso | Checkbox per categorizzazione (aggiunto dall'app) |
+| categoriaCompenso | "card" (💳) o "cash" (💵) - categoria esclusiva |
 | operatore | Nome del collaboratore |
 | paziente | Nome del paziente |
 | prestazione | Tipo di servizio erogato |

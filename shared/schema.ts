@@ -1,8 +1,11 @@
 import { z } from "zod";
 
+export const categoriaCompensoEnum = z.enum(["card", "cash"]);
+export type CategoriaCompenso = z.infer<typeof categoriaCompensoEnum>;
+
 export const compensoRecordSchema = z.object({
   id: z.string(),
-  categoriaCompenso: z.boolean().default(false),
+  categoriaCompenso: categoriaCompensoEnum.default("card"),
   operatore: z.string(),
   paziente: z.string(),
   prestazione: z.string(),
@@ -16,6 +19,19 @@ export type CompensoRecord = z.infer<typeof compensoRecordSchema>;
 
 export const insertCompensoRecordSchema = compensoRecordSchema.omit({ id: true, hasAnomaly: true });
 export type InsertCompensoRecord = z.infer<typeof insertCompensoRecordSchema>;
+
+export const analysisSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  dateRange: z.string(),
+  createdAt: z.string(),
+  records: z.array(compensoRecordSchema),
+});
+
+export type Analysis = z.infer<typeof analysisSchema>;
+
+export const insertAnalysisSchema = analysisSchema.omit({ id: true, createdAt: true });
+export type InsertAnalysis = z.infer<typeof insertAnalysisSchema>;
 
 export const columnMappingSchema = z.object({
   id: z.string(),
@@ -32,11 +48,11 @@ export type InsertColumnMapping = z.infer<typeof insertColumnMappingSchema>;
 export const operatorReportSchema = z.object({
   operatore: z.string(),
   compensoTotale: z.number(),
-  compensoCategoria: z.number(),
-  differenza: z.number(),
+  compensoCard: z.number(),
+  compensoCash: z.number(),
   compensoTotaleArrotondato: z.number(),
-  compensoCategoriaArrotondato: z.number(),
-  differenzaArrotondata: z.number(),
+  compensoCardArrotondato: z.number(),
+  compensoCashArrotondato: z.number(),
   numeroAnomalie: z.number(),
   numeroRecord: z.number(),
 });
