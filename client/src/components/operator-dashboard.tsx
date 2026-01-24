@@ -179,180 +179,91 @@ export function OperatorDashboard({
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Report per Operatore</CardTitle>
-            <CardDescription>
-              Clicca su un operatore per vedere i dettagli
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {operatorReports.map((report) => {
-                const isSelected = selectedOperator === report.operatore;
-                const cardPercentage =
-                  report.compensoTotale > 0
-                    ? (report.compensoCard / report.compensoTotale) * 100
-                    : 0;
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Report per Operatore</h3>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {operatorReports.map((report, index) => {
+            const colors = [
+              { bg: "bg-blue-50 dark:bg-blue-950/40", border: "border-blue-200 dark:border-blue-800", accent: "bg-blue-500", text: "text-blue-700 dark:text-blue-300" },
+              { bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-800", accent: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-300" },
+              { bg: "bg-violet-50 dark:bg-violet-950/40", border: "border-violet-200 dark:border-violet-800", accent: "bg-violet-500", text: "text-violet-700 dark:text-violet-300" },
+              { bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200 dark:border-amber-800", accent: "bg-amber-500", text: "text-amber-700 dark:text-amber-300" },
+              { bg: "bg-rose-50 dark:bg-rose-950/40", border: "border-rose-200 dark:border-rose-800", accent: "bg-rose-500", text: "text-rose-700 dark:text-rose-300" },
+              { bg: "bg-cyan-50 dark:bg-cyan-950/40", border: "border-cyan-200 dark:border-cyan-800", accent: "bg-cyan-500", text: "text-cyan-700 dark:text-cyan-300" },
+              { bg: "bg-orange-50 dark:bg-orange-950/40", border: "border-orange-200 dark:border-orange-800", accent: "bg-orange-500", text: "text-orange-700 dark:text-orange-300" },
+              { bg: "bg-indigo-50 dark:bg-indigo-950/40", border: "border-indigo-200 dark:border-indigo-800", accent: "bg-indigo-500", text: "text-indigo-700 dark:text-indigo-300" },
+            ];
+            const color = colors[index % colors.length];
 
-                return (
-                  <div
-                    key={report.operatore}
-                    className={`flex items-center justify-between rounded-lg border p-4 cursor-pointer transition-colors ${
-                      isSelected
-                        ? "border-primary bg-primary/5"
-                        : "hover-elevate"
-                    }`}
-                    onClick={() =>
-                      onSelectOperator(isSelected ? null : report.operatore)
-                    }
-                    data-testid={`operator-card-${report.operatore}`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
-                        {report.operatore.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">{report.operatore}</p>
-                          {report.numeroAnomalie > 0 && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800">
-                                  <AlertTriangle className="mr-1 h-3 w-3" />
-                                  {report.numeroAnomalie}
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {report.numeroAnomalie} record con anomalia
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {report.numeroRecord} prestazioni
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">
-                        {formatCurrency(report.compensoTotaleArrotondato)}
-                      </p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <span role="img" aria-label="carta">💳</span>
-                          {formatCurrency(report.compensoCardArrotondato)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span role="img" aria-label="contanti">💵</span>
-                          {formatCurrency(report.compensoCashArrotondato)}
-                        </span>
-                      </div>
-                    </div>
+            return (
+              <div
+                key={report.operatore}
+                className={`rounded-lg border-2 p-5 ${color.bg} ${color.border}`}
+                data-testid={`operator-card-${report.operatore}`}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full ${color.accent} text-white font-bold text-lg`}>
+                    {report.operatore.charAt(0).toUpperCase()}
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">
-              {selectedReport ? selectedReport.operatore : "Dettagli Operatore"}
-            </CardTitle>
-            <CardDescription>
-              {selectedReport
-                ? `${selectedReport.numeroRecord} prestazioni registrate`
-                : "Seleziona un operatore per vedere i dettagli"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {selectedReport ? (
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Compenso Totale</span>
-                    <span className="font-semibold">
-                      {formatCurrency(selectedReport.compensoTotaleArrotondato)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground flex items-center gap-1">
-                      <span role="img" aria-label="carta">💳</span> Carta
-                    </span>
-                    <span className="font-semibold text-primary">
-                      {formatCurrency(selectedReport.compensoCardArrotondato)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground flex items-center gap-1">
-                      <span role="img" aria-label="contanti">💵</span> Contanti
-                    </span>
-                    <span className="font-semibold">
-                      {formatCurrency(selectedReport.compensoCashArrotondato)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Distribuzione per categoria
-                  </p>
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span>💳 Carta</span>
-                        <span>{selectedReport.compensoTotale > 0 ? ((selectedReport.compensoCard / selectedReport.compensoTotale) * 100).toFixed(0) : 0}%</span>
-                      </div>
-                      <Progress
-                        value={selectedReport.compensoTotale > 0 ? (selectedReport.compensoCard / selectedReport.compensoTotale) * 100 : 0}
-                        className="h-2"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span>💵 Contanti</span>
-                        <span>{selectedReport.compensoTotale > 0 ? ((selectedReport.compensoCash / selectedReport.compensoTotale) * 100).toFixed(0) : 0}%</span>
-                      </div>
-                      <Progress
-                        value={selectedReport.compensoTotale > 0 ? (selectedReport.compensoCash / selectedReport.compensoTotale) * 100 : 0}
-                        className="h-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {selectedReport.numeroAnomalie > 0 && (
-                  <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 p-4 border border-amber-200 dark:border-amber-800">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-amber-600" />
-                      <p className="font-medium text-amber-700 dark:text-amber-400">
-                        {selectedReport.numeroAnomalie} Anomalie
-                      </p>
-                    </div>
-                    <p className="mt-1 text-sm text-amber-600 dark:text-amber-500">
-                      Record con compenso uguale al prezzo paziente
+                  <div className="flex-1 min-w-0">
+                    <h4 className={`font-semibold text-lg truncate ${color.text}`}>{report.operatore}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {report.numeroRecord} prestazioni
                     </p>
                   </div>
-                )}
+                  {report.numeroAnomalie > 0 && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="outline" className="text-xs bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900 dark:text-amber-300 dark:border-amber-700">
+                          <AlertTriangle className="mr-1 h-3 w-3" />
+                          {report.numeroAnomalie}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {report.numeroAnomalie} record con anomalia
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
 
-                <div className="text-xs text-muted-foreground text-center">
-                  Importi arrotondati alla decina di euro
+                <div className="space-y-3">
+                  <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-muted-foreground">Compenso Totale</span>
+                      <span className={`text-xl font-bold ${color.text}`}>
+                        {formatCurrency(report.compensoTotaleArrotondato)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
+                      <div className="flex items-center gap-1 mb-1">
+                        <span role="img" aria-label="carta">💳</span>
+                        <span className="text-xs font-medium text-muted-foreground">Carta</span>
+                      </div>
+                      <p className="text-lg font-semibold">
+                        {formatCurrency(report.compensoCardArrotondato)}
+                      </p>
+                    </div>
+                    <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
+                      <div className="flex items-center gap-1 mb-1">
+                        <span role="img" aria-label="contanti">💵</span>
+                        <span className="text-xs font-medium text-muted-foreground">Contanti</span>
+                      </div>
+                      <p className="text-lg font-semibold">
+                        {formatCurrency(report.compensoCashArrotondato)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
-                <Users className="h-12 w-12 mb-4 opacity-40" />
-                <p>Nessun operatore selezionato</p>
-                <p className="text-sm">
-                  Clicca su un operatore dalla lista per vedere i dettagli del report
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            );
+          })}
+        </div>
+        <p className="text-xs text-muted-foreground text-center mt-4">
+          Importi arrotondati alla decina di euro
+        </p>
       </div>
     </div>
   );
