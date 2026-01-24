@@ -1,0 +1,74 @@
+Crea un'applicazione web per il calcolo dei compensi dei collaboratori con le seguenti caratteristiche:
+1. Importazione dati:
+
+Permetti il caricamento di un file CSV/Excel contenente una tabella con vari campi
+Dopo il caricamento, mostra un'interfaccia di mappatura dove l'utente può associare le colonne del file caricato ai campi dell'applicazione
+
+2. Struttura dati dell'applicazione:
+La tabella interna deve contenere questi campi:
+
+Categoria compenso (checkbox: selezionato/non selezionato) - IMPORTANTE: questo campo NON esiste nella tabella caricata, ma viene aggiunto automaticamente dall'app dopo la mappatura. Di default tutte le checkbox sono deselezionate
+Operatore (nome del collaboratore) - mappato dal file
+Paziente (nome del paziente) - mappato dal file
+Prestazione (tipo di servizio erogato) - mappato dal file
+Elementi dentali (denti coinvolti nella prestazione) - mappato dal file
+Prezzo al paziente (importo totale fatturato) - mappato dal file
+Compenso operatore (importo spettante all'operatore) - mappato dal file
+
+3. Funzionalità di mappatura:
+
+Interfaccia visuale per associare ogni colonna del file importato ai campi dell'app (esclusa "Categoria compenso")
+Preview dei dati mappati prima della conferma
+Possibilità di salvare le mappature per importazioni future
+Dopo la mappatura, visualizza la tabella completa con la colonna "Categoria compenso" già presente (checkbox deselezionate)
+
+4. Sistema di alert:
+
+Evidenzia visivamente (con icona di warning o colore diverso) tutti i record in cui "Compenso operatore" è uguale a "Prezzo al paziente"
+Mostra un tooltip o badge che spiega l'anomalia quando si passa il mouse sul record evidenziato
+Opzionale: aggiungi un filtro per visualizzare solo i record con questa anomalia
+
+5. Report per operatore:
+Per ogni operatore, genera un report che mostri:
+
+Compenso totale: somma di tutti i compensi dell'operatore
+Compenso categoria selezionata: somma dei soli compensi con checkbox "categoria compenso" attiva
+Differenza: compenso totale - compenso categoria selezionata
+Tutti gli importi arrotondati alla decina di euro (es: 127€ → 130€, 123€ → 120€)
+Numero di record con anomalia (compenso = prezzo paziente) per quell'operatore
+
+6. Interfaccia utente:
+
+Dashboard con lista degli operatori e relative statistiche
+Possibilità di filtrare e visualizzare i dettagli per singolo operatore
+Tabella con tutti i record importati, con:
+
+Checkbox "Categoria compenso" modificabili dall'utente
+Evidenziazione visiva dei record anomali (compenso = prezzo)
+Possibilità di modificare i dati se necessario
+
+
+Esportazione del report in formato PDF o Excel
+
+7. Tecnologie suggerite:
+
+Frontend: React o HTML/CSS/JavaScript vanilla
+Backend: Node.js/Express o Python/Flask
+Database: SQLite per semplicità o PostgreSQL
+Librerie: PapaParse per CSV, SheetJS per Excel
+
+Note tecniche:
+
+Gestisci errori di importazione (formati non validi, campi mancanti)
+Valida i dati numerici per prezzo e compenso
+Implementa la persistenza dei dati tra le sessioni
+Il confronto tra compenso e prezzo deve considerare eventuali arrotondamenti o differenze minime (±0.01€)
+
+Flusso di lavoro atteso:
+
+Utente carica file CSV/Excel
+Utente mappa i campi del file ai campi dell'app
+App mostra tabella con colonna "Categoria compenso" aggiunta (checkbox vuote)
+App evidenzia automaticamente i record dove compenso = prezzo
+Utente può selezionare le checkbox per categorizzare i compensi
+Utente genera report per operatore con importi arrotondati
