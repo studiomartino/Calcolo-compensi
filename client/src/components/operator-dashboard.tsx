@@ -355,7 +355,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           Esporta
         </Button>
       </div>
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 gap-2">
@@ -426,7 +425,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           </CardContent>
         </Card>
       </div>
-
       <div>
         <h3 className="text-lg font-semibold mb-4">Report per Operatore</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -551,7 +549,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           Importi arrotondati alla decina di euro
         </p>
       </div>
-
       <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
@@ -575,7 +572,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           </div>
         </DialogContent>
       </Dialog>
-
       <Dialog open={showTextReportModal} onOpenChange={setShowTextReportModal}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -598,7 +594,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           />
         </DialogContent>
       </Dialog>
-
       <Dialog open={showAnomaliesModal} onOpenChange={setShowAnomaliesModal}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -691,7 +686,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           </div>
         </DialogContent>
       </Dialog>
-
       <Dialog open={showDailyPaymentModal} onOpenChange={(open) => {
         setShowDailyPaymentModal(open);
         if (!open) {
@@ -706,7 +700,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                 Pagamento a Giornata
               </div>
               {selectedDailyOperator && (
-                <span className="text-base font-semibold bg-muted/50 px-3 py-1 rounded-lg">
+                <span className="text-base font-semibold bg-muted/50 px-3 py-1 rounded-lg pl-[20px] pr-[20px]">
                   {selectedDailyOperator}
                 </span>
               )}
