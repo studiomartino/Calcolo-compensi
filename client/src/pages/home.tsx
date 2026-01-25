@@ -327,10 +327,10 @@ export default function Home() {
     }
 
     return (
-      <div className="space-y-6 pl-[16px] pr-[16px]">
+      <div className="space-y-6 w-full">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-muted-foreground pl-[16px] pr-[16px]">
+            <p className="text-muted-foreground">
               {records.length} record {currentDateRange && `| Periodo: ${currentDateRange}`}
             </p>
           </div>
