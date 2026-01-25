@@ -378,6 +378,7 @@ export default function Home() {
                   onExportExcel={handleExportExcel}
                   selectedOperator={selectedOperator}
                   onSelectOperator={setSelectedOperator}
+                  onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
                 />
               </div>
             </SheetContent>

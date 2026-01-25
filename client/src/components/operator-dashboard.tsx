@@ -1,10 +1,13 @@
-import { useMemo } from "react";
-import { Users, TrendingUp, AlertTriangle, Calculator, Download, FileSpreadsheet, CreditCard, Banknote } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo, useState } from "react";
+import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { CompensoRecord, OperatorReport } from "@shared/schema";
 
 interface OperatorDashboardProps {
@@ -12,6 +15,7 @@ interface OperatorDashboardProps {
   onExportExcel: () => void;
   selectedOperator: string | null;
   onSelectOperator: (operator: string | null) => void;
+  onUpdateRecord?: (id: string, compensoOperatore: number) => void;
 }
 
 export function OperatorDashboard({
@@ -19,10 +23,19 @@ export function OperatorDashboard({
   onExportExcel,
   selectedOperator,
   onSelectOperator,
+  onUpdateRecord,
 }: OperatorDashboardProps) {
+  const [showAnomaliesModal, setShowAnomaliesModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+
   const roundToTen = (value: number): number => {
     return Math.round(value / 10) * 10;
   };
+
+  const anomalousRecords = useMemo(() => {
+    return records.filter((r) => r.hasAnomaly);
+  }, [records]);
 
   const operatorReports = useMemo((): OperatorReport[] => {
     const operatorMap = new Map<string, CompensoRecord[]>();
@@ -91,6 +104,43 @@ export function OperatorDashboard({
     }).format(amount);
   };
 
+  const formatCurrencyWithDecimals = (amount: number) => {
+    return new Intl.NumberFormat("it-IT", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
+
+  const handleStartEdit = (id: string, currentValue: number) => {
+    setEditingId(id);
+    setEditValue(currentValue.toString());
+  };
+
+  const handleSaveEdit = (id: string) => {
+    const numValue = parseFloat(editValue);
+    if (!isNaN(numValue) && numValue >= 0 && onUpdateRecord) {
+      onUpdateRecord(id, numValue);
+    }
+    setEditingId(null);
+    setEditValue("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditValue("");
+  };
+
   const selectedReport = selectedOperator
     ? operatorReports.find((r) => r.operatore === selectedOperator)
     : null;
@@ -121,6 +171,17 @@ export function OperatorDashboard({
             <p className="text-xs text-muted-foreground">
               Da {globalStats.totalRecords} prestazioni
             </p>
+            {globalStats.totalAnomalie > 0 && (
+              <Badge 
+                variant="outline" 
+                className="mt-2 text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800 cursor-pointer hover-elevate"
+                onClick={() => setShowAnomaliesModal(true)}
+                data-testid="badge-anomalies"
+              >
+                <AlertTriangle className="mr-1 h-3 w-3" />
+                {globalStats.totalAnomalie} anomalie
+              </Badge>
+            )}
           </CardContent>
         </Card>
 
@@ -163,14 +224,9 @@ export function OperatorDashboard({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{globalStats.totalOperators}</div>
-            <div className="flex items-center gap-1 mt-1">
-              {globalStats.totalAnomalie > 0 && (
-                <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800">
-                  <AlertTriangle className="mr-1 h-3 w-3" />
-                  {globalStats.totalAnomalie} anomalie
-                </Badge>
-              )}
-            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Collaboratori attivi
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -258,6 +314,99 @@ export function OperatorDashboard({
           Importi arrotondati alla decina di euro
         </p>
       </div>
+
+      <Dialog open={showAnomaliesModal} onOpenChange={setShowAnomaliesModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Record con Anomalie ({anomalousRecords.length})
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground mb-4">
+            Questi record hanno il compenso operatore uguale al prezzo paziente. Clicca sull'importo per modificarlo.
+          </p>
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Operatore</TableHead>
+                  <TableHead>Paziente</TableHead>
+                  <TableHead>Prestazione</TableHead>
+                  <TableHead className="text-right">Prezzo Paz.</TableHead>
+                  <TableHead className="text-right">Compenso Op.</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {anomalousRecords.map((record) => (
+                  <TableRow key={record.id} className="bg-red-50/50 dark:bg-red-950/20">
+                    <TableCell className="font-mono text-sm">
+                      {record.data ? formatDate(record.data) : "-"}
+                    </TableCell>
+                    <TableCell>{record.operatore}</TableCell>
+                    <TableCell>{record.paziente}</TableCell>
+                    <TableCell className="max-w-[200px] truncate">
+                      {record.prestazione}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {formatCurrencyWithDecimals(record.prezzoAlPaziente)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {editingId === record.id ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            className="w-24 h-8 text-right font-mono"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleSaveEdit(record.id);
+                              if (e.key === "Escape") handleCancelEdit();
+                            }}
+                            data-testid={`input-edit-compenso-${record.id}`}
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => handleSaveEdit(record.id)}
+                            data-testid={`button-save-edit-${record.id}`}
+                          >
+                            <Check className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={handleCancelEdit}
+                            data-testid={`button-cancel-edit-${record.id}`}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div
+                          className="group flex items-center justify-end gap-2 cursor-pointer"
+                          onClick={() => handleStartEdit(record.id, record.compensoOperatore)}
+                          data-testid={`cell-compenso-${record.id}`}
+                        >
+                          <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <span className="font-mono">
+                            {formatCurrencyWithDecimals(record.compensoOperatore)}
+                          </span>
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
