@@ -419,7 +419,7 @@ export default function Home() {
       </header>
       <div className="container py-6">
         <Tabs value={mainTab} onValueChange={setMainTab}>
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-md grid-cols-3 px-4">
             <TabsTrigger value="import" data-testid="main-tab-import">
               <Upload className="mr-2 h-4 w-4" />
               Importazione
