@@ -9,7 +9,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Importazione File**: Supporto per CSV ed Excel (.xlsx, .xls) con drag-and-drop
 - **Mappatura Colonne**: Interfaccia visuale per associare le colonne del file ai campi dell'applicazione
 - **Periodo di Riferimento**: Determinato automaticamente dalle date presenti nei dati importati
-- **Archiviazione Automatica**: Le analisi precedenti vengono archiviate automaticamente ad ogni nuova importazione
+- **Archiviazione Manuale**: Le analisi vengono archiviate solo tramite il pulsante dedicato (non automaticamente all'importazione)
 - **Categorie Compenso**: Due categorie esclusive per ogni record:
   - Carta (icona CreditCard, default per nuove importazioni)
   - Contanti (icona Banknote)
