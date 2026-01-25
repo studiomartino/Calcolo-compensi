@@ -323,20 +323,16 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
-                      <div className="flex items-center gap-1 mb-1">
+                      <span className="text-xs font-medium text-muted-foreground">Compenso A</span>
+                      <p className="text-lg font-semibold flex items-center gap-1">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-xs font-medium text-muted-foreground">Compenso A</span>
-                      </div>
-                      <p className="text-lg font-semibold">
                         {formatCurrency(report.compensoCardArrotondato)}
                       </p>
                     </div>
                     <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
-                      <div className="flex items-center gap-1 mb-1">
+                      <span className="text-xs font-medium text-muted-foreground">Compenso B</span>
+                      <p className="text-lg font-semibold flex items-center gap-1">
                         <Banknote className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-xs font-medium text-muted-foreground">Compenso B</span>
-                      </div>
-                      <p className="text-lg font-semibold">
                         {formatCurrency(report.compensoCashArrotondato)}
                       </p>
                     </div>
