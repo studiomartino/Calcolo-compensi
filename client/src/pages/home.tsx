@@ -413,11 +413,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
-        <div className="container py-4">
+        <div className="container py-4 pl-[16px] pr-[16px]">
           <h1 className="text-2xl font-bold tracking-tight">Gestione Compensi</h1>
         </div>
       </header>
-
       <div className="container py-6">
         <Tabs value={mainTab} onValueChange={setMainTab}>
           <TabsList className="grid w-full max-w-md grid-cols-3">
