@@ -36,6 +36,28 @@ interface OperatorsTabProps {
   onUpdateOperatorColors: (colors: Record<string, string>) => void;
 }
 
+function parseDate(dateStr: string): Date | null {
+  if (!dateStr) return null;
+  const parts = dateStr.split("/");
+  if (parts.length !== 3) return null;
+  
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  let year = parseInt(parts[2], 10);
+  
+  if (year < 100) {
+    year = year > 50 ? 1900 + year : 2000 + year;
+  }
+  
+  const date = new Date(year, month, day);
+  if (isNaN(date.getTime())) return null;
+  return date;
+}
+
+function getMonthKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
 interface OperatorStats {
   operatore: string;
   totalAnalyses: number;
@@ -63,10 +85,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
     analyses.forEach((analysis) => {
       analysis.records.forEach((record) => {
         if (record.data) {
-          const date = new Date(record.data.split("/").reverse().join("-"));
-          if (!isNaN(date.getTime())) {
-            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-            allMonthsSet.add(monthKey);
+          const date = parseDate(record.data);
+          if (date) {
+            allMonthsSet.add(getMonthKey(date));
           }
         }
         
@@ -116,14 +137,10 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
       
       stats.allRecords.forEach((record) => {
         if (record.data) {
-          const parts = record.data.split("/");
-          if (parts.length === 3) {
-            const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-            if (!isNaN(date.getTime())) {
-              const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-              monthsForOperator.add(monthKey);
-              datesWorked.add(record.data);
-            }
+          const date = parseDate(record.data);
+          if (date) {
+            monthsForOperator.add(getMonthKey(date));
+            datesWorked.add(record.data);
           }
         }
       });
@@ -141,13 +158,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
     analyses.forEach((analysis) => {
       analysis.records.forEach((record) => {
         if (record.data) {
-          const parts = record.data.split("/");
-          if (parts.length === 3) {
-            const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-            if (!isNaN(date.getTime())) {
-              const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-              monthsSet.add(monthKey);
-            }
+          const date = parseDate(record.data);
+          if (date) {
+            monthsSet.add(getMonthKey(date));
           }
         }
       });
@@ -205,13 +218,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
       
       filtered = filtered.filter((r) => {
         if (!r.data) return true;
-        const parts = r.data.split("/");
-        if (parts.length === 3) {
-          const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-          if (!isNaN(date.getTime())) {
-            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-            return allowedMonths.has(monthKey);
-          }
+        const date = parseDate(r.data);
+        if (date) {
+          return allowedMonths.has(getMonthKey(date));
         }
         return true;
       });
@@ -229,13 +238,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
     
     records.forEach((r) => {
       if (r.data) {
-        const parts = r.data.split("/");
-        if (parts.length === 3) {
-          const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-          if (!isNaN(date.getTime())) {
-            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-            monthsSet.add(monthKey);
-          }
+        const date = parseDate(r.data);
+        if (date) {
+          monthsSet.add(getMonthKey(date));
         }
       }
     });
