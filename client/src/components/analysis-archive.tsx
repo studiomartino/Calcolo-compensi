@@ -1,26 +1,34 @@
-import { useState } from "react";
-import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote, CheckSquare, Square } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote, CheckSquare, Square, FolderOpen, Download, FileSpreadsheet, Copy } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import * as XLSX from "xlsx";
 import type { Analysis } from "@shared/schema";
 
 interface AnalysisArchiveProps {
   analyses: Analysis[];
   onDeleteAnalysis: (id: string) => void;
   onBulkDeleteAnalyses: (ids: string[]) => void;
+  onOpenAnalysis?: (analysis: Analysis) => void;
   isLoading?: boolean;
 }
 
-export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalyses, isLoading }: AnalysisArchiveProps) {
+export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalyses, onOpenAnalysis, isLoading }: AnalysisArchiveProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showTextReportModal, setShowTextReportModal] = useState(false);
+  const [exportAnalysis, setExportAnalysis] = useState<Analysis | null>(null);
+  const { toast } = useToast();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("it-IT", {
@@ -53,6 +61,31 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
     };
   };
 
+  const textReport = useMemo(() => {
+    if (!exportAnalysis) return "";
+    const records = exportAnalysis.records;
+    const operatorMap = new Map<string, { card: number; cash: number; total: number }>();
+    
+    records.forEach((r) => {
+      const existing = operatorMap.get(r.operatore) || { card: 0, cash: 0, total: 0 };
+      if (r.categoriaCompenso === "card") {
+        existing.card += r.compensoOperatore;
+      } else {
+        existing.cash += r.compensoOperatore;
+      }
+      existing.total += r.compensoOperatore;
+      operatorMap.set(r.operatore, existing);
+    });
+
+    return Array.from(operatorMap.entries()).map(([operatore, data]) => {
+      return `Nome operatore: ${operatore}
+Periodo analisi: ${exportAnalysis.dateRange}
+Compenso totale: ${roundToTen(data.total)} €
+Compenso A: ${roundToTen(data.card)} €
+Compenso B: ${roundToTen(data.cash)} €`;
+    }).join("\n\n---\n\n");
+  }, [exportAnalysis]);
+
   const handleToggleSelect = (id: string) => {
     const newSelected = new Set(selectedIds);
     if (newSelected.has(id)) {
@@ -75,6 +108,87 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
     onBulkDeleteAnalyses(Array.from(selectedIds));
     setSelectedIds(new Set());
     setShowBulkDeleteDialog(false);
+  };
+
+  const handleOpenExportModal = (analysis: Analysis, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExportAnalysis(analysis);
+    setShowExportModal(true);
+  };
+
+  const handleExportExcel = () => {
+    if (!exportAnalysis) return;
+    
+    const records = exportAnalysis.records;
+    const operatorMap = new Map<string, { card: number; cash: number; count: number }>();
+    
+    records.forEach((r) => {
+      const existing = operatorMap.get(r.operatore) || { card: 0, cash: 0, count: 0 };
+      if (r.categoriaCompenso === "card") {
+        existing.card += r.compensoOperatore;
+      } else {
+        existing.cash += r.compensoOperatore;
+      }
+      existing.count++;
+      operatorMap.set(r.operatore, existing);
+    });
+
+    const reportData = Array.from(operatorMap.entries()).map(([operatore, data]) => ({
+      Operatore: operatore,
+      "Numero Prestazioni": data.count,
+      "Compenso Totale": roundToTen(data.card + data.cash),
+      "Compenso A": roundToTen(data.card),
+      "Compenso B": roundToTen(data.cash),
+    }));
+
+    const detailData = records.map((r) => ({
+      "Categoria": r.categoriaCompenso === "card" ? "Compenso A" : "Compenso B",
+      Data: r.data || "",
+      Operatore: r.operatore,
+      Paziente: r.paziente,
+      Prestazione: r.prestazione,
+      "Elementi Dentali": r.elementiDentali,
+      "Prezzo Al Paziente": r.prezzoAlPaziente,
+      "Compenso Operatore": r.compensoOperatore,
+      Anomalia: r.hasAnomaly ? "Sì" : "No",
+    }));
+
+    const wb = XLSX.utils.book_new();
+    const wsReport = XLSX.utils.json_to_sheet(reportData);
+    const wsDetail = XLSX.utils.json_to_sheet(detailData);
+
+    XLSX.utils.book_append_sheet(wb, wsReport, "Report Operatori");
+    XLSX.utils.book_append_sheet(wb, wsDetail, "Dettaglio Prestazioni");
+
+    const fileName = `${exportAnalysis.name.replace(/\s+/g, "_")}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+
+    toast({
+      title: "Export completato",
+      description: `File ${fileName} scaricato con successo`,
+    });
+
+    setShowExportModal(false);
+  };
+
+  const handleExportText = () => {
+    setShowExportModal(false);
+    setShowTextReportModal(true);
+  };
+
+  const handleCopyTextReport = () => {
+    navigator.clipboard.writeText(textReport);
+    toast({
+      title: "Report copiato",
+      description: "Il report testuale è stato copiato negli appunti",
+    });
+  };
+
+  const handleOpenAnalysis = (analysis: Analysis, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onOpenAnalysis) {
+      onOpenAnalysis(analysis);
+    }
   };
 
   if (isLoading) {
@@ -211,7 +325,7 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="text-right mr-4">
+                        <div className="text-right mr-2">
                           <div className="flex items-center gap-3 text-sm">
                             <span className="flex items-center gap-1"><CreditCard className="h-3 w-3" /> {formatCurrency(stats.cardCompenso)}</span>
                             <span className="flex items-center gap-1"><Banknote className="h-3 w-3" /> {formatCurrency(stats.cashCompenso)}</span>
@@ -220,6 +334,24 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
                             Archiviata il {new Date(analysis.createdAt).toLocaleDateString("it-IT")}
                           </p>
                         </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => handleOpenAnalysis(analysis, e)}
+                          data-testid={`button-open-analysis-${analysis.id}`}
+                        >
+                          <FolderOpen className="mr-1 h-4 w-4" />
+                          Apri
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => handleOpenExportModal(analysis, e)}
+                          data-testid={`button-export-analysis-${analysis.id}`}
+                        >
+                          <Download className="mr-1 h-4 w-4" />
+                          Esporta
+                        </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
@@ -329,6 +461,53 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
           );
         })}
       </CardContent>
+
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Download className="h-5 w-5" />
+              Esporta Analisi
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground mb-4">
+            Scegli il formato di esportazione per "{exportAnalysis?.name}"
+          </p>
+          <div className="flex flex-col gap-3">
+            <Button onClick={handleExportExcel} className="w-full" data-testid="button-archive-export-excel">
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Esporta Excel
+            </Button>
+            <Button onClick={handleExportText} variant="outline" className="w-full" data-testid="button-archive-export-text">
+              <FileText className="mr-2 h-4 w-4" />
+              Esporta Testo
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showTextReportModal} onOpenChange={setShowTextReportModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Report Testuale - {exportAnalysis?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-end mb-2">
+            <Button variant="outline" size="sm" onClick={handleCopyTextReport} data-testid="button-archive-copy-report">
+              <Copy className="mr-2 h-4 w-4" />
+              Copia
+            </Button>
+          </div>
+          <Textarea 
+            value={textReport} 
+            readOnly 
+            className="min-h-[400px] font-mono text-sm"
+            data-testid="textarea-archive-text-report"
+          />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

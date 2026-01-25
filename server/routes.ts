@@ -177,11 +177,15 @@ export async function registerRoutes(
 
   app.post("/api/records/import", async (req, res) => {
     try {
-      const { records: rawRecords, mappings } = importRecordsSchema.parse(req.body);
+      const { records: rawRecords, mappings, preserveCategories } = req.body;
+      
+      if (!rawRecords || !mappings) {
+        return res.status(400).json({ error: "Dati mancanti" });
+      }
 
       const existingRecords = await storage.getRecords();
       
-      const dates = rawRecords.map((r) => parseDate(r[mappings.data]));
+      const dates = rawRecords.map((r: Record<string, string>) => parseDate(r[mappings.data]));
       const { name: analysisName, dateRange } = generateAnalysisName(dates);
       
       if (existingRecords.length > 0) {
@@ -198,16 +202,22 @@ export async function registerRoutes(
 
       await storage.clearRecords();
 
-      const recordsToCreate = rawRecords.map((rawRecord) => ({
-        categoriaCompenso: "card" as const,
-        data: rawRecord[mappings.data] || "",
-        operatore: rawRecord[mappings.operatore] || "",
-        paziente: rawRecord[mappings.paziente] || "",
-        prestazione: rawRecord[mappings.prestazione] || "",
-        elementiDentali: rawRecord[mappings.elementiDentali] || "",
-        prezzoAlPaziente: parseNumber(rawRecord[mappings.prezzoAlPaziente]),
-        compensoOperatore: parseNumber(rawRecord[mappings.compensoOperatore]),
-      }));
+      const recordsToCreate = rawRecords.map((rawRecord: Record<string, string>) => {
+        const categoria = preserveCategories && rawRecord.categoriaCompenso 
+          ? (rawRecord.categoriaCompenso as "card" | "cash")
+          : "card";
+        
+        return {
+          categoriaCompenso: categoria,
+          data: rawRecord[mappings.data] || "",
+          operatore: rawRecord[mappings.operatore] || "",
+          paziente: rawRecord[mappings.paziente] || "",
+          prestazione: rawRecord[mappings.prestazione] || "",
+          elementiDentali: rawRecord[mappings.elementiDentali] || "",
+          prezzoAlPaziente: parseNumber(rawRecord[mappings.prezzoAlPaziente]),
+          compensoOperatore: parseNumber(rawRecord[mappings.compensoOperatore]),
+        };
+      });
 
       const createdRecords = await storage.createRecords(recordsToCreate);
       

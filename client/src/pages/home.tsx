@@ -205,6 +205,48 @@ export default function Home() {
     bulkDeleteAnalysesMutation.mutate(ids);
   }, [bulkDeleteAnalysesMutation]);
 
+  const handleOpenAnalysis = useCallback(async (analysis: Analysis) => {
+    try {
+      await apiRequest("POST", "/api/records/import", { 
+        records: analysis.records.map(r => ({
+          data: r.data || "",
+          operatore: r.operatore,
+          paziente: r.paziente,
+          prestazione: r.prestazione,
+          elementiDentali: r.elementiDentali,
+          prezzoAlPaziente: r.prezzoAlPaziente.toString(),
+          compensoOperatore: r.compensoOperatore.toString(),
+          categoriaCompenso: r.categoriaCompenso,
+        })),
+        mappings: {
+          data: "data",
+          operatore: "operatore",
+          paziente: "paziente",
+          prestazione: "prestazione",
+          elementiDentali: "elementiDentali",
+          prezzoAlPaziente: "prezzoAlPaziente",
+          compensoOperatore: "compensoOperatore",
+        },
+        preserveCategories: true,
+      });
+      
+      await queryClient.invalidateQueries({ queryKey: ["/api/records"] });
+      setCurrentDateRange(analysis.dateRange);
+      setMainTab("analysis");
+      
+      toast({
+        title: "Analisi caricata",
+        description: `${analysis.name} aperta con successo`,
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'apertura dell'analisi",
+        variant: "destructive",
+      });
+    }
+  }, [queryClient, toast]);
+
   const handleArchiveCurrent = useCallback(() => {
     archiveCurrentMutation.mutate();
   }, [archiveCurrentMutation]);
@@ -440,6 +482,7 @@ export default function Home() {
               analyses={analyses}
               onDeleteAnalysis={handleDeleteAnalysis}
               onBulkDeleteAnalyses={handleBulkDeleteAnalyses}
+              onOpenAnalysis={handleOpenAnalysis}
               isLoading={isLoadingAnalyses}
             />
           </TabsContent>
