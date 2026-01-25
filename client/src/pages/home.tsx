@@ -38,18 +38,19 @@ export default function Home() {
   });
 
   const importMutation = useMutation({
-    mutationFn: async (data: { records: Record<string, string>[]; mappings: Record<string, string>; dateRange: string }) => {
-      return apiRequest("POST", "/api/records/import", data);
+    mutationFn: async (data: { records: Record<string, string>[]; mappings: Record<string, string> }) => {
+      const response = await apiRequest("POST", "/api/records/import", data);
+      return response.json();
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
-      setCurrentDateRange(variables.dateRange);
+      setCurrentDateRange(data.dateRange || "");
       setStep("data");
       setActiveTab("table");
       toast({
         title: "Importazione completata",
-        description: "I dati sono stati importati con successo",
+        description: `${data.count} record importati - ${data.analysisName || "Analisi"}`,
       });
     },
     onError: () => {
@@ -133,11 +134,10 @@ export default function Home() {
     setStep("mapping");
   }, []);
 
-  const handleMappingComplete = useCallback((fieldMappings: Record<string, string>, dateRange: string) => {
+  const handleMappingComplete = useCallback((fieldMappings: Record<string, string>) => {
     importMutation.mutate({
       records: rawData,
       mappings: fieldMappings,
-      dateRange,
     });
   }, [rawData, importMutation]);
 

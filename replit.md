@@ -8,7 +8,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 
 - **Importazione File**: Supporto per CSV ed Excel (.xlsx, .xls) con drag-and-drop
 - **Mappatura Colonne**: Interfaccia visuale per associare le colonne del file ai campi dell'applicazione
-- **Periodo di Riferimento**: Ogni importazione richiede un range di date che identifica l'analisi
+- **Periodo di Riferimento**: Determinato automaticamente dalle date presenti nei dati importati
 - **Archiviazione Automatica**: Le analisi precedenti vengono archiviate automaticamente ad ogni nuova importazione
 - **Categorie Compenso**: Due categorie esclusive per ogni record:
   - 💳 Carta (default per nuove importazioni)
@@ -80,6 +80,7 @@ shared/
 | Campo | Descrizione |
 |-------|-------------|
 | categoriaCompenso | "card" (💳) o "cash" (💵) - categoria esclusiva |
+| data | Data della prestazione (usata per determinare il periodo dell'analisi) |
 | operatore | Nome del collaboratore |
 | paziente | Nome del paziente |
 | prestazione | Tipo di servizio erogato |
@@ -87,6 +88,13 @@ shared/
 | prezzoAlPaziente | Importo totale fatturato |
 | compensoOperatore | Importo spettante all'operatore |
 | hasAnomaly | Flag automatico per anomalie |
+
+## Generazione Nome Analisi
+
+Il nome dell'analisi viene generato automaticamente analizzando le date presenti nei record:
+- Un solo mese: "Analisi Giugno 2025"
+- Piu mesi dello stesso anno: "Analisi Febbraio, Marzo 2025"
+- Mesi di anni diversi: "Analisi Dicembre 2024 - Gennaio 2025"
 
 ## Calcolo Report
 

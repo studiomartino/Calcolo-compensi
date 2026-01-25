@@ -7,6 +7,7 @@ import { categoriaCompensoEnum } from "@shared/schema";
 const importRecordsSchema = z.object({
   records: z.array(z.record(z.string(), z.string())),
   mappings: z.object({
+    data: z.string().min(1, "Mappatura 'data' richiesta"),
     operatore: z.string().min(1, "Mappatura 'operatore' richiesta"),
     paziente: z.string().min(1, "Mappatura 'paziente' richiesta"),
     prestazione: z.string().min(1, "Mappatura 'prestazione' richiesta"),
@@ -14,7 +15,6 @@ const importRecordsSchema = z.object({
     prezzoAlPaziente: z.string().min(1, "Mappatura 'prezzoAlPaziente' richiesta"),
     compensoOperatore: z.string().min(1, "Mappatura 'compensoOperatore' richiesta"),
   }),
-  dateRange: z.string().min(1, "Range date richiesto"),
 });
 
 const updateRecordSchema = z.object({
@@ -42,6 +42,111 @@ function parseNumber(value: string): number {
   const cleaned = value.replace(/[€$\s]/g, "").replace(",", ".");
   const parsed = parseFloat(cleaned);
   return isNaN(parsed) ? 0 : parsed;
+}
+
+function parseDate(dateStr: string): Date | null {
+  if (!dateStr || dateStr.trim() === "") return null;
+  
+  const formats = [
+    /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/,
+    /^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/,
+    /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2})$/,
+  ];
+  
+  for (const format of formats) {
+    const match = dateStr.trim().match(format);
+    if (match) {
+      let day: number, month: number, year: number;
+      
+      if (format === formats[1]) {
+        year = parseInt(match[1]);
+        month = parseInt(match[2]) - 1;
+        day = parseInt(match[3]);
+      } else {
+        day = parseInt(match[1]);
+        month = parseInt(match[2]) - 1;
+        year = parseInt(match[3]);
+        if (year < 100) {
+          year += year < 50 ? 2000 : 1900;
+        }
+      }
+      
+      const date = new Date(year, month, day);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+  }
+  
+  const parsed = new Date(dateStr);
+  return isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function generateAnalysisName(dates: (Date | null)[]): { name: string; dateRange: string } {
+  const validDates = dates.filter((d): d is Date => d !== null);
+  
+  if (validDates.length === 0) {
+    const now = new Date();
+    const monthName = now.toLocaleDateString("it-IT", { month: "long" });
+    const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+    return {
+      name: `Analisi ${capitalizedMonth} ${now.getFullYear()}`,
+      dateRange: `${capitalizedMonth} ${now.getFullYear()}`
+    };
+  }
+  
+  const monthYearSet = new Map<string, { month: number; year: number }>();
+  
+  validDates.forEach((date) => {
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const key = `${year}-${month}`;
+    if (!monthYearSet.has(key)) {
+      monthYearSet.set(key, { month, year });
+    }
+  });
+  
+  const sortedMonths = Array.from(monthYearSet.values()).sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return a.month - b.month;
+  });
+  
+  const monthNames = [
+    "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+    "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
+  ];
+  
+  if (sortedMonths.length === 1) {
+    const { month, year } = sortedMonths[0];
+    const monthName = monthNames[month];
+    return {
+      name: `Analisi ${monthName} ${year}`,
+      dateRange: `${monthName} ${year}`
+    };
+  }
+  
+  const yearGroups = new Map<number, number[]>();
+  sortedMonths.forEach(({ month, year }) => {
+    if (!yearGroups.has(year)) {
+      yearGroups.set(year, []);
+    }
+    yearGroups.get(year)!.push(month);
+  });
+  
+  const parts: string[] = [];
+  const sortedYears = Array.from(yearGroups.keys()).sort();
+  
+  sortedYears.forEach((year) => {
+    const months = yearGroups.get(year)!.sort((a, b) => a - b);
+    const monthNamesForYear = months.map((m) => monthNames[m]);
+    parts.push(`${monthNamesForYear.join(", ")} ${year}`);
+  });
+  
+  const dateRange = parts.join(" - ");
+  return {
+    name: `Analisi ${dateRange}`,
+    dateRange
+  };
 }
 
 export async function registerRoutes(
@@ -72,13 +177,21 @@ export async function registerRoutes(
 
   app.post("/api/records/import", async (req, res) => {
     try {
-      const { records: rawRecords, mappings, dateRange } = importRecordsSchema.parse(req.body);
+      const { records: rawRecords, mappings } = importRecordsSchema.parse(req.body);
 
       const existingRecords = await storage.getRecords();
+      
+      const dates = rawRecords.map((r) => parseDate(r[mappings.data]));
+      const { name: analysisName, dateRange } = generateAnalysisName(dates);
+      
       if (existingRecords.length > 0) {
+        const existingDates = existingRecords
+          .map((r) => r.data ? parseDate(r.data) : null);
+        const { name: existingAnalysisName, dateRange: existingDateRange } = generateAnalysisName(existingDates);
+        
         await storage.createAnalysis({
-          name: `Analisi ${dateRange}`,
-          dateRange,
+          name: existingAnalysisName,
+          dateRange: existingDateRange,
           records: existingRecords,
         });
       }
@@ -87,6 +200,7 @@ export async function registerRoutes(
 
       const recordsToCreate = rawRecords.map((rawRecord) => ({
         categoriaCompenso: "card" as const,
+        data: rawRecord[mappings.data] || "",
         operatore: rawRecord[mappings.operatore] || "",
         paziente: rawRecord[mappings.paziente] || "",
         prestazione: rawRecord[mappings.prestazione] || "",
@@ -100,7 +214,9 @@ export async function registerRoutes(
       res.status(201).json({ 
         message: "Import completato", 
         count: createdRecords.length,
-        records: createdRecords 
+        records: createdRecords,
+        analysisName,
+        dateRange
       });
     } catch (error) {
       if (error instanceof z.ZodError) {

@@ -6,6 +6,7 @@ export type CategoriaCompenso = z.infer<typeof categoriaCompensoEnum>;
 export const compensoRecordSchema = z.object({
   id: z.string(),
   categoriaCompenso: categoriaCompensoEnum.default("card"),
+  data: z.string().optional(),
   operatore: z.string(),
   paziente: z.string(),
   prestazione: z.string(),
@@ -60,6 +61,7 @@ export const operatorReportSchema = z.object({
 export type OperatorReport = z.infer<typeof operatorReportSchema>;
 
 export const appFieldNames = [
+  "data",
   "operatore",
   "paziente", 
   "prestazione",
@@ -71,6 +73,7 @@ export const appFieldNames = [
 export type AppFieldName = typeof appFieldNames[number];
 
 export const appFieldLabels: Record<AppFieldName, string> = {
+  data: "Data",
   operatore: "Operatore",
   paziente: "Paziente",
   prestazione: "Prestazione",
