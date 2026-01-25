@@ -200,14 +200,14 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
 
     return (
       <div
-        className="group flex items-center gap-2 cursor-pointer"
+        className="group flex items-center justify-center gap-2 cursor-pointer"
         onClick={() => handleStartEdit(record.id, field, value)}
         data-testid={`cell-${field}-${record.id}`}
       >
+        <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
         <span className={isNumeric ? "font-mono" : ""}>
           {isNumeric ? formatCurrency(value as number) : value}
         </span>
-        <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     );
   };
