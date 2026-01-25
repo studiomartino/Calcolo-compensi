@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2, FileSpreadsheet, FileText, Copy } from "lucide-react";
+import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2, FileSpreadsheet, FileText, Copy, Calendar, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import type { CompensoRecord, OperatorReport } from "@shared/schema";
+
+interface DailyPaymentSettings {
+  enabled: boolean;
+  type: "minimo" | "fisso";
+  dailyAmount: number;
+  workedDays: string[]; // Array of date strings YYYY-MM-DD
+}
 
 interface OperatorDashboardProps {
   records: CompensoRecord[];
@@ -32,6 +41,10 @@ export function OperatorDashboard({
   const [showAnomaliesModal, setShowAnomaliesModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showTextReportModal, setShowTextReportModal] = useState(false);
+  const [showDailyPaymentModal, setShowDailyPaymentModal] = useState(false);
+  const [selectedDailyOperator, setSelectedDailyOperator] = useState<string | null>(null);
+  const [dailyPaymentSettings, setDailyPaymentSettings] = useState<Record<string, DailyPaymentSettings>>({});
+  const [newDayInput, setNewDayInput] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const { toast } = useToast();
@@ -43,6 +56,126 @@ export function OperatorDashboard({
   const anomalousRecords = useMemo(() => {
     return records.filter((r) => r.hasAnomaly);
   }, [records]);
+
+  // Estrae le giornate lavorate per ogni operatore dai record
+  const getOperatorWorkedDays = (operatore: string): string[] => {
+    const days = new Set<string>();
+    records
+      .filter((r) => r.operatore === operatore && r.data)
+      .forEach((r) => {
+        if (r.data) {
+          // Normalize date to YYYY-MM-DD format
+          const date = new Date(r.data);
+          const normalized = date.toISOString().split('T')[0];
+          days.add(normalized);
+        }
+      });
+    return Array.from(days).sort();
+  };
+
+  // Calcola il compenso giornaliero per un operatore
+  const calculateDailyPayment = (operatore: string): number | null => {
+    const settings = dailyPaymentSettings[operatore];
+    if (!settings?.enabled) return null;
+
+    const workedDays = settings.workedDays;
+    if (workedDays.length === 0) return 0;
+
+    if (settings.type === "fisso") {
+      // Fisso: importo fisso per ogni giorno
+      return workedDays.length * settings.dailyAmount;
+    } else {
+      // Minimo: per ogni giorno, prendi il maggiore tra minimo e somma prestazioni
+      let total = 0;
+      workedDays.forEach((day) => {
+        const dayRecords = records.filter(
+          (r) => r.operatore === operatore && r.data && r.data.startsWith(day)
+        );
+        const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
+        total += Math.max(settings.dailyAmount, daySum);
+      });
+      return total;
+    }
+  };
+
+  // Apre il modal per configurare il pagamento a giornata
+  const openDailyPaymentModal = (operatore: string) => {
+    setSelectedDailyOperator(operatore);
+    // Initialize settings if not present
+    if (!dailyPaymentSettings[operatore]) {
+      const workedDays = getOperatorWorkedDays(operatore);
+      setDailyPaymentSettings((prev) => ({
+        ...prev,
+        [operatore]: {
+          enabled: false,
+          type: "minimo",
+          dailyAmount: 0,
+          workedDays,
+        },
+      }));
+    }
+    setShowDailyPaymentModal(true);
+  };
+
+  // Aggiorna impostazioni pagamento giornaliero
+  const updateDailyPaymentSetting = <K extends keyof DailyPaymentSettings>(
+    operatore: string,
+    key: K,
+    value: DailyPaymentSettings[K]
+  ) => {
+    setDailyPaymentSettings((prev) => ({
+      ...prev,
+      [operatore]: {
+        ...prev[operatore],
+        [key]: value,
+      },
+    }));
+  };
+
+  // Aggiungi giornata manuale
+  const addWorkedDay = (operatore: string) => {
+    if (!newDayInput) return;
+    const settings = dailyPaymentSettings[operatore];
+    if (!settings) return;
+    
+    // Verifica che la data sia valida
+    const date = new Date(newDayInput);
+    if (isNaN(date.getTime())) {
+      toast({ title: "Data non valida", variant: "destructive" });
+      return;
+    }
+    
+    const normalized = date.toISOString().split('T')[0];
+    if (settings.workedDays.includes(normalized)) {
+      toast({ title: "Giornata già presente", variant: "destructive" });
+      return;
+    }
+    
+    updateDailyPaymentSetting(operatore, "workedDays", [...settings.workedDays, normalized].sort());
+    setNewDayInput("");
+  };
+
+  // Rimuovi giornata
+  const removeWorkedDay = (operatore: string, day: string) => {
+    const settings = dailyPaymentSettings[operatore];
+    if (!settings) return;
+    updateDailyPaymentSetting(
+      operatore,
+      "workedDays",
+      settings.workedDays.filter((d) => d !== day)
+    );
+  };
+
+  // Formatta data per visualizzazione
+  const formatDateFull = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("it-IT", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   const operatorReports = useMemo((): OperatorReport[] => {
     const operatorMap = new Map<string, CompensoRecord[]>();
@@ -289,62 +422,106 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                 className={`rounded-lg border-2 p-5 ${color.bg} ${color.border}`}
                 data-testid={`operator-card-${report.operatore}`}
               >
-                <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="flex items-center justify-between gap-2 mb-4">
                   <div className="flex-1 min-w-0">
                     <h4 className={`font-semibold text-lg truncate ${color.text}`}>{report.operatore}</h4>
                     <p className="text-sm text-muted-foreground">
                       {report.numeroRecord} prestazioni
                     </p>
                   </div>
-                  {report.numeroAnomalie > 0 && (
+                  <div className="flex items-center gap-1">
+                    {report.numeroAnomalie > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900 dark:text-amber-300 dark:border-amber-700 cursor-pointer hover-elevate"
+                            onClick={() => setShowAnomaliesModal(true)}
+                          >
+                            <AlertTriangle className="mr-1 h-3 w-3" />
+                            {report.numeroAnomalie}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Clicca per correggere {report.numeroAnomalie} anomalie
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900 dark:text-amber-300 dark:border-amber-700 cursor-pointer hover-elevate"
-                          onClick={() => setShowAnomaliesModal(true)}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={`h-8 w-8 ${dailyPaymentSettings[report.operatore]?.enabled ? 'bg-primary/10 text-primary' : ''}`}
+                          onClick={() => openDailyPaymentModal(report.operatore)}
+                          data-testid={`button-daily-payment-${report.operatore}`}
                         >
-                          <AlertTriangle className="mr-1 h-3 w-3" />
-                          {report.numeroAnomalie}
-                        </Badge>
+                          <Calendar className="h-4 w-4" />
+                        </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        Clicca per correggere {report.numeroAnomalie} anomalie
+                        {dailyPaymentSettings[report.operatore]?.enabled 
+                          ? "Modifica pagamento a giornata" 
+                          : "Attiva pagamento a giornata"}
                       </TooltipContent>
                     </Tooltip>
-                  )}
+                  </div>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-muted-foreground">Compenso Totale</span>
-                      <span className={`text-xl font-bold ${color.text}`}>
-                        {formatCurrency(report.compensoTotaleArrotondato)}
-                      </span>
-                    </div>
-                  </div>
+                  {(() => {
+                    const dailyPayment = calculateDailyPayment(report.operatore);
+                    const settings = dailyPaymentSettings[report.operatore];
+                    const isDailyEnabled = settings?.enabled;
+                    
+                    return (
+                      <>
+                        <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-muted-foreground">
+                                {isDailyEnabled ? "Compenso Giornaliero" : "Compenso Totale"}
+                              </span>
+                              {isDailyEnabled && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {settings.type === "fisso" ? "Fisso" : "Minimo"}
+                                </Badge>
+                              )}
+                            </div>
+                            <span className={`text-xl font-bold ${color.text}`}>
+                              {formatCurrency(roundToTen(isDailyEnabled && dailyPayment !== null ? dailyPayment : report.compensoTotale))}
+                            </span>
+                          </div>
+                          {isDailyEnabled && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {settings.workedDays.length} giorni × {formatCurrency(settings.dailyAmount)}/giorno
+                            </p>
+                          )}
+                        </div>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
-                      <span className="text-xs font-medium text-muted-foreground">Compenso A</span>
-                      <div className="flex items-center justify-between">
-                        <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-lg font-semibold">
-                          {formatCurrency(report.compensoCardArrotondato)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
-                      <span className="text-xs font-medium text-muted-foreground">Compenso B</span>
-                      <div className="flex items-center justify-between">
-                        <Banknote className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-lg font-semibold">
-                          {formatCurrency(report.compensoCashArrotondato)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
+                            <span className="text-xs font-medium text-muted-foreground">Compenso A</span>
+                            <div className="flex items-center justify-between">
+                              <CreditCard className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-lg font-semibold">
+                                {formatCurrency(report.compensoCardArrotondato)}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
+                            <span className="text-xs font-medium text-muted-foreground">Compenso B</span>
+                            <div className="flex items-center justify-between">
+                              <Banknote className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-lg font-semibold">
+                                {formatCurrency(report.compensoCashArrotondato)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             );
@@ -492,6 +669,180 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
               </TableBody>
             </Table>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDailyPaymentModal} onOpenChange={(open) => {
+        setShowDailyPaymentModal(open);
+        if (!open) {
+          setNewDayInput("");
+        }
+      }}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Pagamento a Giornata
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedDailyOperator && dailyPaymentSettings[selectedDailyOperator] && (
+            <div className="space-y-6">
+              <div className="p-3 bg-muted/50 rounded-lg">
+                <p className="font-semibold">{selectedDailyOperator}</p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label htmlFor="daily-enabled" className="text-sm font-medium">
+                  Attiva pagamento a giornata
+                </Label>
+                <Button
+                  variant={dailyPaymentSettings[selectedDailyOperator].enabled ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => updateDailyPaymentSetting(
+                    selectedDailyOperator,
+                    "enabled",
+                    !dailyPaymentSettings[selectedDailyOperator].enabled
+                  )}
+                  data-testid="button-toggle-daily"
+                >
+                  {dailyPaymentSettings[selectedDailyOperator].enabled ? "Attivo" : "Disattivo"}
+                </Button>
+              </div>
+
+              {dailyPaymentSettings[selectedDailyOperator].enabled && (
+                <>
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">Tipo di calcolo</Label>
+                    <RadioGroup
+                      value={dailyPaymentSettings[selectedDailyOperator].type}
+                      onValueChange={(value: "minimo" | "fisso") => 
+                        updateDailyPaymentSetting(selectedDailyOperator, "type", value)
+                      }
+                      className="grid grid-cols-2 gap-4"
+                    >
+                      <div className="flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover-elevate">
+                        <RadioGroupItem value="minimo" id="type-minimo" />
+                        <div>
+                          <Label htmlFor="type-minimo" className="cursor-pointer font-medium">Minimo</Label>
+                          <p className="text-xs text-muted-foreground">
+                            Importo minimo garantito, se le prestazioni superano il minimo si usa il totale prestazioni
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover-elevate">
+                        <RadioGroupItem value="fisso" id="type-fisso" />
+                        <div>
+                          <Label htmlFor="type-fisso" className="cursor-pointer font-medium">Fisso</Label>
+                          <p className="text-xs text-muted-foreground">
+                            Importo fisso per ogni giorno, indipendentemente dalle prestazioni
+                          </p>
+                        </div>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="daily-amount" className="text-sm font-medium">
+                      Importo giornaliero (€)
+                    </Label>
+                    <Input
+                      id="daily-amount"
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={dailyPaymentSettings[selectedDailyOperator].dailyAmount || ""}
+                      onChange={(e) => updateDailyPaymentSetting(
+                        selectedDailyOperator,
+                        "dailyAmount",
+                        parseFloat(e.target.value) || 0
+                      )}
+                      placeholder="Es. 150"
+                      data-testid="input-daily-amount"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">
+                        Giornate lavorate ({dailyPaymentSettings[selectedDailyOperator].workedDays.length})
+                      </Label>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Input
+                        type="date"
+                        value={newDayInput}
+                        onChange={(e) => setNewDayInput(e.target.value)}
+                        className="flex-1"
+                        data-testid="input-new-day"
+                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => addWorkedDay(selectedDailyOperator)}
+                        data-testid="button-add-day"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="max-h-48 overflow-y-auto border rounded-lg">
+                      {dailyPaymentSettings[selectedDailyOperator].workedDays.length === 0 ? (
+                        <p className="p-3 text-sm text-muted-foreground text-center">
+                          Nessuna giornata registrata
+                        </p>
+                      ) : (
+                        <div className="divide-y">
+                          {dailyPaymentSettings[selectedDailyOperator].workedDays.map((day) => {
+                            const dayRecords = records.filter(
+                              (r) => r.operatore === selectedDailyOperator && r.data && r.data.startsWith(day)
+                            );
+                            const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
+                            
+                            return (
+                              <div key={day} className="flex items-center justify-between p-2 hover:bg-muted/50">
+                                <div>
+                                  <p className="text-sm font-medium">{formatDateFull(day)}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {dayRecords.length} prestazioni - {formatCurrency(daySum)}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                  onClick={() => removeWorkedDay(selectedDailyOperator, day)}
+                                  data-testid={`button-remove-day-${day}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Compenso calcolato:</span>
+                      <span className="text-lg font-bold">
+                        {formatCurrency(roundToTen(calculateDailyPayment(selectedDailyOperator) || 0))}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-end">
+                <Button onClick={() => setShowDailyPaymentModal(false)} data-testid="button-close-daily-modal">
+                  Chiudi
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
