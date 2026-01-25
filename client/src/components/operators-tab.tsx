@@ -304,82 +304,71 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
             <div key={stats.operatore} className="border rounded-lg overflow-hidden">
               <div 
                 className="flex items-center gap-3 p-3 cursor-pointer hover-elevate"
-                onClick={() => toggleExpanded(stats.operatore)}
                 data-testid={`operator-row-${stats.operatore}`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" onClick={() => toggleExpanded(stats.operatore)}>
                   {isExpanded ? (
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   ) : (
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   )}
                   <div 
-                    className="w-4 h-4 rounded-full shrink-0 border"
+                    className="w-4 h-4 rounded-full shrink-0 border cursor-pointer hover:ring-2 hover:ring-primary hover:ring-offset-1"
                     style={{ backgroundColor: hexColor }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setColorEditOperator(stats.operatore);
+                    }}
+                    data-testid={`color-picker-${stats.operatore}`}
                   />
                 </div>
-                <span className="font-medium flex-1">{stats.operatore}</span>
+                <span className="font-medium flex-1" onClick={() => toggleExpanded(stats.operatore)}>{stats.operatore}</span>
                 <Badge variant="secondary" className="text-xs">
                   {stats.totalAnalyses} {stats.totalAnalyses === 1 ? "analisi" : "analisi"}
                 </Badge>
+                <Button 
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedOperator(stats);
+                    setDetailsSearch("");
+                    setPeriodRange([0, 100]);
+                  }}
+                  data-testid={`details-button-${stats.operatore}`}
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
               </div>
               
               {isExpanded && (
-                <div className="px-4 pb-4 pt-2 border-t bg-muted/20 space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-6 h-6 rounded-full border-2 cursor-pointer"
-                      style={{ backgroundColor: hexColor }}
-                      onClick={() => setColorEditOperator(stats.operatore)}
-                      data-testid={`color-picker-${stats.operatore}`}
-                    />
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setColorEditOperator(stats.operatore)}
-                    >
-                      <Palette className="h-3 w-3 mr-1" />
-                      Modifica colore
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Analisi</p>
-                      <p className="font-medium">{stats.totalAnalyses}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Compenso medio mensile</p>
-                      <p className="font-medium">{formatCurrency(stats.totalCompensation / stats.monthsCount)}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Cat. A medio mensile</p>
-                      <p className="font-medium">{formatCurrency(stats.totalCompensationA / stats.monthsCount)}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Cat. B medio mensile</p>
-                      <p className="font-medium">{formatCurrency(stats.totalCompensationB / stats.monthsCount)}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Prestazioni medie mensili</p>
-                      <p className="font-medium">{(stats.totalPrestazioni / stats.monthsCount).toFixed(1)}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Giornate medie mensili</p>
-                      <p className="font-medium">{(stats.totalGiornate / stats.monthsCount).toFixed(1)}</p>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    onClick={() => {
-                      setSelectedOperator(stats);
-                      setDetailsSearch("");
-                      setPeriodRange([0, 100]);
-                    }}
-                    data-testid={`details-button-${stats.operatore}`}
-                  >
-                    Dettagli
-                  </Button>
+                <div className="px-4 pb-4 pt-2 border-t bg-muted/20">
+                  <ul className="text-sm space-y-1">
+                    <li className="flex justify-between">
+                      <span className="text-muted-foreground">Analisi:</span>
+                      <span className="font-medium">{stats.totalAnalyses}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-muted-foreground">Compenso medio mensile:</span>
+                      <span className="font-medium">{formatCurrency(stats.totalCompensation / stats.monthsCount)}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-muted-foreground">Cat. A medio mensile:</span>
+                      <span className="font-medium">{formatCurrency(stats.totalCompensationA / stats.monthsCount)}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-muted-foreground">Cat. B medio mensile:</span>
+                      <span className="font-medium">{formatCurrency(stats.totalCompensationB / stats.monthsCount)}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-muted-foreground">Prestazioni medie mensili:</span>
+                      <span className="font-medium">{(stats.totalPrestazioni / stats.monthsCount).toFixed(1)}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-muted-foreground">Giornate medie mensili:</span>
+                      <span className="font-medium">{(stats.totalGiornate / stats.monthsCount).toFixed(1)}</span>
+                    </li>
+                  </ul>
                 </div>
               )}
             </div>
