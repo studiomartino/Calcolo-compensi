@@ -94,7 +94,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
       return new Intl.DateTimeFormat("it-IT", {
         day: "2-digit",
         month: "2-digit",
-        year: "numeric",
+        year: "2-digit",
       }).format(date);
     } catch {
       return dateString;
