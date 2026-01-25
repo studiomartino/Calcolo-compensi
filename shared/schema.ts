@@ -82,11 +82,28 @@ export const appFieldLabels: Record<AppFieldName, string> = {
   compensoOperatore: "Compenso Operatore",
 };
 
-export const users = {
-  id: "",
-  username: "",
-  password: "",
-};
+export const userRoleEnum = z.enum(["admin", "user"]);
+export type UserRole = z.infer<typeof userRoleEnum>;
 
-export type InsertUser = { username: string; password: string };
-export type User = { id: string; username: string; password: string };
+export const userSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  password: z.string(),
+  role: userRoleEnum.default("user"),
+  createdAt: z.string(),
+});
+
+export type User = z.infer<typeof userSchema>;
+
+export const insertUserSchema = userSchema.omit({ id: true, createdAt: true });
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export const loginSchema = z.object({
+  username: z.string().min(1, "Username richiesto"),
+  password: z.string().min(1, "Password richiesta"),
+});
+
+export type LoginCredentials = z.infer<typeof loginSchema>;
+
+export const publicUserSchema = userSchema.omit({ password: true });
+export type PublicUser = z.infer<typeof publicUserSchema>;
