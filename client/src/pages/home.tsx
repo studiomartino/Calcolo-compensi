@@ -408,7 +408,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold tracking-tight">Gestione Compensi</h1>
         </div>
       </header>
-      <div className="container py-6">
+      <div className="container py-6 pl-[16px] pr-[16px]">
         <Tabs value={mainTab} onValueChange={setMainTab}>
           <TabsList className="grid w-full max-w-md grid-cols-3 px-4">
             <TabsTrigger value="import" data-testid="main-tab-import">
