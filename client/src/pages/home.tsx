@@ -6,6 +6,7 @@ import { DataTable } from "@/components/data-table";
 import { OperatorDashboard } from "@/components/operator-dashboard";
 import { AnalysisArchive } from "@/components/analysis-archive";
 import { OperatorsTab } from "@/components/operators-tab";
+import { DuplicateModal, DuplicateRecord } from "@/components/duplicate-modal";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -32,6 +33,9 @@ export default function Home() {
     const saved = localStorage.getItem(OPERATOR_COLORS_KEY);
     return saved ? JSON.parse(saved) : {};
   });
+  const [duplicateModalOpen, setDuplicateModalOpen] = useState(false);
+  const [duplicates, setDuplicates] = useState<DuplicateRecord[]>([]);
+  const [pendingMappings, setPendingMappings] = useState<Record<string, string> | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -208,7 +212,7 @@ export default function Home() {
     setImportStep("mapping");
   }, []);
 
-  const handleMappingComplete = useCallback((fieldMappings: Record<string, string>) => {
+  const handleMappingComplete = useCallback(async (fieldMappings: Record<string, string>) => {
     const operatorField = fieldMappings.operatore;
     if (operatorField) {
       const operators = new Set<string>();
@@ -222,11 +226,45 @@ export default function Home() {
       }
     }
     
-    importMutation.mutate({
-      records: rawData,
-      mappings: fieldMappings,
-    });
+    try {
+      const response = await apiRequest("POST", "/api/records/check-duplicates", {
+        records: rawData,
+        mappings: fieldMappings,
+      });
+      const result = await response.json();
+      
+      if (result.hasDuplicates && result.duplicates.length > 0) {
+        setDuplicates(result.duplicates);
+        setPendingMappings(fieldMappings);
+        setDuplicateModalOpen(true);
+      } else {
+        importMutation.mutate({
+          records: rawData,
+          mappings: fieldMappings,
+        });
+      }
+    } catch (error) {
+      importMutation.mutate({
+        records: rawData,
+        mappings: fieldMappings,
+      });
+    }
   }, [rawData, importMutation, operatorColors, assignRandomColors]);
+
+  const handleImportWithExclusions = useCallback((excludeIndices: number[]) => {
+    if (!pendingMappings) return;
+    
+    const excludeSet = new Set(excludeIndices);
+    const filteredRecords = rawData.filter((_, index) => !excludeSet.has(index));
+    
+    importMutation.mutate({
+      records: filteredRecords,
+      mappings: pendingMappings,
+    });
+    
+    setPendingMappings(null);
+    setDuplicates([]);
+  }, [rawData, pendingMappings, importMutation]);
 
   const handleCategoryChange = useCallback((ids: string[], category: CategoriaCompenso) => {
     updateCategoryMutation.mutate({ ids, category });
@@ -550,6 +588,14 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <DuplicateModal
+        open={duplicateModalOpen}
+        onOpenChange={setDuplicateModalOpen}
+        duplicates={duplicates}
+        onImportSelected={handleImportWithExclusions}
+        totalRecords={rawData.length}
+      />
     </div>
   );
 }

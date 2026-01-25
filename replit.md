@@ -19,6 +19,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Dashboard Operatori**: Report con compensi arrotondati alla decina, statistiche carta/contanti
 - **Archivio Analisi**: Storico delle analisi precedenti con dettagli espandibili
 - **Esportazione Excel**: Export completo con report e dettaglio prestazioni
+- **Rilevamento Duplicati**: Controllo automatico all'importazione con modale di gestione per selezionare quali duplicati importare
 
 ## Architettura
 
@@ -49,6 +50,7 @@ client/src/
 │   ├── data-table.tsx         # Tabella dati con toggle categoria
 │   ├── operator-dashboard.tsx # Dashboard e report carta/contanti
 │   ├── analysis-archive.tsx   # Archivio analisi storiche
+│   ├── duplicate-modal.tsx    # Modale gestione duplicati importazione
 │   ├── theme-provider.tsx     # Provider tema dark/light
 │   └── theme-toggle.tsx       # Toggle tema
 ├── pages/
@@ -75,6 +77,7 @@ shared/
 - `GET /api/analyses` - Lista analisi archiviate
 - `GET /api/analyses/:id` - Dettaglio singola analisi
 - `DELETE /api/analyses/:id` - Elimina un'analisi
+- `POST /api/records/check-duplicates` - Controlla duplicati pre-importazione
 
 ## Campi Dati
 

@@ -175,6 +175,50 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/records/check-duplicates", async (req, res) => {
+    try {
+      const { records: rawRecords, mappings } = req.body;
+      
+      if (!rawRecords || !mappings) {
+        return res.status(400).json({ error: "Dati mancanti" });
+      }
+
+      const analyses = await storage.getAnalyses();
+      const existingRecords = await storage.getRecords();
+      
+      const allRecords = [...existingRecords];
+      analyses.forEach(analysis => {
+        allRecords.push(...analysis.records);
+      });
+      
+      const existingKeys = new Set<string>();
+      allRecords.forEach(record => {
+        const key = `${record.data || ""}|${record.operatore}|${record.paziente}|${record.prestazione}|${record.elementiDentali}`;
+        existingKeys.add(key.toLowerCase());
+      });
+      
+      const duplicates: { index: number; data: string; operatore: string; paziente: string; prestazione: string; elementiDentali: string }[] = [];
+      
+      rawRecords.forEach((rawRecord: Record<string, string>, index: number) => {
+        const data = rawRecord[mappings.data] || "";
+        const operatore = rawRecord[mappings.operatore] || "";
+        const paziente = rawRecord[mappings.paziente] || "";
+        const prestazione = rawRecord[mappings.prestazione] || "";
+        const elementiDentali = rawRecord[mappings.elementiDentali] || "";
+        
+        const key = `${data}|${operatore}|${paziente}|${prestazione}|${elementiDentali}`.toLowerCase();
+        
+        if (existingKeys.has(key)) {
+          duplicates.push({ index, data, operatore, paziente, prestazione, elementiDentali });
+        }
+      });
+      
+      res.json({ duplicates, hasDuplicates: duplicates.length > 0 });
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel controllo duplicati" });
+    }
+  });
+
   app.post("/api/records/import", async (req, res) => {
     try {
       const { records: rawRecords, mappings, preserveCategories } = req.body;
