@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ChevronDown, ChevronRight, Palette, Search, FileText, Calendar, CreditCard, Banknote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -176,6 +176,13 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
     });
     return Array.from(monthsSet).sort();
   }, [analyses]);
+
+  useEffect(() => {
+    if (selectedOperator) {
+      setPeriodRange([0, 100]);
+      setDetailsSearch("");
+    }
+  }, [selectedOperator]);
 
   const toggleExpanded = (operatore: string) => {
     setExpandedOperators((prev) => {
