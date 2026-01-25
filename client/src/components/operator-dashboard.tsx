@@ -127,9 +127,8 @@ export function OperatorDashboard({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
             <CardTitle className="text-sm font-medium flex items-center gap-1">
-              <span role="img" aria-label="carta">💳</span> Carta
+              <CreditCard className="h-4 w-4" /> Carta
             </CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCard)}</div>
@@ -145,9 +144,8 @@ export function OperatorDashboard({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
             <CardTitle className="text-sm font-medium flex items-center gap-1">
-              <span role="img" aria-label="contanti">💵</span> Contanti
+              <Banknote className="h-4 w-4" /> Contanti
             </CardTitle>
-            <Banknote className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCash)}</div>
@@ -239,7 +237,7 @@ export function OperatorDashboard({
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
                       <div className="flex items-center gap-1 mb-1">
-                        <span role="img" aria-label="carta">💳</span>
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />
                         <span className="text-xs font-medium text-muted-foreground">Carta</span>
                       </div>
                       <p className="text-lg font-semibold">
@@ -248,7 +246,7 @@ export function OperatorDashboard({
                     </div>
                     <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
                       <div className="flex items-center gap-1 mb-1">
-                        <span role="img" aria-label="contanti">💵</span>
+                        <Banknote className="h-4 w-4 text-muted-foreground" />
                         <span className="text-xs font-medium text-muted-foreground">Contanti</span>
                       </div>
                       <p className="text-lg font-semibold">

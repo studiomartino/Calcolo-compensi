@@ -11,8 +11,8 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Periodo di Riferimento**: Determinato automaticamente dalle date presenti nei dati importati
 - **Archiviazione Automatica**: Le analisi precedenti vengono archiviate automaticamente ad ogni nuova importazione
 - **Categorie Compenso**: Due categorie esclusive per ogni record:
-  - 💳 Carta (default per nuove importazioni)
-  - 💵 Contanti
+  - Carta (icona CreditCard, default per nuove importazioni)
+  - Contanti (icona Banknote)
 - **Modifica Categorie**: Toggle singolo o selezione multipla con azioni bulk
 - **Navigazione a Tab**: Menu con tre sezioni principali (Importazione, Analisi, Archivio)
 - **Rilevamento Anomalie**: Evidenziazione automatica quando compenso operatore = prezzo paziente
@@ -80,7 +80,7 @@ shared/
 
 | Campo | Descrizione |
 |-------|-------------|
-| categoriaCompenso | "card" (💳) o "cash" (💵) - categoria esclusiva |
+| categoriaCompenso | "card" o "cash" - categoria esclusiva (icone CreditCard/Banknote) |
 | data | Data della prestazione (usata per determinare il periodo dell'analisi) |
 | operatore | Nome del collaboratore |
 | paziente | Nome del paziente |

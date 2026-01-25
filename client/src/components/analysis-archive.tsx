@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -128,9 +128,9 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, isLoading }: Analy
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="text-right mr-4">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span>💳 {formatCurrency(stats.cardCompenso)}</span>
-                        <span>💵 {formatCurrency(stats.cashCompenso)}</span>
+                      <div className="flex items-center gap-3 text-sm">
+                        <span className="flex items-center gap-1"><CreditCard className="h-3 w-3" /> {formatCurrency(stats.cardCompenso)}</span>
+                        <span className="flex items-center gap-1"><Banknote className="h-3 w-3" /> {formatCurrency(stats.cashCompenso)}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
                         Archiviata il {new Date(analysis.createdAt).toLocaleDateString("it-IT")}
@@ -188,8 +188,8 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, isLoading }: Analy
                           <TableRow>
                             <TableHead>Operatore</TableHead>
                             <TableHead className="text-right">Prestazioni</TableHead>
-                            <TableHead className="text-right">💳 Carta</TableHead>
-                            <TableHead className="text-right">💵 Contanti</TableHead>
+                            <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><CreditCard className="h-3 w-3" /> Carta</span></TableHead>
+                            <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><Banknote className="h-3 w-3" /> Contanti</span></TableHead>
                             <TableHead className="text-right">Totale</TableHead>
                           </TableRow>
                         </TableHeader>

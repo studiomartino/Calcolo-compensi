@@ -340,9 +340,9 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                             data-testid={`button-category-${record.id}`}
                           >
                             {record.categoriaCompenso === "card" ? (
-                              <span role="img" aria-label="carta">💳</span>
+                              <CreditCard className="h-4 w-4" />
                             ) : (
-                              <span role="img" aria-label="contanti">💵</span>
+                              <Banknote className="h-4 w-4" />
                             )}
                           </Button>
                         </TooltipTrigger>
