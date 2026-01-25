@@ -57,6 +57,32 @@ export function OperatorDashboard({
     return records.filter((r) => r.hasAnomaly);
   }, [records]);
 
+  // Converte una data dal formato italiano a YYYY-MM-DD
+  const parseItalianDate = (dateStr: string): string | null => {
+    if (!dateStr) return null;
+    // Formato: DD/MM/YY o DD/MM/YYYY
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      const day = parts[0].padStart(2, '0');
+      const month = parts[1].padStart(2, '0');
+      let year = parts[2];
+      if (year.length === 2) {
+        year = '20' + year;
+      }
+      return `${year}-${month}-${day}`;
+    }
+    // Prova a parsare come ISO date
+    try {
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  };
+
   // Estrae le giornate lavorate per ogni operatore dai record
   const getOperatorWorkedDays = (operatore: string): string[] => {
     const days = new Set<string>();
@@ -64,10 +90,10 @@ export function OperatorDashboard({
       .filter((r) => r.operatore === operatore && r.data)
       .forEach((r) => {
         if (r.data) {
-          // Normalize date to YYYY-MM-DD format
-          const date = new Date(r.data);
-          const normalized = date.toISOString().split('T')[0];
-          days.add(normalized);
+          const normalized = parseItalianDate(r.data);
+          if (normalized) {
+            days.add(normalized);
+          }
         }
       });
     return Array.from(days).sort();
@@ -89,7 +115,7 @@ export function OperatorDashboard({
       let total = 0;
       workedDays.forEach((day) => {
         const dayRecords = records.filter(
-          (r) => r.operatore === operatore && r.data && r.data.startsWith(day)
+          (r) => r.operatore === operatore && r.data && parseItalianDate(r.data) === day
         );
         const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
         total += Math.max(settings.dailyAmount, daySum);
@@ -796,7 +822,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                         <div className="divide-y">
                           {dailyPaymentSettings[selectedDailyOperator].workedDays.map((day) => {
                             const dayRecords = records.filter(
-                              (r) => r.operatore === selectedDailyOperator && r.data && r.data.startsWith(day)
+                              (r) => r.operatore === selectedDailyOperator && r.data && parseItalianDate(r.data) === day
                             );
                             const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
                             
