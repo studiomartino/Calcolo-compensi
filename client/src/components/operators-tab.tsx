@@ -576,16 +576,16 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
 
               <div className="flex-1 min-h-0 border rounded-lg overflow-hidden">
                 <ScrollArea className="h-full">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm table-fixed">
                     <thead className="bg-muted sticky top-0 z-10">
                       <tr>
-                        <th className="text-left p-2 font-medium">Cat.</th>
-                        <th className="text-left p-2 font-medium">Data</th>
-                        <th className="text-left p-2 font-medium">Paziente</th>
+                        <th className="text-left p-2 font-medium w-[40px]">Cat.</th>
+                        <th className="text-left p-2 font-medium w-[80px]">Data</th>
+                        <th className="text-left p-2 font-medium w-[12%]">Paziente</th>
                         <th className="text-left p-2 font-medium">Prestazione</th>
-                        <th className="text-left p-2 font-medium">Elementi</th>
-                        <th className="text-right p-2 font-medium">Prezzo Paz.</th>
-                        <th className="text-right p-2 font-medium">Compenso</th>
+                        <th className="text-left p-2 font-medium w-[80px]">Elementi</th>
+                        <th className="text-right p-2 font-medium w-[90px]">Prezzo Paz.</th>
+                        <th className="text-right p-2 font-medium w-[90px]">Compenso</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -602,11 +602,32 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                             )}
                           </td>
                           <td className="p-2 whitespace-nowrap">{record.data || "-"}</td>
-                          <td className="p-2">{record.paziente}</td>
-                          <td className="p-2">{record.prestazione}</td>
-                          <td className="p-2 text-center">{record.elementiDentali || "-"}</td>
-                          <td className="p-2 text-right">€ {record.prezzoAlPaziente.toLocaleString("it-IT")}</td>
-                          <td className="p-2 text-right font-medium">€ {record.compensoOperatore.toLocaleString("it-IT")}</td>
+                          <td className="p-2">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate">{record.paziente}</span>
+                              </TooltipTrigger>
+                              <TooltipContent>{record.paziente}</TooltipContent>
+                            </Tooltip>
+                          </td>
+                          <td className="p-2">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate">{record.prestazione}</span>
+                              </TooltipTrigger>
+                              <TooltipContent>{record.prestazione}</TooltipContent>
+                            </Tooltip>
+                          </td>
+                          <td className="p-2 text-center">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="block truncate">{record.elementiDentali || "-"}</span>
+                              </TooltipTrigger>
+                              <TooltipContent>{record.elementiDentali || "-"}</TooltipContent>
+                            </Tooltip>
+                          </td>
+                          <td className="p-2 text-right whitespace-nowrap">€ {record.prezzoAlPaziente.toLocaleString("it-IT")}</td>
+                          <td className="p-2 text-right font-medium whitespace-nowrap">€ {record.compensoOperatore.toLocaleString("it-IT")}</td>
                         </tr>
                       ))}
                     </tbody>
