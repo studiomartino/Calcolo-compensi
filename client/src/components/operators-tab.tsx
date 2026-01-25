@@ -448,7 +448,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
         open={selectedOperator !== null} 
         onOpenChange={() => setSelectedOperator(null)}
       >
-        <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
+        <DialogContent className="max-w-5xl h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <div 
@@ -460,7 +460,8 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           </DialogHeader>
           
           {selectedOperator && filteredStats && (
-            <div className="flex-1 overflow-hidden flex flex-col gap-4 pl-[4px] pr-[4px]">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="flex flex-col gap-4 pl-[4px] pr-[4px]">
               <div className="text-sm text-muted-foreground">
                 Presente in {selectedOperator.totalAnalyses} {selectedOperator.totalAnalyses === 1 ? "analisi" : "analisi"}
               </div>
@@ -574,9 +575,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                 {filteredRecordsForDetails.length} prestazioni trovate
               </div>
 
-              <ScrollArea className="flex-1 border rounded-lg min-h-0 max-h-[40vh]">
+              <div className="border rounded-lg">
                 <table className="w-full text-sm">
-                  <thead className="bg-muted/50 sticky top-0">
+                  <thead className="bg-muted/50">
                     <tr>
                       <th className="text-left p-2 font-medium">Cat.</th>
                       <th className="text-left p-2 font-medium">Data</th>
@@ -610,8 +611,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                     ))}
                   </tbody>
                 </table>
-              </ScrollArea>
+              </div>
             </div>
+            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
