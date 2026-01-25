@@ -64,6 +64,9 @@ interface OperatorStats {
   totalCompensation: number;
   totalCompensationA: number;
   totalCompensationB: number;
+  totalStudioEarnings: number;
+  totalStudioEarningsA: number;
+  totalStudioEarningsB: number;
   totalPrestazioni: number;
   totalGiornate: number;
   monthsCount: number;
@@ -103,6 +106,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           existing.totalCompensation += record.compensoOperatore;
           existing.totalCompensationA += record.categoriaCompenso === "card" ? record.compensoOperatore : 0;
           existing.totalCompensationB += record.categoriaCompenso === "cash" ? record.compensoOperatore : 0;
+          existing.totalStudioEarnings += record.prezzoAlPaziente;
+          existing.totalStudioEarningsA += record.categoriaCompenso === "card" ? record.prezzoAlPaziente : 0;
+          existing.totalStudioEarningsB += record.categoriaCompenso === "cash" ? record.prezzoAlPaziente : 0;
           existing.totalPrestazioni += 1;
         } else {
           analysisIds.add(analysis.id);
@@ -112,6 +118,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
             totalCompensation: record.compensoOperatore,
             totalCompensationA: record.categoriaCompenso === "card" ? record.compensoOperatore : 0,
             totalCompensationB: record.categoriaCompenso === "cash" ? record.compensoOperatore : 0,
+            totalStudioEarnings: record.prezzoAlPaziente,
+            totalStudioEarningsA: record.categoriaCompenso === "card" ? record.prezzoAlPaziente : 0,
+            totalStudioEarningsB: record.categoriaCompenso === "cash" ? record.prezzoAlPaziente : 0,
             totalPrestazioni: 1,
             totalGiornate: 0,
             monthsCount: 0,
@@ -353,12 +362,24 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                       <span className="font-medium">{formatCurrency(stats.totalCompensation / stats.monthsCount)}</span>
                     </li>
                     <li>
-                      <span className="text-muted-foreground">Cat. A medio mensile: </span>
+                      <span className="text-muted-foreground">Compenso Cat. A medio mensile: </span>
                       <span className="font-medium">{formatCurrency(stats.totalCompensationA / stats.monthsCount)}</span>
                     </li>
                     <li>
-                      <span className="text-muted-foreground">Cat. B medio mensile: </span>
+                      <span className="text-muted-foreground">Compenso Cat. B medio mensile: </span>
                       <span className="font-medium">{formatCurrency(stats.totalCompensationB / stats.monthsCount)}</span>
+                    </li>
+                    <li>
+                      <span className="text-muted-foreground">Guadagno studio medio mensile: </span>
+                      <span className="font-medium">{formatCurrency(stats.totalStudioEarnings / stats.monthsCount)}</span>
+                    </li>
+                    <li>
+                      <span className="text-muted-foreground">Guadagno studio Cat. A medio mensile: </span>
+                      <span className="font-medium">{formatCurrency(stats.totalStudioEarningsA / stats.monthsCount)}</span>
+                    </li>
+                    <li>
+                      <span className="text-muted-foreground">Guadagno studio Cat. B medio mensile: </span>
+                      <span className="font-medium">{formatCurrency(stats.totalStudioEarningsB / stats.monthsCount)}</span>
                     </li>
                     <li>
                       <span className="text-muted-foreground">Prestazioni medie mensili: </span>
