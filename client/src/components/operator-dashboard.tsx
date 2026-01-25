@@ -712,73 +712,71 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                 <p className="font-semibold">{selectedDailyOperator}</p>
               </div>
 
-              <div className="flex items-center justify-between">
-                <Label htmlFor="daily-enabled" className="text-sm font-medium">
-                  Attiva pagamento a giornata
-                </Label>
-                <Switch
-                  id="daily-enabled"
-                  checked={dailyPaymentSettings[selectedDailyOperator].enabled}
-                  onCheckedChange={(checked) => updateDailyPaymentSetting(
-                    selectedDailyOperator,
-                    "enabled",
-                    checked
-                  )}
-                  data-testid="switch-toggle-daily"
-                />
-              </div>
+              <div className="flex gap-6">
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Switch
+                      id="daily-enabled"
+                      checked={dailyPaymentSettings[selectedDailyOperator].enabled}
+                      onCheckedChange={(checked) => updateDailyPaymentSetting(
+                        selectedDailyOperator,
+                        "enabled",
+                        checked
+                      )}
+                      data-testid="switch-toggle-daily"
+                    />
+                    <Label htmlFor="daily-enabled" className="text-sm font-medium">
+                      Attiva
+                    </Label>
+                  </div>
 
-              {dailyPaymentSettings[selectedDailyOperator].enabled && (
-                <>
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium">Tipo di calcolo</Label>
+                  {dailyPaymentSettings[selectedDailyOperator].enabled && (
+                    <div className="space-y-2">
+                      <Label htmlFor="daily-amount" className="text-sm font-medium">
+                        Importo giornaliero (€)
+                      </Label>
+                      <Input
+                        id="daily-amount"
+                        type="number"
+                        step="10"
+                        min="0"
+                        value={dailyPaymentSettings[selectedDailyOperator].dailyAmount || ""}
+                        onChange={(e) => updateDailyPaymentSetting(
+                          selectedDailyOperator,
+                          "dailyAmount",
+                          parseFloat(e.target.value) || 0
+                        )}
+                        placeholder="Es. 150"
+                        data-testid="input-daily-amount"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {dailyPaymentSettings[selectedDailyOperator].enabled && (
+                  <div className="flex-1">
                     <RadioGroup
                       value={dailyPaymentSettings[selectedDailyOperator].type}
                       onValueChange={(value: "minimo" | "fisso") => 
                         updateDailyPaymentSetting(selectedDailyOperator, "type", value)
                       }
-                      className="grid grid-cols-2 gap-4"
+                      className="space-y-2"
                     >
                       <div className="flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover-elevate">
                         <RadioGroupItem value="minimo" id="type-minimo" />
-                        <div>
-                          <Label htmlFor="type-minimo" className="cursor-pointer font-medium">Minimo</Label>
-                          <p className="text-xs text-muted-foreground">
-                            Importo minimo garantito, se le prestazioni superano il minimo si usa il totale prestazioni
-                          </p>
-                        </div>
+                        <Label htmlFor="type-minimo" className="cursor-pointer font-medium">Minimo</Label>
                       </div>
                       <div className="flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover-elevate">
                         <RadioGroupItem value="fisso" id="type-fisso" />
-                        <div>
-                          <Label htmlFor="type-fisso" className="cursor-pointer font-medium">Fisso</Label>
-                          <p className="text-xs text-muted-foreground">
-                            Importo fisso per ogni giorno, indipendentemente dalle prestazioni
-                          </p>
-                        </div>
+                        <Label htmlFor="type-fisso" className="cursor-pointer font-medium">Fisso</Label>
                       </div>
                     </RadioGroup>
                   </div>
+                )}
+              </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="daily-amount" className="text-sm font-medium">
-                      Importo giornaliero (€)
-                    </Label>
-                    <Input
-                      id="daily-amount"
-                      type="number"
-                      step="1"
-                      min="0"
-                      value={dailyPaymentSettings[selectedDailyOperator].dailyAmount || ""}
-                      onChange={(e) => updateDailyPaymentSetting(
-                        selectedDailyOperator,
-                        "dailyAmount",
-                        parseFloat(e.target.value) || 0
-                      )}
-                      placeholder="Es. 150"
-                      data-testid="input-daily-amount"
-                    />
-                  </div>
+              {dailyPaymentSettings[selectedDailyOperator].enabled && (
+                <>
 
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
