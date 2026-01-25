@@ -271,7 +271,8 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Password deve essere almeno 6 caratteri" });
       }
       
-      const updated = await storage.updateUserPassword(req.params.id, password);
+      const userId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const updated = await storage.updateUserPassword(userId, password);
       if (!updated) {
         return res.status(404).json({ error: "Utente non trovato" });
       }
@@ -283,7 +284,8 @@ export async function registerRoutes(
 
   app.delete("/api/users/:id", requireAdmin, async (req, res) => {
     try {
-      const deleted = await storage.deleteUser(req.params.id);
+      const userId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const deleted = await storage.deleteUser(userId);
       if (!deleted) {
         return res.status(404).json({ error: "Utente non trovato" });
       }
