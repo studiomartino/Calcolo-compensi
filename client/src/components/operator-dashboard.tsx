@@ -299,13 +299,17 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                   {report.numeroAnomalie > 0 && (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Badge variant="outline" className="text-xs bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900 dark:text-amber-300 dark:border-amber-700">
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900 dark:text-amber-300 dark:border-amber-700 cursor-pointer hover-elevate"
+                          onClick={() => setShowAnomaliesModal(true)}
+                        >
                           <AlertTriangle className="mr-1 h-3 w-3" />
                           {report.numeroAnomalie}
                         </Badge>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {report.numeroAnomalie} record con anomalia
+                        Clicca per correggere {report.numeroAnomalie} anomalie
                       </TooltipContent>
                     </Tooltip>
                   )}
