@@ -336,5 +336,51 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/analyses/bulk-delete", async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: "IDs non validi" });
+      }
+      let deletedCount = 0;
+      for (const id of ids) {
+        const deleted = await storage.deleteAnalysis(id);
+        if (deleted) deletedCount++;
+      }
+      res.json({ deleted: deletedCount });
+    } catch (error) {
+      res.status(500).json({ error: "Errore nell'eliminazione delle analisi" });
+    }
+  });
+
+  app.post("/api/records/archive", async (req, res) => {
+    try {
+      const existingRecords = await storage.getRecords();
+      
+      if (existingRecords.length === 0) {
+        return res.status(400).json({ error: "Nessun record da archiviare" });
+      }
+
+      const existingDates = existingRecords
+        .map((r) => r.data ? parseDate(r.data) : null);
+      const { name: analysisName, dateRange } = generateAnalysisName(existingDates);
+      
+      const analysis = await storage.createAnalysis({
+        name: analysisName,
+        dateRange: dateRange,
+        records: existingRecords,
+      });
+
+      await storage.clearRecords();
+
+      res.status(201).json({ 
+        message: "Analisi archiviata con successo",
+        analysis
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Errore durante l'archiviazione" });
+    }
+  });
+
   return httpServer;
 }

@@ -1,22 +1,26 @@
 import { useState } from "react";
-import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote } from "lucide-react";
+import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote, CheckSquare, Square } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import type { Analysis } from "@shared/schema";
 
 interface AnalysisArchiveProps {
   analyses: Analysis[];
   onDeleteAnalysis: (id: string) => void;
+  onBulkDeleteAnalyses: (ids: string[]) => void;
   isLoading?: boolean;
 }
 
-export function AnalysisArchive({ analyses, onDeleteAnalysis, isLoading }: AnalysisArchiveProps) {
+export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalyses, isLoading }: AnalysisArchiveProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("it-IT", {
@@ -47,6 +51,30 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, isLoading }: Analy
       uniqueOperators,
       anomalies,
     };
+  };
+
+  const handleToggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.size === analyses.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(analyses.map(a => a.id)));
+    }
+  };
+
+  const handleBulkDelete = () => {
+    onBulkDeleteAnalyses(Array.from(selectedIds));
+    setSelectedIds(new Set());
+    setShowBulkDeleteDialog(false);
   };
 
   if (isLoading) {
@@ -81,7 +109,7 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, isLoading }: Analy
   return (
     <Card>
       <CardHeader className="pb-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <CardTitle className="flex items-center gap-2 text-xl">
               <Archive className="h-5 w-5 text-primary" />
@@ -91,143 +119,209 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, isLoading }: Analy
               {analyses.length} analisi archiviate
             </CardDescription>
           </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSelectAll}
+              data-testid="button-select-all-analyses"
+            >
+              {selectedIds.size === analyses.length ? (
+                <>
+                  <Square className="mr-1 h-4 w-4" />
+                  Deseleziona tutti
+                </>
+              ) : (
+                <>
+                  <CheckSquare className="mr-1 h-4 w-4" />
+                  Seleziona tutti
+                </>
+              )}
+            </Button>
+            {selectedIds.size > 0 && (
+              <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    data-testid="button-bulk-delete-analyses"
+                  >
+                    <Trash2 className="mr-1 h-4 w-4" />
+                    Elimina selezionati ({selectedIds.size})
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Eliminare le analisi selezionate?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Stai per eliminare {selectedIds.size} analisi dall'archivio.
+                      Questa azione non può essere annullata e tutti i dati associati saranno persi definitivamente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annulla</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleBulkDelete}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      data-testid="button-confirm-bulk-delete"
+                    >
+                      Elimina {selectedIds.size} analisi
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
         {analyses.map((analysis) => {
           const stats = getAnalysisStats(analysis);
           const isExpanded = expandedId === analysis.id;
+          const isSelected = selectedIds.has(analysis.id);
 
           return (
             <Collapsible
               key={analysis.id}
               open={isExpanded}
-              onOpenChange={(open) => setExpandedId(open ? analysis.id : null)}
+              onOpenChange={() => setExpandedId(isExpanded ? null : analysis.id)}
             >
-              <div className="rounded-lg border">
-                <div className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <Calendar className="h-5 w-5" />
-                    </div>
-                    <div>
+              <div className={`rounded-lg border transition-colors ${isSelected ? 'border-primary bg-primary/5' : ''}`}>
+                <div className="flex items-center gap-3 p-4">
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => handleToggleSelect(analysis.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    data-testid={`checkbox-analysis-${analysis.id}`}
+                  />
+                  <CollapsibleTrigger asChild>
+                    <div className="flex-1 flex items-center justify-between cursor-pointer hover-elevate rounded-md p-2 -m-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                          <FileText className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">{analysis.name}</h4>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="h-3 w-3" />
+                            <span>{stats.uniqueOperators} operatori</span>
+                            <span className="mx-1">•</span>
+                            <span>{stats.totalRecords} record</span>
+                          </div>
+                        </div>
+                      </div>
                       <div className="flex items-center gap-2">
-                        <p className="font-medium">{analysis.dateRange}</p>
-                        <Badge variant="secondary" className="text-xs">
-                          {stats.totalRecords} record
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                        <span className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {stats.uniqueOperators} operatori
-                        </span>
-                        <span>Totale: {formatCurrency(stats.totalCompenso)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-right mr-4">
-                      <div className="flex items-center gap-3 text-sm">
-                        <span className="flex items-center gap-1"><CreditCard className="h-3 w-3" /> {formatCurrency(stats.cardCompenso)}</span>
-                        <span className="flex items-center gap-1"><Banknote className="h-3 w-3" /> {formatCurrency(stats.cashCompenso)}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Archiviata il {new Date(analysis.createdAt).toLocaleDateString("it-IT")}
-                      </p>
-                    </div>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" size="icon" data-testid={`button-expand-${analysis.id}`}>
+                        <div className="text-right mr-4">
+                          <div className="flex items-center gap-3 text-sm">
+                            <span className="flex items-center gap-1"><CreditCard className="h-3 w-3" /> {formatCurrency(stats.cardCompenso)}</span>
+                            <span className="flex items-center gap-1"><Banknote className="h-3 w-3" /> {formatCurrency(stats.cashCompenso)}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Archiviata il {new Date(analysis.createdAt).toLocaleDateString("it-IT")}
+                          </p>
+                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => e.stopPropagation()}
+                              data-testid={`button-delete-analysis-${analysis.id}`}
+                            >
+                              <Trash2 className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Eliminare questa analisi?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Stai per eliminare "{analysis.name}" dall'archivio.
+                                Questa azione non può essere annullata.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Annulla</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => onDeleteAnalysis(analysis.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Elimina
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                         {isExpanded ? (
-                          <ChevronUp className="h-4 w-4" />
+                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
                         ) : (
-                          <ChevronDown className="h-4 w-4" />
+                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
                         )}
-                      </Button>
-                    </CollapsibleTrigger>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          data-testid={`button-delete-analysis-${analysis.id}`}
-                        >
-                          <Trash2 className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Elimina analisi</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Sei sicuro di voler eliminare l'analisi "{analysis.dateRange}"?
-                            Questa azione non puo essere annullata.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Annulla</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => onDeleteAnalysis(analysis.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Elimina
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                      </div>
+                    </div>
+                  </CollapsibleTrigger>
                 </div>
+
                 <CollapsibleContent>
-                  <div className="border-t p-4">
-                    <h4 className="font-medium text-sm mb-3 flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Riepilogo per operatore
-                    </h4>
-                    <ScrollArea className="max-h-[300px] rounded-lg border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Operatore</TableHead>
-                            <TableHead className="text-right">Prestazioni</TableHead>
-                            <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><CreditCard className="h-3 w-3" /> Carta</span></TableHead>
-                            <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><Banknote className="h-3 w-3" /> Contanti</span></TableHead>
-                            <TableHead className="text-right">Totale</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {Array.from(
-                            analysis.records.reduce((acc, record) => {
-                              const existing = acc.get(record.operatore) || {
-                                count: 0,
-                                card: 0,
-                                cash: 0,
-                                total: 0,
-                              };
-                              existing.count++;
-                              if (record.categoriaCompenso === "card") {
-                                existing.card += record.compensoOperatore;
-                              } else {
-                                existing.cash += record.compensoOperatore;
-                              }
-                              existing.total += record.compensoOperatore;
-                              acc.set(record.operatore, existing);
-                              return acc;
-                            }, new Map<string, { count: number; card: number; cash: number; total: number }>())
-                          )
-                            .sort((a, b) => b[1].total - a[1].total)
-                            .map(([operatore, data]) => (
+                  <div className="border-t px-4 py-4 space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground">Compenso Totale</p>
+                        <p className="text-2xl font-bold">{formatCurrency(stats.totalCompenso)}</p>
+                      </div>
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <CreditCard className="h-3 w-3" /> Carta
+                        </p>
+                        <p className="text-2xl font-bold">{formatCurrency(stats.cardCompenso)}</p>
+                      </div>
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <Banknote className="h-3 w-3" /> Contanti
+                        </p>
+                        <p className="text-2xl font-bold">{formatCurrency(stats.cashCompenso)}</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h5 className="font-medium mb-2">Dettaglio per Operatore</h5>
+                      <ScrollArea className="max-h-[300px] rounded-lg border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Operatore</TableHead>
+                              <TableHead className="text-right">Prestazioni</TableHead>
+                              <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><CreditCard className="h-3 w-3" /> Carta</span></TableHead>
+                              <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><Banknote className="h-3 w-3" /> Contanti</span></TableHead>
+                              <TableHead className="text-right">Totale</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {Array.from(
+                              analysis.records.reduce((map, r) => {
+                                const existing = map.get(r.operatore) || { card: 0, cash: 0, count: 0 };
+                                if (r.categoriaCompenso === "card") {
+                                  existing.card += r.compensoOperatore;
+                                } else {
+                                  existing.cash += r.compensoOperatore;
+                                }
+                                existing.count++;
+                                map.set(r.operatore, existing);
+                                return map;
+                              }, new Map<string, { card: number; cash: number; count: number }>())
+                            ).map(([operatore, data]) => (
                               <TableRow key={operatore}>
                                 <TableCell className="font-medium">{operatore}</TableCell>
                                 <TableCell className="text-right">{data.count}</TableCell>
                                 <TableCell className="text-right">{formatCurrency(roundToTen(data.card))}</TableCell>
                                 <TableCell className="text-right">{formatCurrency(roundToTen(data.cash))}</TableCell>
-                                <TableCell className="text-right font-semibold">
-                                  {formatCurrency(roundToTen(data.total))}
+                                <TableCell className="text-right font-medium">
+                                  {formatCurrency(roundToTen(data.card + data.cash))}
                                 </TableCell>
                               </TableRow>
                             ))}
-                        </TableBody>
-                      </Table>
-                    </ScrollArea>
+                          </TableBody>
+                        </Table>
+                      </ScrollArea>
+                    </div>
                   </div>
                 </CollapsibleContent>
               </div>

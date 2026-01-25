@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users, FolderArchive } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
 
@@ -127,6 +128,41 @@ export default function Home() {
     },
   });
 
+  const bulkDeleteAnalysesMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      return apiRequest("POST", "/api/analyses/bulk-delete", { ids });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      toast({
+        title: "Analisi eliminate",
+        description: "Le analisi selezionate sono state rimosse dall'archivio",
+      });
+    },
+  });
+
+  const archiveCurrentMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/records/archive");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      setCurrentDateRange("");
+      toast({
+        title: "Analisi archiviata",
+        description: "L'analisi corrente è stata archiviata con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'archiviazione",
+        variant: "destructive",
+      });
+    },
+  });
+
   const operators = useMemo(() => {
     const uniqueOperators = new Set(records.map((r) => r.operatore));
     return Array.from(uniqueOperators).sort();
@@ -164,6 +200,14 @@ export default function Home() {
   const handleDeleteAnalysis = useCallback((id: string) => {
     deleteAnalysisMutation.mutate(id);
   }, [deleteAnalysisMutation]);
+
+  const handleBulkDeleteAnalyses = useCallback((ids: string[]) => {
+    bulkDeleteAnalysesMutation.mutate(ids);
+  }, [bulkDeleteAnalysesMutation]);
+
+  const handleArchiveCurrent = useCallback(() => {
+    archiveCurrentMutation.mutate();
+  }, [archiveCurrentMutation]);
 
   const roundToTen = (value: number): number => {
     return Math.round(value / 10) * 10;
@@ -298,13 +342,37 @@ export default function Home() {
               {records.length} record {currentDateRange && `| Periodo: ${currentDateRange}`}
             </p>
           </div>
-          <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
-            <SheetTrigger asChild>
-              <Button data-testid="button-open-reports">
-                <Users className="mr-2 h-4 w-4" />
-                Report Operatori
-              </Button>
-            </SheetTrigger>
+          <div className="flex items-center gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" data-testid="button-archive-current">
+                  <FolderArchive className="mr-2 h-4 w-4" />
+                  Archivia Analisi
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    L'analisi corrente con {records.length} record verrà spostata nell'archivio.
+                    I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annulla</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
+                    Archivia
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
+              <SheetTrigger asChild>
+                <Button data-testid="button-open-reports">
+                  <Users className="mr-2 h-4 w-4" />
+                  Report Operatori
+                </Button>
+              </SheetTrigger>
             <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
@@ -321,7 +389,8 @@ export default function Home() {
                 />
               </div>
             </SheetContent>
-          </Sheet>
+            </Sheet>
+          </div>
         </div>
 
         {isLoadingRecords ? (
@@ -378,6 +447,7 @@ export default function Home() {
             <AnalysisArchive
               analyses={analyses}
               onDeleteAnalysis={handleDeleteAnalysis}
+              onBulkDeleteAnalyses={handleBulkDeleteAnalyses}
               isLoading={isLoadingAnalyses}
             />
           </TabsContent>
