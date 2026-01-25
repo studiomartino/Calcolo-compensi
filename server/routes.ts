@@ -366,32 +366,16 @@ export async function registerRoutes(
 
   app.post("/api/records/import", requireAuth, async (req, res) => {
     try {
-      const { records: rawRecords, mappings, preserveCategories } = req.body;
-      
-      if (!rawRecords || !mappings) {
-        return res.status(400).json({ error: "Dati mancanti" });
-      }
+      const validated = importRecordsSchema.parse(req.body);
+      const { records: rawRecords, mappings } = validated;
+      const preserveCategories = req.body.preserveCategories;
 
-      const existingRecords = await storage.getRecords();
-      
-      const dates = rawRecords.map((r: Record<string, string>) => parseDate(r[mappings.data]));
+      const dates = rawRecords.map((r) => parseDate(r[mappings.data]));
       const { name: analysisName, dateRange } = generateAnalysisName(dates);
-      
-      if (existingRecords.length > 0) {
-        const existingDates = existingRecords
-          .map((r) => r.data ? parseDate(r.data) : null);
-        const { name: existingAnalysisName, dateRange: existingDateRange } = generateAnalysisName(existingDates);
-        
-        await storage.createAnalysis({
-          name: existingAnalysisName,
-          dateRange: existingDateRange,
-          records: existingRecords,
-        });
-      }
 
       await storage.clearRecords();
 
-      const recordsToCreate = rawRecords.map((rawRecord: Record<string, string>) => {
+      const recordsToCreate = rawRecords.map((rawRecord) => {
         const categoria = preserveCategories && rawRecord.categoriaCompenso 
           ? (rawRecord.categoriaCompenso as "card" | "cash")
           : "card";

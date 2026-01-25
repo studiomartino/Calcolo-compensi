@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote, CheckSquare, Square, FolderOpen, Download, FileSpreadsheet, Copy } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
     return Math.round(value / 10) * 10;
   };
 
-  const getAnalysisStats = (analysis: Analysis) => {
+  const getAnalysisStats = useCallback((analysis: Analysis) => {
     const records = analysis.records;
     const totalCompenso = records.reduce((sum, r) => sum + r.compensoOperatore, 0);
     const cardCompenso = records.filter(r => r.categoriaCompenso === "card").reduce((sum, r) => sum + r.compensoOperatore, 0);
@@ -59,7 +59,7 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
       uniqueOperators,
       anomalies,
     };
-  };
+  }, []);
 
   const textReport = useMemo(() => {
     if (!exportAnalysis) return "";
@@ -212,7 +212,7 @@ Compenso B: ${roundToTen(data.cash)} €`;
             <Archive className="h-12 w-12 opacity-40" />
             <p className="font-medium">Nessuna analisi archiviata</p>
             <p className="text-sm text-center max-w-md">
-              Le analisi precedenti verranno automaticamente archiviate quando importi nuovi dati
+              Usa il pulsante "Archivia Analisi Corrente" nel tab Analisi per salvare le analisi
             </p>
           </div>
         </CardContent>
