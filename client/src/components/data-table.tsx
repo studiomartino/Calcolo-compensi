@@ -348,8 +348,8 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                 <TableHead className="w-[120px] px-2">Paziente</TableHead>
                 <TableHead className="w-[160px] px-2">Prestazione</TableHead>
                 <TableHead className="w-[100px] px-2 text-center">Elementi</TableHead>
-                <TableHead className="w-[100px] px-2 text-right">Prezzo Paz.</TableHead>
-                <TableHead className="w-[120px] px-2 text-right">Compenso Op.</TableHead>
+                <TableHead className="w-[100px] px-2 text-center">Prezzo Paz.</TableHead>
+                <TableHead className="w-[120px] px-2 text-center">Compenso Op.</TableHead>
                 <TableHead className="w-[40px] px-2 text-center"></TableHead>
               </TableRow>
             </TableHeader>
@@ -419,10 +419,10 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                     <TableCell className="px-2 text-center">
                       <TruncatedCell text={record.elementiDentali} maxWidth="90px" />
                     </TableCell>
-                    <TableCell className="px-2 text-right font-mono text-sm">
+                    <TableCell className="px-2 text-center font-mono text-sm">
                       {formatCurrency(record.prezzoAlPaziente)}
                     </TableCell>
-                    <TableCell className="px-2 text-right">
+                    <TableCell className="px-2 text-center">
                       {renderEditableCell(record, "compensoOperatore", record.compensoOperatore, true)}
                     </TableCell>
                     <TableCell className="px-2 text-center">
