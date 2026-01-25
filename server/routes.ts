@@ -1,8 +1,34 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import session from "express-session";
 import { storage } from "./storage";
 import { z } from "zod";
-import { categoriaCompensoEnum } from "@shared/schema";
+import { categoriaCompensoEnum, loginSchema, insertUserSchema } from "@shared/schema";
+
+declare module "express-session" {
+  interface SessionData {
+    userId?: string;
+    username?: string;
+    role?: "admin" | "user";
+  }
+}
+
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "Non autenticato" });
+  }
+  next();
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "Non autenticato" });
+  }
+  if (req.session.role !== "admin") {
+    return res.status(403).json({ error: "Accesso non autorizzato" });
+  }
+  next();
+}
 
 const importRecordsSchema = z.object({
   records: z.array(z.record(z.string(), z.string())),
@@ -154,7 +180,123 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
-  app.get("/api/records", async (req, res) => {
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || "gestione-compensi-secret-key-2026",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      },
+    })
+  );
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const credentials = loginSchema.parse(req.body);
+      const user = await storage.validateUser(credentials.username, credentials.password);
+      
+      if (!user) {
+        return res.status(401).json({ error: "Credenziali non valide" });
+      }
+
+      req.session.userId = user.id;
+      req.session.username = user.username;
+      req.session.role = user.role;
+
+      res.json({ 
+        id: user.id,
+        username: user.username, 
+        role: user.role 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Dati non validi" });
+      }
+      res.status(500).json({ error: "Errore durante il login" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Errore durante il logout" });
+      }
+      res.json({ message: "Logout effettuato" });
+    });
+  });
+
+  app.get("/api/auth/me", (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Non autenticato" });
+    }
+    res.json({
+      id: req.session.userId,
+      username: req.session.username,
+      role: req.session.role,
+    });
+  });
+
+  app.get("/api/users", requireAdmin, async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero degli utenti" });
+    }
+  });
+
+  app.post("/api/users", requireAdmin, async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      const user = await storage.createUser(userData);
+      res.status(201).json(user);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Dati non validi" });
+      }
+      if (error instanceof Error && error.message === "Username già esistente") {
+        return res.status(409).json({ error: error.message });
+      }
+      res.status(500).json({ error: "Errore nella creazione dell'utente" });
+    }
+  });
+
+  app.patch("/api/users/:id/password", requireAdmin, async (req, res) => {
+    try {
+      const { password } = req.body;
+      if (!password || password.length < 6) {
+        return res.status(400).json({ error: "Password deve essere almeno 6 caratteri" });
+      }
+      
+      const updated = await storage.updateUserPassword(req.params.id, password);
+      if (!updated) {
+        return res.status(404).json({ error: "Utente non trovato" });
+      }
+      res.json({ message: "Password aggiornata" });
+    } catch (error) {
+      res.status(500).json({ error: "Errore nell'aggiornamento della password" });
+    }
+  });
+
+  app.delete("/api/users/:id", requireAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deleteUser(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Utente non trovato" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(400).json({ error: error.message });
+      }
+      res.status(500).json({ error: "Errore nell'eliminazione dell'utente" });
+    }
+  });
+  
+  app.get("/api/records", requireAuth, async (req, res) => {
     try {
       const records = await storage.getRecords();
       res.json(records);

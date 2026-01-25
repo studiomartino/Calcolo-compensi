@@ -17930,5 +17930,14 @@
       "id": "6dda158d-a45d-4167-9c2b-911798708f0c",
       "createdAt": "2026-01-25T13:23:52.393Z"
     }
+  ],
+  "users": [
+    {
+      "id": "12e9a07e-352a-4768-b48d-3a8bddcb37cc",
+      "username": "admin",
+      "password": "$2b$10$nkdPI.fReUt1piTH43HD8u008MU7EbR3l7IfofpBcabHfUNtbiLqy",
+      "role": "admin",
+      "createdAt": "2026-01-25T14:42:17.543Z"
+    }
   ]
 }
