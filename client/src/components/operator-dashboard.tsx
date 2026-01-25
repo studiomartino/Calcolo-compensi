@@ -847,11 +847,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                 </>
               )}
 
-              <div className="flex justify-end">
-                <Button onClick={() => setShowDailyPaymentModal(false)} data-testid="button-close-daily-modal">
-                  Chiudi
-                </Button>
-              </div>
             </div>
           )}
         </DialogContent>
