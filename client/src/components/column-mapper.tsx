@@ -90,68 +90,23 @@ export function ColumnMapper({
                 Associa le colonne del file ai campi dell'applicazione. Il periodo dell'analisi verra determinato automaticamente dalle date presenti nei dati.
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {savedMappings.length > 0 && (
-                <Select onValueChange={(id) => {
-                  const mapping = savedMappings.find(m => m.id === id);
-                  if (mapping) loadSavedMapping(mapping);
-                }}>
-                  <SelectTrigger className="w-[200px]" data-testid="select-saved-mapping">
-                    <SelectValue placeholder="Carica mappatura..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {savedMappings.map((mapping) => (
-                      <SelectItem key={mapping.id} value={mapping.id}>
-                        {mapping.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    disabled={!isMappingComplete}
-                    data-testid="button-save-mapping-dialog"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Salva Mappatura
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Salva Mappatura</DialogTitle>
-                    <DialogDescription>
-                      Salva questa configurazione per riutilizzarla in futuro
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="py-4">
-                    <Label htmlFor="mapping-name">Nome della mappatura</Label>
-                    <Input
-                      id="mapping-name"
-                      value={newMappingName}
-                      onChange={(e) => setNewMappingName(e.target.value)}
-                      placeholder="Es: Importazione Studio Dentistico"
-                      className="mt-2"
-                      data-testid="input-mapping-name"
-                    />
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
-                      Annulla
-                    </Button>
-                    <Button
-                      onClick={handleSaveMapping}
-                      disabled={!newMappingName.trim()}
-                      data-testid="button-save-mapping-confirm"
-                    >
-                      Salva
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+            {savedMappings.length > 0 && (
+              <Select onValueChange={(id) => {
+                const mapping = savedMappings.find(m => m.id === id);
+                if (mapping) loadSavedMapping(mapping);
+              }}>
+                <SelectTrigger className="w-[200px]" data-testid="select-saved-mapping">
+                  <SelectValue placeholder="Carica mappatura..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {savedMappings.map((mapping) => (
+                    <SelectItem key={mapping.id} value={mapping.id}>
+                      {mapping.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -226,14 +181,59 @@ export function ColumnMapper({
               {Object.values(mappings).filter(Boolean).length} di {appFieldNames.length} campi mappati
             </span>
           </div>
-          <Button
-            onClick={handleConfirm}
-            disabled={!isMappingComplete}
-            data-testid="button-confirm-mapping"
-          >
-            <Check className="mr-2 h-4 w-4" />
-            Conferma e Importa
-          </Button>
+          <div className="flex items-center gap-2">
+            <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  disabled={!isMappingComplete}
+                  data-testid="button-save-mapping-dialog"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Salva Mappatura
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Salva Mappatura</DialogTitle>
+                  <DialogDescription>
+                    Salva questa configurazione per riutilizzarla in futuro
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <Label htmlFor="mapping-name">Nome della mappatura</Label>
+                  <Input
+                    id="mapping-name"
+                    value={newMappingName}
+                    onChange={(e) => setNewMappingName(e.target.value)}
+                    placeholder="Es: Importazione Studio Dentistico"
+                    className="mt-2"
+                    data-testid="input-mapping-name"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                    Annulla
+                  </Button>
+                  <Button
+                    onClick={handleSaveMapping}
+                    disabled={!newMappingName.trim()}
+                    data-testid="button-save-mapping-confirm"
+                  >
+                    Salva
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button
+              onClick={handleConfirm}
+              disabled={!isMappingComplete}
+              data-testid="button-confirm-mapping"
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Conferma e Importa
+            </Button>
+          </div>
         </CardFooter>
       </Card>
       {savedMappings.length > 0 && (
