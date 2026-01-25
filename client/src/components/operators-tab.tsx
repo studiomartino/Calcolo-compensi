@@ -574,7 +574,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                 {filteredRecordsForDetails.length} prestazioni trovate
               </div>
 
-              <ScrollArea className="flex-1 border rounded-lg">
+              <ScrollArea className="flex-1 border rounded-lg min-h-0 max-h-[40vh]">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50 sticky top-0">
                     <tr>
