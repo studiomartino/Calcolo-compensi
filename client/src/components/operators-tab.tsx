@@ -460,13 +460,12 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           </DialogHeader>
           
           {selectedOperator && filteredStats && (
-            <ScrollArea className="flex-1 min-h-0">
-              <div className="flex flex-col gap-4 pl-[4px] pr-[4px]">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex-1 min-h-0 flex flex-col gap-4 overflow-hidden">
+              <div className="text-sm text-muted-foreground shrink-0">
                 Presente in {selectedOperator.totalAnalyses} {selectedOperator.totalAnalyses === 1 ? "analisi" : "analisi"}
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-3 shrink-0">
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
                   <div className="rounded-lg border p-2 bg-card">
                     <p className="text-[10px] leading-tight text-muted-foreground">Compenso Totale</p>
@@ -537,7 +536,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center shrink-0">
                 <div className="relative flex-1 max-w-sm">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -571,49 +570,50 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                 )}
               </div>
 
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground shrink-0">
                 {filteredRecordsForDetails.length} prestazioni trovate
               </div>
 
-              <div className="border rounded-lg">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/50">
-                    <tr>
-                      <th className="text-left p-2 font-medium">Cat.</th>
-                      <th className="text-left p-2 font-medium">Data</th>
-                      <th className="text-left p-2 font-medium">Paziente</th>
-                      <th className="text-left p-2 font-medium">Prestazione</th>
-                      <th className="text-left p-2 font-medium">Elementi</th>
-                      <th className="text-right p-2 font-medium">Prezzo Paz.</th>
-                      <th className="text-right p-2 font-medium">Compenso</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredRecordsForDetails.map((record, idx) => (
-                      <tr 
-                        key={`${record.id}-${idx}`} 
-                        className={`border-t ${record.hasAnomaly ? "bg-red-50 dark:bg-red-950/20" : ""}`}
-                      >
-                        <td className="p-2">
-                          {record.categoriaCompenso === "card" ? (
-                            <CreditCard className="h-4 w-4 text-blue-600" />
-                          ) : (
-                            <Banknote className="h-4 w-4 text-green-600" />
-                          )}
-                        </td>
-                        <td className="p-2 whitespace-nowrap">{record.data || "-"}</td>
-                        <td className="p-2">{record.paziente}</td>
-                        <td className="p-2">{record.prestazione}</td>
-                        <td className="p-2">{record.elementiDentali || "-"}</td>
-                        <td className="p-2 text-right">€ {record.prezzoAlPaziente.toLocaleString("it-IT")}</td>
-                        <td className="p-2 text-right font-medium">€ {record.compensoOperatore.toLocaleString("it-IT")}</td>
+              <div className="flex-1 min-h-0 border rounded-lg overflow-hidden">
+                <ScrollArea className="h-full">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/50 sticky top-0">
+                      <tr>
+                        <th className="text-left p-2 font-medium">Cat.</th>
+                        <th className="text-left p-2 font-medium">Data</th>
+                        <th className="text-left p-2 font-medium">Paziente</th>
+                        <th className="text-left p-2 font-medium">Prestazione</th>
+                        <th className="text-left p-2 font-medium">Elementi</th>
+                        <th className="text-right p-2 font-medium">Prezzo Paz.</th>
+                        <th className="text-right p-2 font-medium">Compenso</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {filteredRecordsForDetails.map((record, idx) => (
+                        <tr 
+                          key={`${record.id}-${idx}`} 
+                          className={`border-t ${record.hasAnomaly ? "bg-red-50 dark:bg-red-950/20" : ""}`}
+                        >
+                          <td className="p-2">
+                            {record.categoriaCompenso === "card" ? (
+                              <CreditCard className="h-4 w-4 text-blue-600" />
+                            ) : (
+                              <Banknote className="h-4 w-4 text-green-600" />
+                            )}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">{record.data || "-"}</td>
+                          <td className="p-2">{record.paziente}</td>
+                          <td className="p-2">{record.prestazione}</td>
+                          <td className="p-2">{record.elementiDentali || "-"}</td>
+                          <td className="p-2 text-right">€ {record.prezzoAlPaziente.toLocaleString("it-IT")}</td>
+                          <td className="p-2 text-right font-medium">€ {record.compensoOperatore.toLocaleString("it-IT")}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </ScrollArea>
               </div>
             </div>
-            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
