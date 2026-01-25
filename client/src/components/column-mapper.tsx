@@ -155,23 +155,22 @@ export function ColumnMapper({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="space-y-3">
             {appFieldNames.map((field) => (
-              <div key={field} className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  {appFieldLabels[field]}
+              <div key={field} className="flex items-center justify-between gap-4 py-2 border-b last:border-b-0">
+                <div className="flex items-center gap-3 min-w-[180px]">
+                  <Label className="font-medium text-sm">
+                    {appFieldLabels[field]}
+                  </Label>
                   {mappings[field] && (
-                    <Badge variant="secondary" className="text-xs">
-                      <Check className="mr-1 h-3 w-3" />
-                      Mappato
-                    </Badge>
+                    <Check className="h-4 w-4 text-green-500" />
                   )}
-                </Label>
+                </div>
                 <Select
                   value={mappings[field]}
                   onValueChange={(value) => handleMappingChange(field, value)}
                 >
-                  <SelectTrigger data-testid={`select-mapping-${field}`}>
+                  <SelectTrigger className="w-[280px]" data-testid={`select-mapping-${field}`}>
                     <SelectValue placeholder="Seleziona colonna..." />
                   </SelectTrigger>
                   <SelectContent>
