@@ -783,60 +783,74 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                         Giornate lavorate ({dailyPaymentSettings[selectedDailyOperator].workedDays.length})
                       </Label>
                     </div>
-                    
-                    <div className="flex gap-2">
-                      <Input
-                        type="date"
-                        value={newDayInput}
-                        onChange={(e) => setNewDayInput(e.target.value)}
-                        className="flex-1"
-                        data-testid="input-new-day"
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => addWorkedDay(selectedDailyOperator)}
-                        data-testid="button-add-day"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
 
-                    <div className="max-h-48 overflow-y-auto border rounded-lg">
-                      {dailyPaymentSettings[selectedDailyOperator].workedDays.length === 0 ? (
-                        <p className="p-3 text-sm text-muted-foreground text-center">
-                          Nessuna giornata registrata
-                        </p>
-                      ) : (
-                        <div className="divide-y">
-                          {dailyPaymentSettings[selectedDailyOperator].workedDays.map((day) => {
-                            const dayRecords = records.filter(
-                              (r) => r.operatore === selectedDailyOperator && r.data && parseItalianDate(r.data) === day
-                            );
-                            const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
-                            
-                            return (
-                              <div key={day} className="flex items-center justify-between p-2 hover:bg-muted/50">
-                                <div>
-                                  <p className="text-sm font-medium">{formatDateFull(day)}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {dayRecords.length} prestazioni - {formatCurrency(daySum)}
-                                  </p>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                  onClick={() => removeWorkedDay(selectedDailyOperator, day)}
-                                  data-testid={`button-remove-day-${day}`}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                    <div className="max-h-56 overflow-y-auto border rounded-lg">
+                      <div className="divide-y">
+                        {dailyPaymentSettings[selectedDailyOperator].workedDays.map((day) => {
+                          const dayRecords = records.filter(
+                            (r) => r.operatore === selectedDailyOperator && r.data && parseItalianDate(r.data) === day
+                          );
+                          const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
+                          
+                          return (
+                            <div key={day} className="flex items-center justify-between p-2 hover:bg-muted/50">
+                              <div>
+                                <p className="text-sm font-medium">{formatDateFull(day)}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {dayRecords.length} prestazioni - {formatCurrency(daySum)}
+                                </p>
                               </div>
-                            );
-                          })}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                onClick={() => removeWorkedDay(selectedDailyOperator, day)}
+                                data-testid={`button-remove-day-${day}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                        
+                        <div className="p-2 hover:bg-muted/50">
+                          {newDayInput ? (
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="date"
+                                value={newDayInput}
+                                onChange={(e) => setNewDayInput(e.target.value)}
+                                className="flex-1 h-8"
+                                data-testid="input-new-day"
+                              />
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => addWorkedDay(selectedDailyOperator)}
+                                data-testid="button-add-day"
+                              >
+                                Aggiungi
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setNewDayInput("")}
+                              >
+                                Annulla
+                              </Button>
+                            </div>
+                          ) : (
+                            <button
+                              className="flex items-center gap-2 text-sm text-primary hover:underline w-full"
+                              onClick={() => setNewDayInput(new Date().toISOString().split('T')[0])}
+                              data-testid="button-show-add-day"
+                            >
+                              <Plus className="h-4 w-4" />
+                              Aggiungi giornata lavorata
+                            </button>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
 
