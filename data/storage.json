@@ -17938,6 +17938,13 @@
       "password": "$2b$10$nkdPI.fReUt1piTH43HD8u008MU7EbR3l7IfofpBcabHfUNtbiLqy",
       "role": "admin",
       "createdAt": "2026-01-25T14:42:17.543Z"
+    },
+    {
+      "id": "b7d35195-6161-46ed-88ee-35e8ed686b68",
+      "username": "Prova",
+      "password": "$2b$10$WIIAlkGqC3NzMitvJid2Zu3GSnPoNgtboK8i5u5DjqwCwpLtYFfzC",
+      "role": "user",
+      "createdAt": "2026-01-25T14:55:00.666Z"
     }
   ]
 }
