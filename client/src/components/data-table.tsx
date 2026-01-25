@@ -368,19 +368,19 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                       </Tooltip>
                     </TableCell>
                     <TableCell className="font-medium">
-                      {renderEditableCell(record, "operatore", record.operatore)}
+                      {record.operatore}
                     </TableCell>
                     <TableCell>
-                      {renderEditableCell(record, "paziente", record.paziente)}
+                      {record.paziente}
                     </TableCell>
                     <TableCell>
-                      {renderEditableCell(record, "prestazione", record.prestazione)}
+                      {record.prestazione}
                     </TableCell>
                     <TableCell>
-                      {renderEditableCell(record, "elementiDentali", record.elementiDentali)}
+                      {record.elementiDentali}
                     </TableCell>
-                    <TableCell className="text-right">
-                      {renderEditableCell(record, "prezzoAlPaziente", record.prezzoAlPaziente, true)}
+                    <TableCell className="text-right font-mono">
+                      {formatCurrency(record.prezzoAlPaziente)}
                     </TableCell>
                     <TableCell className="text-right">
                       {renderEditableCell(record, "compensoOperatore", record.compensoOperatore, true)}
@@ -420,7 +420,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             Visualizzati {filteredRecords.length} di {records.length} record
           </span>
           <span>
-            Clicca su una cella per modificarla
+            Clicca sul compenso operatore per modificarlo
           </span>
         </div>
       </CardContent>
