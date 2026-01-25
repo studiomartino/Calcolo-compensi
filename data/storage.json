@@ -9,7 +9,7 @@
       "elementiDentali": "15",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 30,
-      "id": "fe095301-5b7a-4566-96d5-328aab5cd235",
+      "id": "1e8c5400-9962-4d98-86f2-b72185923bdb",
       "hasAnomaly": false
     },
     {
@@ -21,7 +21,7 @@
       "elementiDentali": "17",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 30,
-      "id": "14d5cf7b-c3b5-44aa-a14f-50fa621d9e44",
+      "id": "8be7e554-3840-4156-b1c9-d1c9aa675f6e",
       "hasAnomaly": false
     },
     {
@@ -33,7 +33,7 @@
       "elementiDentali": "45",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 30,
-      "id": "e2e7970e-dd22-4aaf-b8ad-370846980676",
+      "id": "598323d7-de92-4ebc-b181-1550c42ba266",
       "hasAnomaly": false
     },
     {
@@ -45,7 +45,7 @@
       "elementiDentali": "45",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 45,
-      "id": "bd33f6ec-5dd0-4c7e-9839-d53be65c402d",
+      "id": "2e165650-37b9-42e3-ba24-915a9b1463ee",
       "hasAnomaly": false
     },
     {
@@ -57,7 +57,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 36,
-      "id": "62d0ff19-d649-4402-a1f9-243e416d7bc0",
+      "id": "ea78268f-6151-46ce-bdb9-8e436f09273c",
       "hasAnomaly": false
     },
     {
@@ -69,7 +69,7 @@
       "elementiDentali": "47",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 36,
-      "id": "7e0d5ec5-f504-4274-844d-ea76511ac48c",
+      "id": "06951380-c40f-471c-a18e-5c9b4727941e",
       "hasAnomaly": false
     },
     {
@@ -81,7 +81,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 400,
       "compensoOperatore": 90,
-      "id": "ed9f7770-4bc3-489d-a05a-293e7f51bbf8",
+      "id": "07537aad-bfdf-4840-a4a2-ab6c3bcaa864",
       "hasAnomaly": false
     },
     {
@@ -93,7 +93,7 @@
       "elementiDentali": "28",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 39,
-      "id": "8d8f0ccf-d1e8-4aaf-adf9-4e2c5668064d",
+      "id": "4302fbaf-a2be-4e03-9e8e-5c53ae30fb15",
       "hasAnomaly": false
     },
     {
@@ -105,7 +105,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "c9a1bd85-e2e2-4967-be26-e3d4f0f4331c",
+      "id": "59c1d380-f5cb-4f72-bc27-9196a4feb97b",
       "hasAnomaly": false
     },
     {
@@ -117,7 +117,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "dd95ace9-9b39-4e50-bca3-e508b509acb2",
+      "id": "b2661f6e-44f9-4ed0-a3a4-a16dbdcc247f",
       "hasAnomaly": false
     },
     {
@@ -129,7 +129,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "4c5dedfe-17c7-4ad8-9c60-4efe090f9d67",
+      "id": "64433a63-c6f7-4098-bb6e-43943620ff5c",
       "hasAnomaly": false
     },
     {
@@ -141,7 +141,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "f46364aa-8515-4325-8fc7-2b84b395ec3d",
+      "id": "838812a4-b688-418a-9c98-a959ed49e94b",
       "hasAnomaly": false
     },
     {
@@ -153,7 +153,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "9251ecd5-356c-4fdf-aeb0-7835027dd502",
+      "id": "db448935-7310-4030-b9cd-ae1ffdcd3505",
       "hasAnomaly": false
     },
     {
@@ -165,7 +165,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "8dce7513-e9a2-4123-878c-7c980f5ede62",
+      "id": "f8efa9be-598d-4069-9f50-ab52ff2eb1ad",
       "hasAnomaly": false
     },
     {
@@ -177,7 +177,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "20e5e8e3-00a5-462b-b38d-c5161768f8c3",
+      "id": "44b5e2ac-13cc-4970-89db-ccce8e304377",
       "hasAnomaly": false
     },
     {
@@ -189,7 +189,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 30,
       "compensoOperatore": 8,
-      "id": "9ab4300a-9834-4c21-b4f5-a472c45beec0",
+      "id": "60fed28b-2574-4448-b609-e259a4f0f210",
       "hasAnomaly": false
     },
     {
@@ -201,7 +201,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 60,
       "compensoOperatore": 27,
-      "id": "26e0e1f3-64d7-4b94-a7d5-ba9903be788a",
+      "id": "5fac9620-e437-4f01-bb89-95c59bf2fcc4",
       "hasAnomaly": false
     },
     {
@@ -213,7 +213,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 800,
       "compensoOperatore": 200,
-      "id": "48088b1a-ba21-430f-a34b-39dbb9205ae3",
+      "id": "7fef04c7-c953-412b-bfa8-083268ab75fb",
       "hasAnomaly": false
     },
     {
@@ -225,7 +225,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 500,
       "compensoOperatore": 150,
-      "id": "44b52486-6a73-4582-9a17-b1d0b01a14f3",
+      "id": "7e0a1308-c8c0-45bb-b0fe-49e5a7a37d4f",
       "hasAnomaly": false
     },
     {
@@ -237,7 +237,7 @@
       "elementiDentali": "16",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 30,
-      "id": "4135ed6e-7e5a-4259-8545-6acaa27ab32d",
+      "id": "c2e5cb9a-c548-494d-b98e-97d3366b97cc",
       "hasAnomaly": false
     },
     {
@@ -249,7 +249,7 @@
       "elementiDentali": "17",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 30,
-      "id": "82c9262a-7243-4077-b4c1-535ee320d23b",
+      "id": "9e41935f-e2d5-4455-94d1-ea58596118bc",
       "hasAnomaly": false
     },
     {
@@ -261,7 +261,7 @@
       "elementiDentali": "37",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 45,
-      "id": "ddceb169-0bc8-4012-b8cc-2867ec44ad2b",
+      "id": "1b8b66a9-a113-453d-a58e-5e0ff16c8046",
       "hasAnomaly": false
     },
     {
@@ -273,7 +273,7 @@
       "elementiDentali": "35",
       "prezzoAlPaziente": 130,
       "compensoOperatore": 33,
-      "id": "791567d0-32a2-4c14-9f40-03047e8b4070",
+      "id": "d6643126-8b47-4a44-91a1-ab097f9eec91",
       "hasAnomaly": false
     },
     {
@@ -285,7 +285,7 @@
       "elementiDentali": "37",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "d70d92e6-d3a5-425f-a6ab-4c8ea0378719",
+      "id": "5d88e568-74a3-448f-a3b3-af52857eafea",
       "hasAnomaly": false
     },
     {
@@ -297,7 +297,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "bcd9fbe8-2619-4bf7-95a0-94aabe253b1a",
+      "id": "2e86ac97-c290-4737-9fa5-912d7102da6b",
       "hasAnomaly": false
     },
     {
@@ -309,7 +309,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "a6a1150f-905e-42e8-8e35-cdf2028c18cb",
+      "id": "854a393d-4005-439a-ba28-996e19af4fdc",
       "hasAnomaly": false
     },
     {
@@ -321,7 +321,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "19c947fc-0fd2-4a1a-813f-4af045f2847b",
+      "id": "8b45d302-fd8c-44cd-9b84-69b5c85bfe4d",
       "hasAnomaly": false
     },
     {
@@ -333,7 +333,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "e1cd24bf-7ffb-48ea-b9e3-9861daa308a5",
+      "id": "9a8f0c7c-86fb-4c69-ab7c-68de3a280140",
       "hasAnomaly": false
     },
     {
@@ -345,7 +345,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "77c45c01-c28f-4992-bb36-23c546e98824",
+      "id": "60b2a056-e545-4295-a722-b66e6ec3ffd8",
       "hasAnomaly": false
     },
     {
@@ -357,7 +357,7 @@
       "elementiDentali": "12",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "84cb4303-4ad3-405b-a686-985ad208cfbd",
+      "id": "757393b1-7af8-4b3b-b2c2-34b3a279ecff",
       "hasAnomaly": false
     },
     {
@@ -369,7 +369,7 @@
       "elementiDentali": "16",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 15,
-      "id": "242c66fc-bb8d-412c-831d-abc16b597008",
+      "id": "51e5ff91-302a-4160-bd82-2b6bed11f15b",
       "hasAnomaly": false
     },
     {
@@ -381,7 +381,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 15,
-      "id": "c36e2a7d-df89-4e94-80a4-0f2584f16f3d",
+      "id": "83fc4043-cafe-4a1c-8756-f8c40c3c88bd",
       "hasAnomaly": false
     },
     {
@@ -393,7 +393,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 50,
-      "id": "634da855-7c0d-4293-b8f5-93e443b1aa6e",
+      "id": "ae26b6af-c7dc-45ae-9783-ffe7612e99a6",
       "hasAnomaly": true
     },
     {
@@ -405,7 +405,7 @@
       "elementiDentali": "33",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "a664a466-1d41-4297-a231-d3d0a1c8558b",
+      "id": "0d86d0c1-3b5e-4a27-9c1f-44bbe8f45d1d",
       "hasAnomaly": false
     },
     {
@@ -417,7 +417,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "23d52a57-2a91-4b21-bf52-52e112e6c7f8",
+      "id": "381d9eee-a7eb-462b-af12-32fc7e902b4e",
       "hasAnomaly": false
     },
     {
@@ -429,7 +429,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 400,
       "compensoOperatore": 50,
-      "id": "b28673ea-2060-41d7-b2d1-5b466a444b7a",
+      "id": "cebdcd4d-dac1-4bb4-a374-6e04d60a9cca",
       "hasAnomaly": false
     },
     {
@@ -441,7 +441,7 @@
       "elementiDentali": "48",
       "prezzoAlPaziente": 500,
       "compensoOperatore": 105,
-      "id": "015c793d-350c-4ae7-ad9b-1e9845da8266",
+      "id": "b5d1e2a0-4e37-42f4-97c3-d875acec1ece",
       "hasAnomaly": false
     },
     {
@@ -453,7 +453,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "ad3af3e1-0600-4324-874a-f01644c2067a",
+      "id": "edad1ca8-2db5-45cb-82d1-991f183f5c11",
       "hasAnomaly": false
     },
     {
@@ -465,7 +465,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "b213a641-7216-4819-8d6b-974ff6eaff81",
+      "id": "1a76cda8-9be3-484c-8e28-64b881ea7395",
       "hasAnomaly": false
     },
     {
@@ -477,7 +477,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "c5b820ff-5be5-43c1-b7c1-3c17ad17d7e6",
+      "id": "adea30d1-492f-4ae6-9617-91b34ffb0858",
       "hasAnomaly": false
     },
     {
@@ -489,7 +489,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "f41594fd-0a06-4319-9127-d1d91830184b",
+      "id": "70157652-1d2b-4e2d-b627-e51bf150f00f",
       "hasAnomaly": false
     },
     {
@@ -501,7 +501,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "45e3d6a2-bdc9-43ed-9e3d-93041776ac81",
+      "id": "315c877b-b05a-4926-905a-99cec008cc5c",
       "hasAnomaly": false
     },
     {
@@ -513,7 +513,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 30,
       "compensoOperatore": 8,
-      "id": "ca3b9e47-7a0d-40da-bc6f-0fc84283cf45",
+      "id": "e195bed0-df91-47ab-8a44-0cc361cdc300",
       "hasAnomaly": false
     },
     {
@@ -525,7 +525,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "407ee457-91ae-4d14-92a6-95c19b2581b3",
+      "id": "ef37fda0-d38c-4372-930e-6f80dd91f6bf",
       "hasAnomaly": false
     },
     {
@@ -537,7 +537,7 @@
       "elementiDentali": "26",
       "prezzoAlPaziente": 500,
       "compensoOperatore": 105,
-      "id": "779b2ed9-bc0d-4906-b1a1-84113574a6cc",
+      "id": "18e0c90b-49c5-402f-96aa-8d467ea582d7",
       "hasAnomaly": false
     },
     {
@@ -549,7 +549,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "2dc74b2c-e270-4e70-bc2f-b7ba453342ad",
+      "id": "7ea908cc-6774-452d-959c-44b2a3ea7498",
       "hasAnomaly": false
     },
     {
@@ -561,7 +561,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 37.5,
-      "id": "7a6a17e4-0efc-4376-8f95-2f80c57f1bf9",
+      "id": "87e55440-f36d-4df8-b4af-4878be26533d",
       "hasAnomaly": false
     },
     {
@@ -573,7 +573,7 @@
       "elementiDentali": "17",
       "prezzoAlPaziente": 350,
       "compensoOperatore": 105,
-      "id": "8918adf8-b9cb-4cb8-a6bb-9476c447448b",
+      "id": "866cc217-602d-4c1e-8c5c-571152e27a57",
       "hasAnomaly": false
     },
     {
@@ -585,7 +585,7 @@
       "elementiDentali": "24",
       "prezzoAlPaziente": 130,
       "compensoOperatore": 39,
-      "id": "ef4d6330-f9c6-4480-8101-be78bd155bee",
+      "id": "c448c5af-217e-4049-98b8-c109e1a4e097",
       "hasAnomaly": false
     },
     {
@@ -597,7 +597,7 @@
       "elementiDentali": "25",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "e7729168-48f0-4265-9aa0-0725b53d2f26",
+      "id": "da2a88c7-ed7c-4e0a-afaf-17d197624e76",
       "hasAnomaly": false
     },
     {
@@ -609,7 +609,7 @@
       "elementiDentali": "27",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "94dc5b42-a8a6-42a4-b4b3-e14c9087a59e",
+      "id": "6f4179d7-b742-4721-8e55-d7e788b9fb8b",
       "hasAnomaly": false
     },
     {
@@ -621,7 +621,7 @@
       "elementiDentali": "27",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 24,
-      "id": "d15729d0-95c3-4e36-a1c7-36d060bd78bd",
+      "id": "057544a6-a997-4b0a-ace2-0ca2d0767053",
       "hasAnomaly": false
     },
     {
@@ -633,7 +633,7 @@
       "elementiDentali": "47",
       "prezzoAlPaziente": 350,
       "compensoOperatore": 75,
-      "id": "56899035-766e-4b02-a9c3-d6480c89e420",
+      "id": "6488690a-0826-4bae-82e8-952208b2c527",
       "hasAnomaly": false
     },
     {
@@ -645,7 +645,7 @@
       "elementiDentali": "21",
       "prezzoAlPaziente": 130,
       "compensoOperatore": 39,
-      "id": "126612fa-ef2d-4e45-89dd-e00d14a9f95f",
+      "id": "294cd0c1-0087-4776-b7f8-5bd39f59a7aa",
       "hasAnomaly": false
     },
     {
@@ -657,7 +657,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "4a117ebf-5045-4608-aa8c-38bdb3ab9e04",
+      "id": "c8379fa3-fd68-4c6b-ab98-fd94a435a5ae",
       "hasAnomaly": false
     },
     {
@@ -669,7 +669,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "e26dd529-815f-423c-88ab-662b1e827fd2",
+      "id": "63171d94-b524-4bcb-9933-9d42dbc3fe86",
       "hasAnomaly": false
     },
     {
@@ -681,7 +681,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 24,
-      "id": "0723286d-12d1-4840-b2bb-9092921a171c",
+      "id": "b93cfddc-d8d2-4694-be5a-b1c94e50da11",
       "hasAnomaly": false
     },
     {
@@ -693,7 +693,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 500,
       "compensoOperatore": 100,
-      "id": "c32e0e2c-9a5c-464b-9d3f-a123af480ec1",
+      "id": "b4adf747-f7e3-4543-8cc4-046349198b06",
       "hasAnomaly": false
     },
     {
@@ -705,7 +705,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "a9de0dd4-4019-4a29-9fea-c4b03d5d370b",
+      "id": "09dfaaf6-861b-4e0a-8a10-035a9304ab93",
       "hasAnomaly": false
     },
     {
@@ -717,7 +717,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "24868722-803c-463c-8d5f-bd0d9503983c",
+      "id": "1da4532c-6068-41ef-9c31-7d8d866ddeeb",
       "hasAnomaly": false
     },
     {
@@ -729,7 +729,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "a1a606ee-b6cd-4b08-8f62-1b330374fe54",
+      "id": "d34d33bb-6f75-4960-8fea-cd91038f6dc5",
       "hasAnomaly": false
     },
     {
@@ -741,7 +741,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "9be4a226-71a9-4265-b5a6-4be3e5745aa9",
+      "id": "5f89efd7-9a64-423a-93a0-5bd50a3642f9",
       "hasAnomaly": false
     },
     {
@@ -753,7 +753,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "b875b7d0-7454-448b-bd7d-c405d9515086",
+      "id": "773c82c5-7476-4ed1-9a8e-d574a6c0e5d1",
       "hasAnomaly": false
     },
     {
@@ -765,7 +765,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "fcffbaab-56ba-4a23-ad0c-678dfcdf55ee",
+      "id": "7ee1ae64-4f64-432d-941e-c7f8ba8de35d",
       "hasAnomaly": false
     },
     {
@@ -777,7 +777,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "d92d195d-4e3b-4878-8738-46b31ccf3869",
+      "id": "3180939f-75ab-405c-a982-cb616100ebd3",
       "hasAnomaly": false
     },
     {
@@ -789,7 +789,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "689241c8-df77-43c4-b910-1306acdd4f6d",
+      "id": "b88ccd89-def3-4940-8f09-a3bbafc3373e",
       "hasAnomaly": false
     },
     {
@@ -801,7 +801,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "5f6d9e89-dcef-4dd4-947c-e59ca6a887e7",
+      "id": "456f9ecd-bc1b-431d-9071-279362763dc6",
       "hasAnomaly": false
     },
     {
@@ -813,7 +813,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "3cc05541-b29a-433f-ab55-7b1504e8ad24",
+      "id": "405bc68c-770a-4253-89ab-e68762cd5493",
       "hasAnomaly": false
     },
     {
@@ -825,7 +825,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 15,
-      "id": "c91b5a22-1be1-4c45-97ef-2ce492c19bc0",
+      "id": "b7ba3fd1-a71e-4aa2-9bf6-6e4dad072b94",
       "hasAnomaly": false
     },
     {
@@ -837,7 +837,7 @@
       "elementiDentali": "11",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 45,
-      "id": "839c5495-74ea-4ddd-b8f4-4f6988fe86fc",
+      "id": "c619fcf6-73c9-4d56-93cb-b6aa474f6cc9",
       "hasAnomaly": false
     },
     {
@@ -849,7 +849,7 @@
       "elementiDentali": "38",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 30,
-      "id": "f1d87573-92a4-49a1-a751-547fe4d3770a",
+      "id": "182f8342-350c-482b-9123-0d93c982b692",
       "hasAnomaly": false
     },
     {
@@ -861,7 +861,7 @@
       "elementiDentali": "16",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 45,
-      "id": "78b0c6e5-f791-4209-b988-cad649fa3f9b",
+      "id": "3e284d03-b0c0-4448-8a09-1422dee5f5da",
       "hasAnomaly": false
     },
     {
@@ -873,7 +873,7 @@
       "elementiDentali": "17",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 36,
-      "id": "60f653e9-92c1-4e99-b1ef-8604aac75e9b",
+      "id": "0b15525d-f278-48fd-9115-b5769103ed5b",
       "hasAnomaly": false
     },
     {
@@ -885,7 +885,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 45,
-      "id": "b2043760-2343-4a8d-937d-6f124e692195",
+      "id": "c03e4d57-7c8e-4fe5-8066-caa2eee05a10",
       "hasAnomaly": false
     },
     {
@@ -897,7 +897,7 @@
       "elementiDentali": "34",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 25,
-      "id": "95861f84-d285-443d-966a-b2e7b5e5be14",
+      "id": "146d6053-7ad6-4bc8-9ab8-d3a36318601c",
       "hasAnomaly": false
     },
     {
@@ -909,7 +909,7 @@
       "elementiDentali": "35",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 25,
-      "id": "ab85b816-7dbe-4a80-a330-47894a1da1bf",
+      "id": "f9b6b102-84c3-432b-8ca0-1082dbe0dda0",
       "hasAnomaly": false
     },
     {
@@ -921,7 +921,7 @@
       "elementiDentali": "44",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 25,
-      "id": "b4b1074e-9cf6-4c02-a580-77066039a6b8",
+      "id": "c1b66ab7-5c32-4ddb-9dde-b1494e8cdac6",
       "hasAnomaly": false
     },
     {
@@ -933,7 +933,7 @@
       "elementiDentali": "45",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 25,
-      "id": "1de964df-306b-454e-a615-d5ef04e1fb36",
+      "id": "029e8fb1-c303-4aed-a8b0-6e30bbe14315",
       "hasAnomaly": false
     },
     {
@@ -945,7 +945,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "5e29ff8d-a287-439b-b08e-d062f8e90945",
+      "id": "02716685-0db2-4448-9e30-d691d687d22c",
       "hasAnomaly": false
     },
     {
@@ -957,7 +957,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "0b574684-83fd-42b6-b13f-c0a3d104e340",
+      "id": "672fff41-2277-43bd-b8d6-1af7ce6346b2",
       "hasAnomaly": false
     },
     {
@@ -969,7 +969,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 800,
       "compensoOperatore": 200,
-      "id": "a667e3f6-5629-4a1b-ada2-89ed6fcc5d0a",
+      "id": "c6778da1-e0a2-4771-9e05-8f98b95a0a37",
       "hasAnomaly": false
     },
     {
@@ -981,7 +981,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 24,
-      "id": "d466f652-127c-4b2e-abad-73670912fa79",
+      "id": "46713ed4-54c8-40fe-85d1-1116b9ecd17f",
       "hasAnomaly": false
     },
     {
@@ -993,7 +993,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "db57726f-1be0-4c85-9f94-4f3b459ad6fe",
+      "id": "e8070e6d-b504-4c93-82f1-e7ffa7f25c95",
       "hasAnomaly": false
     },
     {
@@ -1005,7 +1005,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "bbe8925f-ec8c-4a37-bfc9-bb1c0020d1b3",
+      "id": "a9a2aafc-3152-4db1-94ae-825aff183432",
       "hasAnomaly": false
     },
     {
@@ -1017,7 +1017,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "3c6e667e-d80f-4412-bd45-8ab1b96b9cd2",
+      "id": "4962cdea-7df4-4421-b8df-bac4eec0c402",
       "hasAnomaly": false
     },
     {
@@ -1029,7 +1029,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "43d421fd-8d25-4a86-ab2b-070b934cc396",
+      "id": "315b5935-cd44-449f-bd72-3934cbecdcb2",
       "hasAnomaly": false
     },
     {
@@ -1041,7 +1041,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "867f3b4b-cb4e-4710-88d3-753485ed742e",
+      "id": "866d378d-92d3-4fa5-acae-dc71f9aac5a8",
       "hasAnomaly": false
     },
     {
@@ -1053,7 +1053,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 0,
       "compensoOperatore": 10,
-      "id": "919a106c-3ceb-42ed-9924-a2ec3992e7cc",
+      "id": "eac6bc3b-a1ce-430e-96a1-2012e240e280",
       "hasAnomaly": false
     },
     {
@@ -1065,7 +1065,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "3dde8604-87b4-4ce0-92d2-67f8687e3724",
+      "id": "55458ecd-6cbf-4fdc-ba5c-d179441ee8b8",
       "hasAnomaly": false
     },
     {
@@ -1077,7 +1077,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "2a9dbb62-351e-4bb2-9bd1-7b5f6529d434",
+      "id": "44ee213d-d6ef-4265-ad30-cdcef978fab6",
       "hasAnomaly": false
     },
     {
@@ -1089,7 +1089,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "f4dd4d6e-54d7-4840-93a3-1751a6f6e40b",
+      "id": "43fca831-d4d2-4cce-be5c-c62c9dd21ae9",
       "hasAnomaly": false
     },
     {
@@ -1101,7 +1101,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "5fc71cdd-3963-4b86-96f9-d3839a84e152",
+      "id": "ef6cd8ff-1dbf-40d8-b95c-6c0ee611a4ad",
       "hasAnomaly": false
     },
     {
@@ -1113,7 +1113,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "4420f127-2c54-45d3-b2f8-9e637323d143",
+      "id": "1c961d80-04d3-4aa6-a685-90a97ea9dfaa",
       "hasAnomaly": false
     },
     {
@@ -1125,7 +1125,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "ba0af9d5-058e-44ce-8d74-1f716f6e33dd",
+      "id": "eda0c6d7-850e-4f20-b6ae-88f25a3e3569",
       "hasAnomaly": false
     },
     {
@@ -1137,7 +1137,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "fe333745-0084-4a54-8ded-5adf4512758a",
+      "id": "2b6e730c-ef09-4d7c-89f2-29a7d68d44a1",
       "hasAnomaly": false
     },
     {
@@ -1149,7 +1149,7 @@
       "elementiDentali": "23",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "451f5f70-6dfe-4fe3-9bee-6c5a4030502d",
+      "id": "9f71580d-29a5-4daf-a30d-ddb3b8890bd5",
       "hasAnomaly": false
     },
     {
@@ -1161,7 +1161,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "eb391dae-a1d7-4904-aedf-fde163d4a3a6",
+      "id": "ba4cb0c2-0a12-4be7-92f7-a04a7e717a3b",
       "hasAnomaly": false
     },
     {
@@ -1173,7 +1173,7 @@
       "elementiDentali": "47",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 30,
-      "id": "d23c8836-3c7b-4f19-8bf4-6252cb0da945",
+      "id": "489b758c-9965-41d1-b6ab-c6c238664f67",
       "hasAnomaly": false
     },
     {
@@ -1185,7 +1185,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 45,
-      "id": "cee2a5ea-3427-4148-881a-f2892ad67ed4",
+      "id": "48bc1b20-524b-43d8-b231-2ec5837bfe6c",
       "hasAnomaly": false
     },
     {
@@ -1197,7 +1197,7 @@
       "elementiDentali": "47",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 45,
-      "id": "f5e97695-7008-4e47-a760-dcedfaf124cd",
+      "id": "8ddc1b8d-288a-4f01-bc7b-c5394886a8d8",
       "hasAnomaly": false
     },
     {
@@ -1209,7 +1209,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 130,
       "compensoOperatore": 39,
-      "id": "3e97ce29-05c4-40ed-9267-e8ce80cc3fea",
+      "id": "d9312ef6-f742-4552-a1e6-3431ed40ba20",
       "hasAnomaly": false
     },
     {
@@ -1221,7 +1221,7 @@
       "elementiDentali": "47",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 30,
-      "id": "8c7988ef-4788-42dc-b6bd-c22f57251692",
+      "id": "2385e7f3-11bc-4273-9d35-47c2faaf4eb8",
       "hasAnomaly": false
     },
     {
@@ -1233,7 +1233,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "a1cb9db9-8ab9-493a-8498-c1758ab72ec4",
+      "id": "197b5301-866c-460b-85e1-355517d1f7dc",
       "hasAnomaly": false
     },
     {
@@ -1245,7 +1245,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "9793d601-1530-4e80-9452-74851df01ca3",
+      "id": "a4e82ca7-66fe-4d36-b1bb-95acccdcd707",
       "hasAnomaly": false
     },
     {
@@ -1257,7 +1257,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "59997a27-b59c-4abd-b54a-9b1fe6b2d883",
+      "id": "d4c2d958-961b-4fe9-8d64-bc15def8b65a",
       "hasAnomaly": false
     },
     {
@@ -1269,7 +1269,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "356e405f-34d1-42d4-b4c0-5caf7551d20a",
+      "id": "bff41228-6ee1-4bee-b493-d139a16092e3",
       "hasAnomaly": false
     },
     {
@@ -1281,7 +1281,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "759e27a5-8c49-4117-bc77-e8c12a44c5b5",
+      "id": "bdbe95cd-b263-4aa0-ad39-b9827fea9e5a",
       "hasAnomaly": false
     },
     {
@@ -1293,7 +1293,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "7f91199e-df59-4212-b4bd-8fdce901ed23",
+      "id": "d4f62d4a-d942-44bf-9ccc-0c5f84f92297",
       "hasAnomaly": false
     },
     {
@@ -1305,7 +1305,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "7e01e18f-3123-486f-9ad1-75e571bb9a20",
+      "id": "bd416c9d-b0ed-4f50-a961-fca8a7e8fdf9",
       "hasAnomaly": false
     },
     {
@@ -1317,7 +1317,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 37.5,
-      "id": "cb7bd13c-16b7-427b-ab2a-d78d9a63dc39",
+      "id": "e1d39488-4910-4b61-9177-615677db600c",
       "hasAnomaly": false
     },
     {
@@ -1329,7 +1329,7 @@
       "elementiDentali": "24",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "27724b81-e7d9-4a1f-8b67-b71ee826f721",
+      "id": "f46e1dc7-1c61-4868-b708-31158e04a77c",
       "hasAnomaly": false
     },
     {
@@ -1341,7 +1341,7 @@
       "elementiDentali": "25",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "380926f6-1f43-489d-8e81-d005434d79d2",
+      "id": "a9acb0c5-2136-4a20-9006-3a78831a733c",
       "hasAnomaly": false
     },
     {
@@ -1353,7 +1353,7 @@
       "elementiDentali": "26",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 52.5,
-      "id": "070198d8-0449-4a38-9361-8358d349c880",
+      "id": "708ab765-c26b-4ea0-8367-7aa254c29eee",
       "hasAnomaly": false
     },
     {
@@ -1365,7 +1365,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 3,
       "compensoOperatore": 300,
-      "id": "95732864-df26-45a1-8e3b-299871b5a9d3",
+      "id": "d782256b-f0b8-4537-a160-cedb42856535",
       "hasAnomaly": false
     },
     {
@@ -1377,7 +1377,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 3,
       "compensoOperatore": 0,
-      "id": "d4d73c44-14ae-4ae8-8be4-7b6e5cc05448",
+      "id": "14312e90-cb5e-432c-91b6-6e3f56e64cb6",
       "hasAnomaly": false
     },
     {
@@ -1389,7 +1389,7 @@
       "elementiDentali": "14",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 0,
-      "id": "a1e6e921-c653-45f1-acdc-9179d2cd4246",
+      "id": "d70f46f8-d636-4907-88ba-922aa70b2d99",
       "hasAnomaly": false
     },
     {
@@ -1401,7 +1401,7 @@
       "elementiDentali": "35",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 0,
-      "id": "b9c275c6-cc10-4703-8ad9-4dc9d8666747",
+      "id": "28da0da0-2797-4913-a064-cce1f4bfb004",
       "hasAnomaly": false
     },
     {
@@ -1413,7 +1413,7 @@
       "elementiDentali": "14",
       "prezzoAlPaziente": 800,
       "compensoOperatore": 200,
-      "id": "ad293543-090b-4c5a-a105-602c0d16a205",
+      "id": "df743d3e-a065-459d-983a-d3a3fbac2ece",
       "hasAnomaly": false
     },
     {
@@ -1425,7 +1425,7 @@
       "elementiDentali": "35",
       "prezzoAlPaziente": 800,
       "compensoOperatore": 200,
-      "id": "615c829a-b149-45c0-aa0c-b22749dc04d9",
+      "id": "5cce8951-e131-416b-bc93-95a6ca35af08",
       "hasAnomaly": false
     },
     {
@@ -1437,7 +1437,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 800,
       "compensoOperatore": 200,
-      "id": "20cef84f-a2b5-43c2-bbfb-74cf7efef59d",
+      "id": "1828a826-d252-49ab-aadf-025556fa178d",
       "hasAnomaly": false
     },
     {
@@ -1449,7 +1449,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 800,
       "compensoOperatore": 200,
-      "id": "aa9b025d-c5e0-4777-8b8a-9fa44c781487",
+      "id": "bc815e8f-12b2-4414-803a-b3afdc1a43d0",
       "hasAnomaly": false
     },
     {
@@ -1461,7 +1461,7 @@
       "elementiDentali": "45",
       "prezzoAlPaziente": 800,
       "compensoOperatore": 200,
-      "id": "1fa66ad5-1e0f-496d-874b-78d4c74e7509",
+      "id": "f8798836-98f7-4b13-8565-a6e76f3d9dc6",
       "hasAnomaly": false
     },
     {
@@ -1473,7 +1473,7 @@
       "elementiDentali": "14,35,45",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 0,
-      "id": "a6331025-fcd7-46f6-a105-6aa4a28f5476",
+      "id": "c5e90413-b936-4ea3-97ed-ca90dfc7ce24",
       "hasAnomaly": false
     },
     {
@@ -1485,7 +1485,7 @@
       "elementiDentali": "45",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 0,
-      "id": "6d8ab54c-f0e4-48e2-81a9-6c87b6819723",
+      "id": "f7e4b06a-e1b8-47ea-a6f4-a3949ffdcbbf",
       "hasAnomaly": false
     },
     {
@@ -1497,7 +1497,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 45,
-      "id": "f85d26f5-ea43-4c11-91c8-e07680503b55",
+      "id": "e5ae76fa-f7f7-4ae7-b774-d005dd7f7b40",
       "hasAnomaly": false
     },
     {
@@ -1509,7 +1509,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 500,
       "compensoOperatore": 100,
-      "id": "26f4ad64-4305-4423-a28e-5a80ae84cd05",
+      "id": "3336b3fd-7e07-49db-9f92-70448bd1b63c",
       "hasAnomaly": false
     },
     {
@@ -1521,7 +1521,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 30,
-      "id": "7b83c797-f2c9-4083-a421-a5d795dd51b8",
+      "id": "72d37a03-f67d-4dae-88e6-68dbb17e26ff",
       "hasAnomaly": false
     },
     {
@@ -1533,7 +1533,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 30,
       "compensoOperatore": 0,
-      "id": "7784042d-3e58-40e8-b722-19618e1d256a",
+      "id": "bb7022bb-0325-4fd7-8367-c4899b5aad6c",
       "hasAnomaly": false
     },
     {
@@ -1545,7 +1545,7 @@
       "elementiDentali": "23",
       "prezzoAlPaziente": 150,
       "compensoOperatore": 36,
-      "id": "dfa916b7-71c1-49e5-aea7-1e3e793a0f3e",
+      "id": "07fae973-2d8a-4f16-a1db-8556e535ae58",
       "hasAnomaly": false
     },
     {
@@ -1557,7 +1557,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "24047de2-1c80-4346-917e-fbbd6364f156",
+      "id": "b160eee7-2834-4863-b87c-495f38d27e96",
       "hasAnomaly": false
     },
     {
@@ -1569,7 +1569,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "48ded3e0-0078-4d58-85b4-0972fb0dd6d1",
+      "id": "258cb27e-7f7b-4dd4-bce0-223c00544b1f",
       "hasAnomaly": false
     },
     {
@@ -1581,7 +1581,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "e33a610a-b1cd-4c0d-8cee-99fe700a55ba",
+      "id": "5d9266c9-b454-459b-aca8-41b02b6c80c4",
       "hasAnomaly": false
     },
     {
@@ -1593,7 +1593,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "ac5077d3-ed7a-4f5b-84dc-07861665a36d",
+      "id": "4f759dd7-0cbb-41e6-bebb-ee14b1007f1f",
       "hasAnomaly": false
     },
     {
@@ -1605,7 +1605,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 130,
       "compensoOperatore": 39,
-      "id": "bdd557a3-04bc-48ec-a8ec-7c8e4480f164",
+      "id": "d55df67f-d4c4-4ef6-a92c-66a39bbf9749",
       "hasAnomaly": false
     },
     {
@@ -1617,7 +1617,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 1.8,
       "compensoOperatore": 0,
-      "id": "87042119-1dc6-4f1e-8ca4-3f5243826f2d",
+      "id": "37df7ad8-8186-4c99-a9d6-f788cdbedc0a",
       "hasAnomaly": false
     },
     {
@@ -1629,7 +1629,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 24,
-      "id": "b9d50ac2-a81d-4175-b7f3-8496f687e9db",
+      "id": "6ccbb912-240b-4ef2-8d49-6728b51d7564",
       "hasAnomaly": false
     },
     {
@@ -1641,7 +1641,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "755cdbe9-56fb-4703-8e2d-a4551b812838",
+      "id": "39e52781-3c24-4894-be33-3f787a29490f",
       "hasAnomaly": false
     },
     {
@@ -1653,7 +1653,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "701742f5-ff51-499e-af78-b0f3233a3cd9",
+      "id": "8f621040-6747-437b-9bc1-1d603d0bf465",
       "hasAnomaly": false
     },
     {
@@ -1665,7 +1665,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "1b8074a9-0708-4942-9c0a-f21580d648da",
+      "id": "8a850546-f84c-4da3-a8ef-70c74924a3a7",
       "hasAnomaly": false
     },
     {
@@ -1677,7 +1677,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 400,
       "compensoOperatore": 316,
-      "id": "a2ec2b3a-5a03-495e-9515-8450a22b5d74",
+      "id": "8fce9723-e906-4df4-badf-540c11fc7ba1",
       "hasAnomaly": false
     },
     {
@@ -1689,7 +1689,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "8f1926c2-f6d7-41e6-8bb6-f6834e2ad5ca",
+      "id": "fa855894-3cdd-48a4-8bcb-d809af61d5fd",
       "hasAnomaly": false
     },
     {
@@ -1701,7 +1701,7 @@
       "elementiDentali": "38",
       "prezzoAlPaziente": 400,
       "compensoOperatore": 90,
-      "id": "30880f98-bf7d-4af4-b6dc-ff1710496d54",
+      "id": "38fd96aa-1b81-4cab-b732-84dc5976a951",
       "hasAnomaly": false
     },
     {
@@ -1713,7 +1713,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 2.2,
       "compensoOperatore": 0,
-      "id": "1b355605-5d70-4ee6-be5e-6337885ea2af",
+      "id": "bc40ba7c-c3d1-475b-92a0-87188968ec51",
       "hasAnomaly": false
     },
     {
@@ -1725,7 +1725,7 @@
       "elementiDentali": "14",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 0,
-      "id": "db5f7e64-08ea-4cfc-91f1-faee10a6ae37",
+      "id": "9e9c59d1-ee8c-4fe8-a14b-0a271c2ae298",
       "hasAnomaly": false
     },
     {
@@ -1737,7 +1737,7 @@
       "elementiDentali": "13",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 0,
-      "id": "a71f455a-9be2-4b1d-84b8-41ef1222de09",
+      "id": "a517fa37-701e-42b7-9b6f-ab56a9e5d9bc",
       "hasAnomaly": false
     },
     {
@@ -1749,7 +1749,7 @@
       "elementiDentali": "15",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 0,
-      "id": "a4097612-55a7-49d4-aa91-2aad22408211",
+      "id": "472a5ee9-884a-4aee-8f5d-f33a7a56d5d5",
       "hasAnomaly": false
     },
     {
@@ -1761,7 +1761,7 @@
       "elementiDentali": "31",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "973c6395-7b7a-4263-8a3d-ecddc2c268e6",
+      "id": "751e3756-2f7b-4b5f-8277-0a68a61194a6",
       "hasAnomaly": false
     },
     {
@@ -1773,7 +1773,7 @@
       "elementiDentali": "32",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "78b4f7b5-61d4-4057-b6dd-2d2fccb2aae7",
+      "id": "bbda91e4-ef5c-4fc9-9ac5-d7a7e8813592",
       "hasAnomaly": false
     },
     {
@@ -1785,7 +1785,7 @@
       "elementiDentali": "31",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 9,
-      "id": "7019c156-696d-46b9-a922-dabaefb9a223",
+      "id": "bb2011a2-d022-40f4-b3bc-0b3141294b0b",
       "hasAnomaly": false
     },
     {
@@ -1797,7 +1797,7 @@
       "elementiDentali": "32",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 9,
-      "id": "a47717f9-6443-4cf7-afb0-5a91ac2492a9",
+      "id": "1bbbe484-00db-46ae-bdae-f0d47cd855e5",
       "hasAnomaly": false
     },
     {
@@ -1809,7 +1809,7 @@
       "elementiDentali": "31",
       "prezzoAlPaziente": 200,
       "compensoOperatore": 36,
-      "id": "897d4700-e852-4606-95bd-a54b8480c9b6",
+      "id": "4f946b9a-e926-4e3f-b93e-3c2d233fbc84",
       "hasAnomaly": false
     },
     {
@@ -1821,7 +1821,7 @@
       "elementiDentali": "32",
       "prezzoAlPaziente": 200,
       "compensoOperatore": 36,
-      "id": "d7061de2-1996-45d2-9f8a-d84e565734db",
+      "id": "4d3862d8-e1da-450d-860b-c52001889301",
       "hasAnomaly": false
     },
     {
@@ -1833,7 +1833,7 @@
       "elementiDentali": "25",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 45,
-      "id": "b3133264-4079-4fab-b28c-d39b50a98e56",
+      "id": "d9d038fa-d493-4bf5-85c3-61d70c56026a",
       "hasAnomaly": false
     },
     {
@@ -1845,7 +1845,7 @@
       "elementiDentali": "26",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 45,
-      "id": "2d9e2206-2fbf-4ad7-bf09-ebcfdef5faa5",
+      "id": "4705a957-fcb2-4991-9847-4cd21410a238",
       "hasAnomaly": false
     },
     {
@@ -1857,7 +1857,7 @@
       "elementiDentali": "27",
       "prezzoAlPaziente": 175,
       "compensoOperatore": 45,
-      "id": "69c0c815-3688-429e-9f05-8fdd039b96bc",
+      "id": "262ce4c5-a79c-4658-b809-aebc500a6bed",
       "hasAnomaly": false
     },
     {
@@ -1869,7 +1869,7 @@
       "elementiDentali": "14",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "e4b85070-1477-4fa3-a670-c4b970d0c882",
+      "id": "82244cda-0397-4598-a88f-148ea2253b60",
       "hasAnomaly": false
     },
     {
@@ -1881,7 +1881,7 @@
       "elementiDentali": "16",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "278bda59-6154-4b2c-814a-4333e0339fa8",
+      "id": "09058bb0-dbd8-40c9-89c3-6b90faa8291e",
       "hasAnomaly": false
     },
     {
@@ -1893,7 +1893,7 @@
       "elementiDentali": "35",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "ea9931cd-c56b-4ab8-b6b5-670cdcb355a4",
+      "id": "0c1f0444-2175-411a-804f-92f6ef229648",
       "hasAnomaly": false
     },
     {
@@ -1905,7 +1905,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "f3129616-2162-4f56-af3b-67bb07d08893",
+      "id": "7dde1209-c54b-4944-83b9-f850e24c9dac",
       "hasAnomaly": false
     },
     {
@@ -1917,7 +1917,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "f151c586-8634-45e2-98db-42fcdde716f7",
+      "id": "9183d65d-cee5-48a0-9947-9579bc3ddd47",
       "hasAnomaly": false
     },
     {
@@ -1929,7 +1929,7 @@
       "elementiDentali": "15",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 25,
-      "id": "24463add-f467-451e-83fb-e70639e71c84",
+      "id": "0d4208c2-edef-482a-8d2f-d1ad682d71fe",
       "hasAnomaly": false
     },
     {
@@ -1941,7 +1941,7 @@
       "elementiDentali": "45",
       "prezzoAlPaziente": 300,
       "compensoOperatore": 75,
-      "id": "e047b8e7-8592-4ce6-b3ca-4ff4a0482c37",
+      "id": "6fa938fa-edff-410b-84cf-c92e1151f705",
       "hasAnomaly": false
     },
     {
@@ -1953,7 +1953,7 @@
       "elementiDentali": "38",
       "prezzoAlPaziente": 500,
       "compensoOperatore": 150,
-      "id": "02c2e362-6aae-4869-b73d-0c78a3d8b67a",
+      "id": "d8da2d1a-bc6f-40b3-81ce-2137aceba226",
       "hasAnomaly": false
     },
     {
@@ -1965,7 +1965,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "1f869a92-74f4-40d8-9bc6-44c119bf012b",
+      "id": "b55cb350-7d62-4e32-9317-426fb37ebf05",
       "hasAnomaly": false
     },
     {
@@ -1977,7 +1977,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "8a87f87e-ca45-4733-8c7b-9265f7b691cd",
+      "id": "1263a72b-309d-4330-94fe-5690933bf58e",
       "hasAnomaly": false
     },
     {
@@ -1989,7 +1989,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "f8007369-1934-4f6f-a476-e4d34ac02b4f",
+      "id": "ba3e8208-2ab0-4943-a58e-fb51fdb7c1de",
       "hasAnomaly": false
     },
     {
@@ -2001,7 +2001,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "b57cabeb-f6ee-492f-84b2-4a4016d67512",
+      "id": "f45164fe-bb95-4a50-9e82-e942bb8c6501",
       "hasAnomaly": false
     },
     {
@@ -2013,7 +2013,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 24,
-      "id": "654689b3-b43b-484c-85c7-963c67aeaee5",
+      "id": "4ba575ea-ab90-4684-8d5f-7d193280a0df",
       "hasAnomaly": false
     },
     {
@@ -2025,7 +2025,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "6436b70d-4a9d-43b1-9922-a02768860825",
+      "id": "670fec4e-58d4-4201-bdff-e69ff0807f64",
       "hasAnomaly": false
     },
     {
@@ -2037,7 +2037,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "639d82cb-6971-4053-82bc-a63b2c9c1175",
+      "id": "7a0a44f3-2bc0-48d0-a492-06ac3f8c8ddb",
       "hasAnomaly": false
     },
     {
@@ -2049,7 +2049,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "a3f7a7e6-3093-47bb-9869-41c7f3a175b1",
+      "id": "6fa04139-4831-4642-9289-f7fc7f9c5320",
       "hasAnomaly": false
     },
     {
@@ -2061,7 +2061,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "7e03420b-603f-460e-b045-8260d958e6bd",
+      "id": "eede5618-bfa1-492f-9a32-3c07c5019f98",
       "hasAnomaly": false
     },
     {
@@ -2073,7 +2073,7 @@
       "elementiDentali": "64",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 15,
-      "id": "650f56c0-8220-473d-8013-06aeb2e2fc7f",
+      "id": "386e91c8-b61b-46de-80f6-38087f7f389b",
       "hasAnomaly": false
     },
     {
@@ -2085,7 +2085,7 @@
       "elementiDentali": "65",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 15,
-      "id": "0b3bd8e9-828f-4907-87d3-6c0fa07040d8",
+      "id": "7e7fbf6b-d4b2-41c0-993b-9f474025404a",
       "hasAnomaly": false
     },
     {
@@ -2097,7 +2097,7 @@
       "elementiDentali": "64",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 24,
-      "id": "23e16ecb-cf07-41ee-a06b-2540313b573b",
+      "id": "34f7f023-690b-40fc-8fad-0229cf217b6f",
       "hasAnomaly": false
     },
     {
@@ -2109,7 +2109,7 @@
       "elementiDentali": "31-33,41-43",
       "prezzoAlPaziente": 250,
       "compensoOperatore": 75,
-      "id": "8bf07e2a-3d5d-4d58-8bcd-e0c0880727f8",
+      "id": "b4a43a1d-3dc3-44f7-b372-a4b157f17a06",
       "hasAnomaly": false
     },
     {
@@ -2121,7 +2121,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 80,
       "compensoOperatore": 22,
-      "id": "0cdcc445-4021-46eb-bcc0-1f5c8a3fd04d",
+      "id": "47010c12-fb41-47c7-98f0-e89cfd90f279",
       "hasAnomaly": false
     },
     {
@@ -2133,7 +2133,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 100,
       "compensoOperatore": 27,
-      "id": "c3518dd6-17d1-4a46-ab77-81a113f5bdab",
+      "id": "954249fd-8398-4a94-a498-66c1f181655e",
       "hasAnomaly": false
     },
     {
@@ -2145,7 +2145,7 @@
       "elementiDentali": "46",
       "prezzoAlPaziente": 500,
       "compensoOperatore": 75,
-      "id": "af062a31-4b1f-44ec-bf50-bf7da9f84081",
+      "id": "1f804361-9656-47e3-ba97-0144aae54e6c",
       "hasAnomaly": false
     },
     {
@@ -2157,7 +2157,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "25deac5a-31c1-474f-8652-2c02b2230a1d",
+      "id": "e196d8bf-903d-4394-a487-f9c2faf5cbca",
       "hasAnomaly": false
     },
     {
@@ -2169,7 +2169,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 0,
       "compensoOperatore": 10,
-      "id": "ba64f32a-79d0-4a6a-a76e-04535307e458",
+      "id": "b68d44c4-f807-4a10-bef9-5534f0c4c33c",
       "hasAnomaly": false
     },
     {
@@ -2181,7 +2181,7 @@
       "elementiDentali": "*",
       "prezzoAlPaziente": 50,
       "compensoOperatore": 0,
-      "id": "74df36a8-98dd-481f-863d-a5c0568c3020",
+      "id": "cc7e405d-ecae-4d4b-9f66-1f5da0dbdaff",
       "hasAnomaly": false
     },
     {
@@ -2193,7 +2193,7 @@
       "elementiDentali": "36",
       "prezzoAlPaziente": 70,
       "compensoOperatore": 60,
-      "id": "ad7fa6f9-9854-450a-bbff-38f45a2abd3d",
+      "id": "c6472eff-b9f4-4660-8d0c-5e5314900868",
       "hasAnomaly": false
     },
     {
@@ -2205,7 +2205,7 @@
       "elementiDentali": "48",
       "prezzoAlPaziente": 70,
       "compensoOperatore": 60,
-      "id": "1033c9ac-c722-4346-aea5-13b6800991af",
+      "id": "53ae59b7-deda-4531-a89c-f6025269c29e",
       "hasAnomaly": false
     },
     {
@@ -2217,7 +2217,7 @@
       "elementiDentali": "34",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 24,
-      "id": "43757caf-579b-4045-972f-f2f2b286054f",
+      "id": "d693f578-0d18-4889-813f-b6d1833f6791",
       "hasAnomaly": false
     },
     {
@@ -2229,7 +2229,7 @@
       "elementiDentali": "44",
       "prezzoAlPaziente": 120,
       "compensoOperatore": 24,
-      "id": "c09f9028-3fd1-4d0f-8226-cbd4a6e98f12",
+      "id": "21dbdc35-4c55-4472-be6b-cd2f28fd3fd9",
       "hasAnomaly": false
     }
   ],
@@ -13449,6 +13449,2246 @@
       ],
       "id": "2e11f1d3-0423-4484-8ef7-c47d650c843a",
       "createdAt": "2026-01-25T12:06:59.362Z"
+    },
+    {
+      "name": "Analisi Maggio 2025",
+      "dateRange": "Maggio 2025",
+      "records": [
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "FIORENZA VENUSIA",
+          "prestazione": "Build-Up",
+          "elementiDentali": "15",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 30,
+          "id": "fe095301-5b7a-4566-96d5-328aab5cd235",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "FIORENZA VENUSIA",
+          "prestazione": "Build-Up",
+          "elementiDentali": "17",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 30,
+          "id": "14d5cf7b-c3b5-44aa-a14f-50fa621d9e44",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "BANCHERO MARIA LUISA",
+          "prestazione": "n.1 perno radicolare",
+          "elementiDentali": "45",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 30,
+          "id": "e2e7970e-dd22-4aaf-b8ad-370846980676",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "BANCHERO MARIA LUISA",
+          "prestazione": "Ricostruzione moncone in composito",
+          "elementiDentali": "45",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 45,
+          "id": "bd33f6ec-5dd0-4c7e-9839-d53be65c402d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "BANCHERO MARIA LUISA",
+          "prestazione": "Build-Up",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 36,
+          "id": "62d0ff19-d649-4402-a1f9-243e416d7bc0",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "BANCHERO MARIA LUISA",
+          "prestazione": "Otturazione semplice I classe",
+          "elementiDentali": "47",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 36,
+          "id": "7e0d5ec5-f504-4274-844d-ea76511ac48c",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "CANEVA EGIDIO",
+          "prestazione": "Intarsio overlay in composito",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 400,
+          "compensoOperatore": 90,
+          "id": "ed9f7770-4bc3-489d-a05a-293e7f51bbf8",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "PANDOLFO ALBERTO",
+          "prestazione": "Otturazione II classe OM",
+          "elementiDentali": "28",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 39,
+          "id": "8d8f0ccf-d1e8-4aaf-adf9-4e2c5668064d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "GRASSO GIORGIO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "c9a1bd85-e2e2-4967-be26-e3d4f0f4331c",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "POMILLA BERNARDA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "dd95ace9-9b39-4e50-bca3-e508b509acb2",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "GRASSI LIDO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "4c5dedfe-17c7-4ad8-9c60-4efe090f9d67",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "DALPIAN MARIA ENRICA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "f46364aa-8515-4325-8fc7-2b84b395ec3d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "VALLOME GIACOMO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "9251ecd5-356c-4fdf-aeb0-7835027dd502",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "LANATA MATHIAS",
+          "prestazione": "Seduta di igiene pediatrica",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "8dce7513-e9a2-4123-878c-7c980f5ede62",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "LANATA MANUEL",
+          "prestazione": "Seduta di igiene pediatrica",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "20e5e8e3-00a5-462b-b38d-c5161768f8c3",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "BUDDS NEVA",
+          "prestazione": "Fluoroprofilassi",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 30,
+          "compensoOperatore": 8,
+          "id": "9ab4300a-9834-4c21-b4f5-a472c45beec0",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "05/05/25",
+          "operatore": "LARA",
+          "paziente": "BUDDS NEVA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 60,
+          "compensoOperatore": 27,
+          "id": "26e0e1f3-64d7-4b94-a7d5-ba9903be788a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "06/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MEGGETTO BARBARA",
+          "prestazione": "Impianto osteointegrato",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 800,
+          "compensoOperatore": 200,
+          "id": "48088b1a-ba21-430f-a34b-39dbb9205ae3",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "ROMANO",
+          "paziente": "PROVENZANO CHIARA",
+          "prestazione": "Apparecchio di contenzione Invisalign Vivera",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 500,
+          "compensoOperatore": 150,
+          "id": "44b52486-6a73-4582-9a17-b1d0b01a14f3",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MOLINARI DANIELA",
+          "prestazione": "Corona provvisoria in resina ribasata",
+          "elementiDentali": "16",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 30,
+          "id": "4135ed6e-7e5a-4259-8545-6acaa27ab32d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MOLINARI DANIELA",
+          "prestazione": "Corona provvisoria in resina ribasata",
+          "elementiDentali": "17",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 30,
+          "id": "82c9262a-7243-4077-b4c1-535ee320d23b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "MARTINA",
+          "paziente": "VERBICKA JULIJA",
+          "prestazione": "Otturazione II classe MOD",
+          "elementiDentali": "37",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 45,
+          "id": "ddceb169-0bc8-4012-b8cc-2867ec44ad2b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "MARTINA",
+          "paziente": "VERBICKA JULIJA",
+          "prestazione": "Otturazione semplice II classe OD",
+          "elementiDentali": "35",
+          "prezzoAlPaziente": 130,
+          "compensoOperatore": 33,
+          "id": "791567d0-32a2-4c14-9f40-03047e8b4070",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "MARTINA",
+          "paziente": "D'AMBROSA CHIARA MARIA",
+          "prestazione": "Otturazione II classe OM",
+          "elementiDentali": "37",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "d70d92e6-d3a5-425f-a6ab-4c8ea0378719",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "D'ASTE RICCARDO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "bcd9fbe8-2619-4bf7-95a0-94aabe253b1a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "SACCHI CECILIA",
+          "prestazione": "Seduta di igiene di mantenimento alta frequenza",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "a6a1150f-905e-42e8-8e35-cdf2028c18cb",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "DEVOTO FEDERICA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "19c947fc-0fd2-4a1a-813f-4af045f2847b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "FONTANELLA PAOLA",
+          "prestazione": "Seduta di igiene di mantenimento",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "e1cd24bf-7ffb-48ea-b9e3-9861daa308a5",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "LASAGNA BARBARA",
+          "prestazione": "Seduta di igiene di mantenimento",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "77c45c01-c28f-4992-bb36-23c546e98824",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "MARTINA",
+          "paziente": "BOVO DANIELA DORA",
+          "prestazione": "Otturazione IV classe D",
+          "elementiDentali": "12",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "84cb4303-4ad3-405b-a686-985ad208cfbd",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MOLINARI DANIELA",
+          "prestazione": "Otturazione provvisoria in vetroionomero",
+          "elementiDentali": "16",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 15,
+          "id": "242c66fc-bb8d-412c-831d-abc16b597008",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "ROMANO",
+          "paziente": "PARODI BENEDETTA",
+          "prestazione": "RX Ortopanoramica",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 15,
+          "id": "c36e2a7d-df89-4e94-80a4-0f2584f16f3d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "ROMANO",
+          "paziente": "PARODI BENEDETTA",
+          "prestazione": "RX laterale del cranio",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 50,
+          "id": "634da855-7c0d-4293-b8f5-93e443b1aa6e",
+          "hasAnomaly": true
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "07/05/25",
+          "operatore": "MARTINA",
+          "paziente": "GONZALEZ BOMBINO ANEISY",
+          "prestazione": "Otturazione II classe OD",
+          "elementiDentali": "33",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "a664a466-1d41-4297-a231-d3d0a1c8558b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "LARA",
+          "paziente": "NORI LORENZO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "23d52a57-2a91-4b21-bf52-52e112e6c7f8",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "JAHN JUNA",
+          "prestazione": "Bite funzionalizzato",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 400,
+          "compensoOperatore": 50,
+          "id": "b28673ea-2060-41d7-b2d1-5b466a444b7a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "ROBUSTI CAMILLA",
+          "prestazione": "Estrazione terzo molare",
+          "elementiDentali": "48",
+          "prezzoAlPaziente": 500,
+          "compensoOperatore": 105,
+          "id": "015c793d-350c-4ae7-ad9b-1e9845da8266",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "LARA",
+          "paziente": "PAPALIA ANTONIO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "ad3af3e1-0600-4324-874a-f01644c2067a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "LARA",
+          "paziente": "TROMPETTO VALERIA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "b213a641-7216-4819-8d6b-974ff6eaff81",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "LARA",
+          "paziente": "BENVENUTO NICOLO'",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "c5b820ff-5be5-43c1-b7c1-3c17ad17d7e6",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "LARA",
+          "paziente": "BERTOCCHI DAVIDE",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "f41594fd-0a06-4319-9127-d1d91830184b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "LARA",
+          "paziente": "GANDOLFO SUSANNA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "45e3d6a2-bdc9-43ed-9e3d-93041776ac81",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "LARA",
+          "paziente": "NORI LORENZO",
+          "prestazione": "Fluoroprofilassi",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 30,
+          "compensoOperatore": 8,
+          "id": "ca3b9e47-7a0d-40da-bc6f-0fc84283cf45",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "08/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MEGGETTO BARBARA",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "407ee457-91ae-4d14-92a6-95c19b2581b3",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "MASSIMO RAFFAELLA",
+          "prestazione": "Intarsio overlay disilicato di litio",
+          "elementiDentali": "26",
+          "prezzoAlPaziente": 500,
+          "compensoOperatore": 105,
+          "id": "779b2ed9-bc0d-4906-b1a1-84113574a6cc",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "SPITERI SILVIA",
+          "prestazione": "Otturazione II classe OM",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "2dc74b2c-e270-4e70-bc2f-b7ba453342ad",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "EDOARDO SML",
+          "paziente": "ZACCARIA NICOLO'",
+          "prestazione": "Ribasatura indiretto protesi rimovibile",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 37.5,
+          "id": "7a6a17e4-0efc-4376-8f95-2f80c57f1bf9",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "MOLINARI DANIELA",
+          "prestazione": "Ritrattamento canalare 3",
+          "elementiDentali": "17",
+          "prezzoAlPaziente": 350,
+          "compensoOperatore": 105,
+          "id": "8918adf8-b9cb-4cb8-a6bb-9476c447448b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "CASTAGNOLA DAVIDE",
+          "prestazione": "Otturazione semplice II classe OD",
+          "elementiDentali": "24",
+          "prezzoAlPaziente": 130,
+          "compensoOperatore": 39,
+          "id": "ef4d6330-f9c6-4480-8101-be78bd155bee",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "CASTAGNOLA DAVIDE",
+          "prestazione": "Otturazione II classe OD",
+          "elementiDentali": "25",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "e7729168-48f0-4265-9aa0-0725b53d2f26",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "CASTAGNOLA DAVIDE",
+          "prestazione": "Otturazione II classe OM",
+          "elementiDentali": "27",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "94dc5b42-a8a6-42a4-b4b3-e14c9087a59e",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "LOCONTE MAURIZIO",
+          "prestazione": "Build-Up",
+          "elementiDentali": "27",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 24,
+          "id": "d15729d0-95c3-4e36-a1c7-36d060bd78bd",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "VENTURINO FRANCESCA",
+          "prestazione": "Ritrattamento canalare 3",
+          "elementiDentali": "47",
+          "prezzoAlPaziente": 350,
+          "compensoOperatore": 75,
+          "id": "56899035-766e-4b02-a9c3-d6480c89e420",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "12/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "BERTOCCHI DAVIDE",
+          "prestazione": "Otturazione semplice V classe",
+          "elementiDentali": "21",
+          "prezzoAlPaziente": 130,
+          "compensoOperatore": 39,
+          "id": "126612fa-ef2d-4e45-89dd-e00d14a9f95f",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "BITUNI STIVI",
+          "prestazione": "Seduta di igiene di mantenimento",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "4a117ebf-5045-4608-aa8c-38bdb3ab9e04",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "REALE LAURA",
+          "prestazione": "Seduta di igiene semplice",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "e26dd529-815f-423c-88ab-662b1e827fd2",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "CONTU PAOLA",
+          "prestazione": "Seduta di Igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 24,
+          "id": "0723286d-12d1-4840-b2bb-9092921a171c",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MENNELLA ALESSANDRO",
+          "prestazione": "Intarsio onlay in disilicato di litio",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 500,
+          "compensoOperatore": 100,
+          "id": "c32e0e2c-9a5c-464b-9d3f-a123af480ec1",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PODESTA' DANIELE",
+          "prestazione": "RX Ortopanoramica",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "a9de0dd4-4019-4a29-9fea-c4b03d5d370b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "GROPPI FLAVIO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "24868722-803c-463c-8d5f-bd0d9503983c",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "GALLIZIA ANNALISA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "a1a606ee-b6cd-4b08-8f62-1b330374fe54",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "LYTVYNENKO VIKTOR",
+          "prestazione": "RX Ortopanoramica",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "9be4a226-71a9-4265-b5a6-4be3e5745aa9",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "RIZZO ROBERTO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "b875b7d0-7454-448b-bd7d-c405d9515086",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "REMAGNINO ANNA CARLA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "fcffbaab-56ba-4a23-ad0c-678dfcdf55ee",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "DE VIRGILIO PIETRO",
+          "prestazione": "Seduta di igiene di mantenimento alta frequenza",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "d92d195d-4e3b-4878-8738-46b31ccf3869",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "TRENTA DIEGO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "689241c8-df77-43c4-b910-1306acdd4f6d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "DELLEPIANE MICHELE",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "5f6d9e89-dcef-4dd4-947c-e59ca6a887e7",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PATRATTI GABRIELE",
+          "prestazione": "Rimozione corona",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "3cc05541-b29a-433f-ab55-7b1504e8ad24",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "13/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PATRATTI GABRIELE",
+          "prestazione": "Build-Up",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 15,
+          "id": "c91b5a22-1be1-4c45-97ef-2ce492c19bc0",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "MARTINA",
+          "paziente": "CONTU PAOLA",
+          "prestazione": "Otturazione IV classe D",
+          "elementiDentali": "11",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 45,
+          "id": "839c5495-74ea-4ddd-b8f4-4f6988fe86fc",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "MARTINA",
+          "paziente": "VERBICKA JULIJA",
+          "prestazione": "Otturazione semplice I classe",
+          "elementiDentali": "38",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 30,
+          "id": "f1d87573-92a4-49a1-a751-547fe4d3770a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "MARTINA",
+          "paziente": "VERBICKA JULIJA",
+          "prestazione": "Otturazione II classe OM",
+          "elementiDentali": "16",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 45,
+          "id": "78b0c6e5-f791-4209-b988-cad649fa3f9b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "MARTINA",
+          "paziente": "VERBICKA JULIJA",
+          "prestazione": "Otturazione I classe",
+          "elementiDentali": "17",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 36,
+          "id": "60f653e9-92c1-4e99-b1ef-8604aac75e9b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "MARTINA",
+          "paziente": "RUBINO ALISIA",
+          "prestazione": "Otturazione II classe OD",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 45,
+          "id": "b2043760-2343-4a8d-937d-6f124e692195",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "EDOARDO SML",
+          "paziente": "FERRARI ANTONELLA",
+          "prestazione": "Sostituzione dente su protesi rimovibile",
+          "elementiDentali": "34",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 25,
+          "id": "95861f84-d285-443d-966a-b2e7b5e5be14",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "EDOARDO SML",
+          "paziente": "FERRARI ANTONELLA",
+          "prestazione": "Sostituzione dente su protesi rimovibile",
+          "elementiDentali": "35",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 25,
+          "id": "ab85b816-7dbe-4a80-a330-47894a1da1bf",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "EDOARDO SML",
+          "paziente": "FERRARI ANTONELLA",
+          "prestazione": "Sostituzione dente su protesi rimovibile",
+          "elementiDentali": "44",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 25,
+          "id": "b4b1074e-9cf6-4c02-a580-77066039a6b8",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "EDOARDO SML",
+          "paziente": "FERRARI ANTONELLA",
+          "prestazione": "Sostituzione dente su protesi rimovibile",
+          "elementiDentali": "45",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 25,
+          "id": "1de964df-306b-454e-a615-d5ef04e1fb36",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "14/05/25",
+          "operatore": "MARTINA",
+          "paziente": "D'AMBROSA CHIARA MARIA",
+          "prestazione": "Otturazione II classe OD",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "5e29ff8d-a287-439b-b08e-d062f8e90945",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PAPALIA ANTONIO",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "0b574684-83fd-42b6-b13f-c0a3d104e340",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "BALDUCCI ROBERTO",
+          "prestazione": "Impianto osteointegrato",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 800,
+          "compensoOperatore": 200,
+          "id": "a667e3f6-5629-4a1b-ada2-89ed6fcc5d0a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "BALDUCCI ROBERTO",
+          "prestazione": "Estrazione radice",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 24,
+          "id": "d466f652-127c-4b2e-abad-73670912fa79",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "CANEPA LOREDANA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "db57726f-1be0-4c85-9f94-4f3b459ad6fe",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "SALA PATRIZIA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "bbe8925f-ec8c-4a37-bfc9-bb1c0020d1b3",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "CONTI ANGELO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "3c6e667e-d80f-4412-bd45-8ab1b96b9cd2",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "DINAPOLI RENATA",
+          "prestazione": "Seduta di igiene di mantenimento alta frequenza",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "43d421fd-8d25-4a86-ab2b-070b934cc396",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "CEPALE GIORGIO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "867f3b4b-cb4e-4710-88d3-753485ed742e",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "URIBE FARFAN CYNTHIA MIRELLA DE LOS ANGELES",
+          "prestazione": "Visita iniziale",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 0,
+          "compensoOperatore": 10,
+          "id": "919a106c-3ceb-42ed-9924-a2ec3992e7cc",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "15/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "URIBE FARFAN CYNTHIA MIRELLA DE LOS ANGELES",
+          "prestazione": "RX Ortopanoramica",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "3dde8604-87b4-4ce0-92d2-67f8687e3724",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "16/05/25",
+          "operatore": "LARA",
+          "paziente": "APORTIS ANDREA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "2a9dbb62-351e-4bb2-9bd1-7b5f6529d434",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "16/05/25",
+          "operatore": "LARA",
+          "paziente": "DE MEO TIZIANA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "f4dd4d6e-54d7-4840-93a3-1751a6f6e40b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "16/05/25",
+          "operatore": "LARA",
+          "paziente": "OSHIMA NAOKO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "5fc71cdd-3963-4b86-96f9-d3839a84e152",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "16/05/25",
+          "operatore": "LARA",
+          "paziente": "IACOMETTI CARLO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "4420f127-2c54-45d3-b2f8-9e637323d143",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "16/05/25",
+          "operatore": "LARA",
+          "paziente": "DOBOS ANAMARIA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "ba0af9d5-058e-44ce-8d74-1f716f6e33dd",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "16/05/25",
+          "operatore": "LARA",
+          "paziente": "GAMBERINI MARTA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "fe333745-0084-4a54-8ded-5adf4512758a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "MASSIMO RAFFAELLA",
+          "prestazione": "Otturazione V classe",
+          "elementiDentali": "23",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "451f5f70-6dfe-4fe3-9bee-6c5a4030502d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "MANELLI ANDREA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "eb391dae-a1d7-4904-aedf-fde163d4a3a6",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "FIORENZA VENUSIA",
+          "prestazione": "Build-Up",
+          "elementiDentali": "47",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 30,
+          "id": "d23c8836-3c7b-4f19-8bf4-6252cb0da945",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "CASTAGNOLA DAVIDE",
+          "prestazione": "Otturazione I classe",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 45,
+          "id": "cee2a5ea-3427-4148-881a-f2892ad67ed4",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "CASTAGNOLA DAVIDE",
+          "prestazione": "Otturazione I classe",
+          "elementiDentali": "47",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 45,
+          "id": "f5e97695-7008-4e47-a760-dcedfaf124cd",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "FANTASIA MATTEO",
+          "prestazione": "Otturazione semplice II classe OD",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 130,
+          "compensoOperatore": 39,
+          "id": "3e97ce29-05c4-40ed-9267-e8ce80cc3fea",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "VENTURINO FRANCESCA",
+          "prestazione": "Build-Up",
+          "elementiDentali": "47",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 30,
+          "id": "8c7988ef-4788-42dc-b6bd-c22f57251692",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "PASTORINO CARLOTTA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "a1cb9db9-8ab9-493a-8498-c1758ab72ec4",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "BACIGALUPO ENRICA MARCELLA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "9793d601-1530-4e80-9452-74851df01ca3",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "FARINA ANTONINA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "59997a27-b59c-4abd-b54a-9b1fe6b2d883",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "ELETTO BRUNA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "356e405f-34d1-42d4-b4c0-5caf7551d20a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "ROVINALTI GRAZIANO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "759e27a5-8c49-4117-bc77-e8c12a44c5b5",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "MACHELLO NICOLETTA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "7f91199e-df59-4212-b4bd-8fdce901ed23",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "LARA",
+          "paziente": "GIORDANO ERICA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "7e01e18f-3123-486f-9ad1-75e571bb9a20",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "GALLIZIA ANNALISA",
+          "prestazione": "Otturazione II classe OD",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 37.5,
+          "id": "cb7bd13c-16b7-427b-ab2a-d78d9a63dc39",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "MASSIMO RAFFAELLA",
+          "prestazione": "Otturazione V classe",
+          "elementiDentali": "24",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "27724b81-e7d9-4a1f-8b67-b71ee826f721",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "MASSIMO RAFFAELLA",
+          "prestazione": "Otturazione V classe",
+          "elementiDentali": "25",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "380926f6-1f43-489d-8e81-d005434d79d2",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "MASSIMO RAFFAELLA",
+          "prestazione": "Otturazione V classe",
+          "elementiDentali": "26",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 52.5,
+          "id": "070198d8-0449-4a38-9361-8358d349c880",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "NORDMAN SOFIA",
+          "prestazione": "fase Inizio di Terapia ortodontica Invisalign Lite 2 arcate",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 3,
+          "compensoOperatore": 300,
+          "id": "95732864-df26-45a1-8e3b-299871b5a9d3",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "19/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "NORDMAN SOFIA",
+          "prestazione": "fase Fine di Terapia ortodontica Invisalign Lite 2 arcate",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 3,
+          "compensoOperatore": 0,
+          "id": "d4d73c44-14ae-4ae8-8be4-7b6e5cc05448",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Estrazione",
+          "elementiDentali": "14",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 0,
+          "id": "a1e6e921-c653-45f1-acdc-9179d2cd4246",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Estrazione",
+          "elementiDentali": "35",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 0,
+          "id": "b9c275c6-cc10-4703-8ad9-4dc9d8666747",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Impianto osteointegrato",
+          "elementiDentali": "14",
+          "prezzoAlPaziente": 800,
+          "compensoOperatore": 200,
+          "id": "ad293543-090b-4c5a-a105-602c0d16a205",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Impianto osteointegrato",
+          "elementiDentali": "35",
+          "prezzoAlPaziente": 800,
+          "compensoOperatore": 200,
+          "id": "615c829a-b149-45c0-aa0c-b22749dc04d9",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Impianto osteointegrato",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 800,
+          "compensoOperatore": 200,
+          "id": "20cef84f-a2b5-43c2-bbfb-74cf7efef59d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Impianto osteointegrato",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 800,
+          "compensoOperatore": 200,
+          "id": "aa9b025d-c5e0-4777-8b8a-9fa44c781487",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Impianto osteointegrato",
+          "elementiDentali": "45",
+          "prezzoAlPaziente": 800,
+          "compensoOperatore": 200,
+          "id": "1fa66ad5-1e0f-496d-874b-78d4c74e7509",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Osso allogenico S",
+          "elementiDentali": "14,35,45",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 0,
+          "id": "a6331025-fcd7-46f6-a105-6aa4a28f5476",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Estrazione",
+          "elementiDentali": "45",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 0,
+          "id": "6d8ab54c-f0e4-48e2-81a9-6c87b6819723",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "20/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "TOMMASI EDOARDO",
+          "prestazione": "Apparecchio di contenzione (essix) - 1 arcata",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 45,
+          "id": "f85d26f5-ea43-4c11-91c8-e07680503b55",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "MARTINA",
+          "paziente": "SACCHINI EMANUELA",
+          "prestazione": "Intarsio onlay in disilicato di litio",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 500,
+          "compensoOperatore": 100,
+          "id": "26f4ad64-4305-4423-a28e-5a80ae84cd05",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "BARLOW ROGER MALCOM",
+          "prestazione": "Urgenza",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 30,
+          "id": "7b83c797-f2c9-4083-a421-a5d795dd51b8",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "BARLOW ROGER MALCOM",
+          "prestazione": "RX endorale",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 30,
+          "compensoOperatore": 0,
+          "id": "7784042d-3e58-40e8-b722-19618e1d256a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PICIERRO LILIANA",
+          "prestazione": "Riparazione corona diretta",
+          "elementiDentali": "23",
+          "prezzoAlPaziente": 150,
+          "compensoOperatore": 36,
+          "id": "dfa916b7-71c1-49e5-aea7-1e3e793a0f3e",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "D'ASTE MICHELA",
+          "prestazione": "Seduta di igiene di mantenimento",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "24047de2-1c80-4346-917e-fbbd6364f156",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "SPILOTROS ROBERTO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "48ded3e0-0078-4d58-85b4-0972fb0dd6d1",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "GNECCO LAURA",
+          "prestazione": "Seduta di igiene di mantenimento alta frequenza",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "e33a610a-b1cd-4c0d-8cee-99fe700a55ba",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EMMA SML",
+          "paziente": "BELLA ALESSANDRA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "ac5077d3-ed7a-4f5b-84dc-07861665a36d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "MARTINA",
+          "paziente": "MACHELLO NICOLETTA",
+          "prestazione": "Otturazione semplice II classe OD",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 130,
+          "compensoOperatore": 39,
+          "id": "bdd557a3-04bc-48ec-a8ec-7c8e4480f164",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "21/05/25",
+          "operatore": "EDOARDO SML",
+          "paziente": "GIAMBELLUCA  SANTI PEPPINO",
+          "prestazione": "fase Fine di Terapia ortodontica fissa convenzionale 1° anno",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 1.8,
+          "compensoOperatore": 0,
+          "id": "87042119-1dc6-4f1e-8ca4-3f5243826f2d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "22/05/25",
+          "operatore": "LARA",
+          "paziente": "CANALINI ALICE",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 24,
+          "id": "b9d50ac2-a81d-4175-b7f3-8496f687e9db",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "22/05/25",
+          "operatore": "LARA",
+          "paziente": "ROMEO FRANCESCA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "755cdbe9-56fb-4703-8e2d-a4551b812838",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "22/05/25",
+          "operatore": "LARA",
+          "paziente": "DEMMI GIUSEPPINA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "701742f5-ff51-499e-af78-b0f3233a3cd9",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "22/05/25",
+          "operatore": "LARA",
+          "paziente": "TRAVERSO ALESSANDRO",
+          "prestazione": "Seduta di igiene a fine trattamento ortodontico",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "1b8074a9-0708-4942-9c0a-f21580d648da",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "22/05/25",
+          "operatore": "LARA",
+          "paziente": "MARTINO FRANCESCO GIUSEPPE",
+          "prestazione": "Sbiancamento professionale completo",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 400,
+          "compensoOperatore": 316,
+          "id": "a2ec2b3a-5a03-495e-9515-8450a22b5d74",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "22/05/25",
+          "operatore": "LARA",
+          "paziente": "GHIGINO UMBERTINA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "8f1926c2-f6d7-41e6-8bb6-f6834e2ad5ca",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "23/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "FERROGGIARO GIORGIA",
+          "prestazione": "Estrazione terzo molare complessa",
+          "elementiDentali": "38",
+          "prezzoAlPaziente": 400,
+          "compensoOperatore": 90,
+          "id": "30880f98-bf7d-4af4-b6dc-ff1710496d54",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "23/05/25",
+          "operatore": "ROMANO",
+          "paziente": "ORLANNO GIORGIA",
+          "prestazione": "fase Fine di Terapia ortodontica fissa 1° anno",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 2.2,
+          "compensoOperatore": 0,
+          "id": "1b355605-5d70-4ee6-be5e-6337885ea2af",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "25/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MARTINO ANGELO ROMANO",
+          "prestazione": "Otturazione V classe",
+          "elementiDentali": "14",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 0,
+          "id": "db5f7e64-08ea-4cfc-91f1-faee10a6ae37",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "25/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MARTINO ANGELO ROMANO",
+          "prestazione": "Otturazione V classe",
+          "elementiDentali": "13",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 0,
+          "id": "a71f455a-9be2-4b1d-84b8-41ef1222de09",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "25/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "MARTINO ANGELO ROMANO",
+          "prestazione": "Otturazione V classe",
+          "elementiDentali": "15",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 0,
+          "id": "a4097612-55a7-49d4-aa91-2aad22408211",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "LOCONTE MAURIZIO",
+          "prestazione": "Medicazione canalare",
+          "elementiDentali": "31",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "973c6395-7b7a-4263-8a3d-ecddc2c268e6",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "LOCONTE MAURIZIO",
+          "prestazione": "Medicazione canalare",
+          "elementiDentali": "32",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "78b4f7b5-61d4-4057-b6dd-2d2fccb2aae7",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "LOCONTE MAURIZIO",
+          "prestazione": "Trattamento canali radicolari intermedio 1",
+          "elementiDentali": "31",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 9,
+          "id": "7019c156-696d-46b9-a922-dabaefb9a223",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "LOCONTE MAURIZIO",
+          "prestazione": "Trattamento canali radicolari intermedio 1",
+          "elementiDentali": "32",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 9,
+          "id": "a47717f9-6443-4cf7-afb0-5a91ac2492a9",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "LOCONTE MAURIZIO",
+          "prestazione": "Trattamento canalare 1",
+          "elementiDentali": "31",
+          "prezzoAlPaziente": 200,
+          "compensoOperatore": 36,
+          "id": "897d4700-e852-4606-95bd-a54b8480c9b6",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "LOCONTE MAURIZIO",
+          "prestazione": "Trattamento canalare 1",
+          "elementiDentali": "32",
+          "prezzoAlPaziente": 200,
+          "compensoOperatore": 36,
+          "id": "d7061de2-1996-45d2-9f8a-d84e565734db",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "VENTURINO FRANCESCA",
+          "prestazione": "Otturazione II classe OD",
+          "elementiDentali": "25",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 45,
+          "id": "b3133264-4079-4fab-b28c-d39b50a98e56",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "VENTURINO FRANCESCA",
+          "prestazione": "Otturazione II classe OD",
+          "elementiDentali": "26",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 45,
+          "id": "2d9e2206-2fbf-4ad7-bf09-ebcfdef5faa5",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "26/05/25",
+          "operatore": "FRANCESCA GE",
+          "paziente": "VENTURINO FRANCESCA",
+          "prestazione": "Otturazione II classe OM",
+          "elementiDentali": "27",
+          "prezzoAlPaziente": 175,
+          "compensoOperatore": 45,
+          "id": "69c0c815-3688-429e-9f05-8fdd039b96bc",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "14",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "e4b85070-1477-4fa3-a670-c4b970d0c882",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "16",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "278bda59-6154-4b2c-814a-4333e0339fa8",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "35",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "ea9931cd-c56b-4ab8-b6b5-670cdcb355a4",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "f3129616-2162-4f56-af3b-67bb07d08893",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "f151c586-8634-45e2-98db-42fcdde716f7",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Elemento di ponte provvisorio in resina",
+          "elementiDentali": "15",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 25,
+          "id": "24463add-f467-451e-83fb-e70639e71c84",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PARDINI ANGELA ANTONIETTA",
+          "prestazione": "Corona avvitata provvisoria in resina",
+          "elementiDentali": "45",
+          "prezzoAlPaziente": 300,
+          "compensoOperatore": 75,
+          "id": "e047b8e7-8592-4ce6-b3ca-4ff4a0482c37",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "BOZZO JACOPO",
+          "prestazione": "Estrazione terzo molare",
+          "elementiDentali": "38",
+          "prezzoAlPaziente": 500,
+          "compensoOperatore": 150,
+          "id": "02c2e362-6aae-4869-b73d-0c78a3d8b67a",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "PROVENZANO CHIARA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "1f869a92-74f4-40d8-9bc6-44c119bf012b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "CANEVA EGIDIO",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "8a87f87e-ca45-4733-8c7b-9265f7b691cd",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "PASTORINO SIMONETTA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "f8007369-1934-4f6f-a476-e4d34ac02b4f",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "PINOTTI ROBERTA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "b57cabeb-f6ee-492f-84b2-4a4016d67512",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "GHELLI CAMILLA",
+          "prestazione": "Seduta di Igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 24,
+          "id": "654689b3-b43b-484c-85c7-963c67aeaee5",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "BOLOGNESI MARIA-BEATRICE",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "6436b70d-4a9d-43b1-9922-a02768860825",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "VALLEBONA ARIANNA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "639d82cb-6971-4053-82bc-a63b2c9c1175",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "GALUPPI ALESSANDRA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "a3f7a7e6-3093-47bb-9869-41c7f3a175b1",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "27/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "BRESCIA ROSARIA",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "7e03420b-603f-460e-b045-8260d958e6bd",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "28/05/25",
+          "operatore": "FRANCESCA SML",
+          "paziente": "KARUNAKARAN MATHURIYAN",
+          "prestazione": "Otturazione dente deciduo semplice",
+          "elementiDentali": "64",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 15,
+          "id": "650f56c0-8220-473d-8013-06aeb2e2fc7f",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "28/05/25",
+          "operatore": "FRANCESCA SML",
+          "paziente": "KARUNAKARAN MATHURIYAN",
+          "prestazione": "Otturazione dente deciduo semplice",
+          "elementiDentali": "65",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 15,
+          "id": "0b3bd8e9-828f-4907-87d3-6c0fa07040d8",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "28/05/25",
+          "operatore": "FRANCESCA SML",
+          "paziente": "SATHEESVARAN KASVEKAN",
+          "prestazione": "Otturazione dente deciduo",
+          "elementiDentali": "64",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 24,
+          "id": "23e16ecb-cf07-41ee-a06b-2540313b573b",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "28/05/25",
+          "operatore": "FRANCESCA SML",
+          "paziente": "MILZI ALESSANDRA",
+          "prestazione": "Splintaggio diretto armato con fibra di vetro",
+          "elementiDentali": "31-33,41-43",
+          "prezzoAlPaziente": 250,
+          "compensoOperatore": 75,
+          "id": "8bf07e2a-3d5d-4d58-8bcd-e0c0880727f8",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "29/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "MIGLIACCIO PATRIZIA",
+          "prestazione": "Seduta di igiene semplice",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 80,
+          "compensoOperatore": 22,
+          "id": "0cdcc445-4021-46eb-bcc0-1f5c8a3fd04d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "29/05/25",
+          "operatore": "EMMA GE",
+          "paziente": "RAIS ANDRE'",
+          "prestazione": "Seduta di igiene",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 100,
+          "compensoOperatore": 27,
+          "id": "c3518dd6-17d1-4a46-ab77-81a113f5bdab",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "29/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "PATRATTI GABRIELE",
+          "prestazione": "Intarsio onlay in disilicato di litio",
+          "elementiDentali": "46",
+          "prezzoAlPaziente": 500,
+          "compensoOperatore": 75,
+          "id": "af062a31-4b1f-44ec-bf50-bf7da9f84081",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "29/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "TENORIO MEDINA GUSTAVO ADOLFO",
+          "prestazione": "RX Ortopanoramica",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "25deac5a-31c1-474f-8652-2c02b2230a1d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "29/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "TENORIO MEDINA GUSTAVO ADOLFO",
+          "prestazione": "Visita iniziale",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 0,
+          "compensoOperatore": 10,
+          "id": "ba64f32a-79d0-4a6a-a76e-04535307e458",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "29/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "TENORIO MEDINA GUSTAVO ADOLFO",
+          "prestazione": "RX ATM",
+          "elementiDentali": "*",
+          "prezzoAlPaziente": 50,
+          "compensoOperatore": 0,
+          "id": "74df36a8-98dd-481f-863d-a5c0568c3020",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "30/05/25",
+          "operatore": "SILVIA",
+          "paziente": "CAGNES LUCA",
+          "prestazione": "Sigillatura solchi",
+          "elementiDentali": "36",
+          "prezzoAlPaziente": 70,
+          "compensoOperatore": 60,
+          "id": "ad7fa6f9-9854-450a-bbff-38f45a2abd3d",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "30/05/25",
+          "operatore": "SILVIA",
+          "paziente": "CAGNES LUCA",
+          "prestazione": "Sigillatura solchi",
+          "elementiDentali": "48",
+          "prezzoAlPaziente": 70,
+          "compensoOperatore": 60,
+          "id": "1033c9ac-c722-4346-aea5-13b6800991af",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "30/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "ROBUSTI CAMILLA",
+          "prestazione": "Estrazione",
+          "elementiDentali": "34",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 24,
+          "id": "43757caf-579b-4045-972f-f2f2b286054f",
+          "hasAnomaly": false
+        },
+        {
+          "categoriaCompenso": "card",
+          "data": "30/05/25",
+          "operatore": "EDOARDO GE",
+          "paziente": "ROBUSTI CAMILLA",
+          "prestazione": "Estrazione",
+          "elementiDentali": "44",
+          "prezzoAlPaziente": 120,
+          "compensoOperatore": 24,
+          "id": "c09f9028-3fd1-4d0f-8226-cbd4a6e98f12",
+          "hasAnomaly": false
+        }
+      ],
+      "id": "9772ee91-dd33-47f2-bb79-735738430987",
+      "createdAt": "2026-01-25T12:19:32.085Z"
     }
   ]
 }

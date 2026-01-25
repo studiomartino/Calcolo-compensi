@@ -700,7 +700,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                 Pagamento a Giornata
               </div>
               {selectedDailyOperator && (
-                <span className="text-base font-semibold bg-muted/50 px-3 py-1 rounded-lg pl-[20px] pr-[20px]">
+                <span className="text-base font-semibold bg-muted/50 px-3 py-1 rounded-lg pl-[20px] pr-[20px] ml-[30px] mr-[30px]">
                   {selectedDailyOperator}
                 </span>
               )}
