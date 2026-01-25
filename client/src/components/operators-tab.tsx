@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronDown, ChevronRight, Palette, Search, FileText, Calendar } from "lucide-react";
+import { ChevronDown, ChevronRight, Palette, Search, FileText, Calendar, CreditCard, Banknote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -258,6 +258,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
     const totalCompensation = records.reduce((sum, r) => sum + r.compensoOperatore, 0);
     const totalCompensationA = records.filter((r) => r.categoriaCompenso === "card").reduce((sum, r) => sum + r.compensoOperatore, 0);
     const totalCompensationB = records.filter((r) => r.categoriaCompenso === "cash").reduce((sum, r) => sum + r.compensoOperatore, 0);
+    const totalStudioEarnings = records.reduce((sum, r) => sum + r.prezzoAlPaziente, 0);
+    const totalStudioEarningsA = records.filter((r) => r.categoriaCompenso === "card").reduce((sum, r) => sum + r.prezzoAlPaziente, 0);
+    const totalStudioEarningsB = records.filter((r) => r.categoriaCompenso === "cash").reduce((sum, r) => sum + r.prezzoAlPaziente, 0);
     
     return {
       totalCompensation,
@@ -266,6 +269,12 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
       avgCompensationA: totalCompensationA / monthsCount,
       totalCompensationB,
       avgCompensationB: totalCompensationB / monthsCount,
+      totalStudioEarnings,
+      avgStudioEarnings: totalStudioEarnings / monthsCount,
+      totalStudioEarningsA,
+      avgStudioEarningsA: totalStudioEarningsA / monthsCount,
+      totalStudioEarningsB,
+      avgStudioEarningsB: totalStudioEarningsB / monthsCount,
       totalPrestazioni: records.length,
       avgPrestazioni: records.length / monthsCount,
       totalGiornate: datesWorked.size,
@@ -449,46 +458,74 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                 Presente in {selectedOperator.totalAnalyses} {selectedOperator.totalAnalyses === 1 ? "analisi" : "analisi"}
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Compenso Totale</p>
-                  <p className="text-lg font-bold">{formatCurrency(filteredStats.totalCompensation)}</p>
+              <div className="space-y-3">
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Compenso Totale</p>
+                    <p className="text-sm font-bold">{formatCurrency(filteredStats.totalCompensation)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Compenso Cat. A Totale</p>
+                    <p className="text-sm font-bold text-blue-600">{formatCurrency(filteredStats.totalCompensationA)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Compenso Cat. B Totale</p>
+                    <p className="text-sm font-bold text-green-600">{formatCurrency(filteredStats.totalCompensationB)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Guadagno Studio Totale</p>
+                    <p className="text-sm font-bold">{formatCurrency(filteredStats.totalStudioEarnings)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Guadagno Studio Cat. A Totale</p>
+                    <p className="text-sm font-bold text-blue-600">{formatCurrency(filteredStats.totalStudioEarningsA)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Guadagno Studio Cat. B Totale</p>
+                    <p className="text-sm font-bold text-green-600">{formatCurrency(filteredStats.totalStudioEarningsB)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Prestazioni Totali</p>
+                    <p className="text-sm font-bold">{filteredStats.totalPrestazioni}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Giornate Totali</p>
+                    <p className="text-sm font-bold">{filteredStats.totalGiornate}</p>
+                  </div>
                 </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Compenso Medio Mensile</p>
-                  <p className="text-lg font-bold">{formatCurrency(filteredStats.avgCompensation)}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Cat. A Totale</p>
-                  <p className="text-lg font-bold text-blue-600">{formatCurrency(filteredStats.totalCompensationA)}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Cat. A Medio Mensile</p>
-                  <p className="text-lg font-bold text-blue-600">{formatCurrency(filteredStats.avgCompensationA)}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Cat. B Totale</p>
-                  <p className="text-lg font-bold text-green-600">{formatCurrency(filteredStats.totalCompensationB)}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Cat. B Medio Mensile</p>
-                  <p className="text-lg font-bold text-green-600">{formatCurrency(filteredStats.avgCompensationB)}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Prestazioni Totali</p>
-                  <p className="text-lg font-bold">{filteredStats.totalPrestazioni}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Prestazioni Medie Mensili</p>
-                  <p className="text-lg font-bold">{filteredStats.avgPrestazioni.toFixed(1)}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Giornate Totali</p>
-                  <p className="text-lg font-bold">{filteredStats.totalGiornate}</p>
-                </div>
-                <div className="rounded-lg border p-3 bg-card">
-                  <p className="text-xs text-muted-foreground">Giornate Medie Mensili</p>
-                  <p className="text-lg font-bold">{filteredStats.avgGiornate.toFixed(1)}</p>
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Compenso Medio Mensile</p>
+                    <p className="text-sm font-bold">{formatCurrency(filteredStats.avgCompensation)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Compenso Cat. A Medio Mensile</p>
+                    <p className="text-sm font-bold text-blue-600">{formatCurrency(filteredStats.avgCompensationA)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Compenso Cat. B Medio Mensile</p>
+                    <p className="text-sm font-bold text-green-600">{formatCurrency(filteredStats.avgCompensationB)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Guadagno Studio Medio Mensile</p>
+                    <p className="text-sm font-bold">{formatCurrency(filteredStats.avgStudioEarnings)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Guadagno Studio Cat. A Medio Mensile</p>
+                    <p className="text-sm font-bold text-blue-600">{formatCurrency(filteredStats.avgStudioEarningsA)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Guadagno Studio Cat. B Medio Mensile</p>
+                    <p className="text-sm font-bold text-green-600">{formatCurrency(filteredStats.avgStudioEarningsB)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Prestazioni Medie Mensili</p>
+                    <p className="text-sm font-bold">{filteredStats.avgPrestazioni.toFixed(1)}</p>
+                  </div>
+                  <div className="rounded-lg border p-2 bg-card">
+                    <p className="text-[10px] leading-tight text-muted-foreground">Giornate Medie Mensili</p>
+                    <p className="text-sm font-bold">{filteredStats.avgGiornate.toFixed(1)}</p>
+                  </div>
                 </div>
               </div>
 
@@ -541,7 +578,6 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                       <th className="text-left p-2 font-medium">Elementi</th>
                       <th className="text-right p-2 font-medium">Prezzo Paz.</th>
                       <th className="text-right p-2 font-medium">Compenso</th>
-                      <th className="text-left p-2 font-medium">Analisi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -551,9 +587,11 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                         className={`border-t ${record.hasAnomaly ? "bg-red-50 dark:bg-red-950/20" : ""}`}
                       >
                         <td className="p-2">
-                          <Badge variant={record.categoriaCompenso === "card" ? "default" : "secondary"} className="text-xs">
-                            {record.categoriaCompenso === "card" ? "A" : "B"}
-                          </Badge>
+                          {record.categoriaCompenso === "card" ? (
+                            <CreditCard className="h-4 w-4 text-blue-600" />
+                          ) : (
+                            <Banknote className="h-4 w-4 text-green-600" />
+                          )}
                         </td>
                         <td className="p-2 whitespace-nowrap">{record.data || "-"}</td>
                         <td className="p-2">{record.paziente}</td>
@@ -561,7 +599,6 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                         <td className="p-2">{record.elementiDentali || "-"}</td>
                         <td className="p-2 text-right">€ {record.prezzoAlPaziente.toLocaleString("it-IT")}</td>
                         <td className="p-2 text-right font-medium">€ {record.compensoOperatore.toLocaleString("it-IT")}</td>
-                        <td className="p-2 text-xs text-muted-foreground">{record.analysisName}</td>
                       </tr>
                     ))}
                   </tbody>
