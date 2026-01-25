@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Users, Plus, Key, Trash2, AlertTriangle, Shield, User } from "lucide-react";
+import { Users, Plus, Key, Trash2, AlertTriangle, Shield, User, Eye, EyeOff } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { PublicUser, UserRole } from "@shared/schema";
@@ -24,6 +24,7 @@ export function UsersTab() {
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState<UserRole>("user");
   const [passwordToChange, setPasswordToChange] = useState("");
+  const [showPasswordValue, setShowPasswordValue] = useState(false);
 
   const { data: users = [], isLoading } = useQuery<PublicUser[]>({
     queryKey: ["/api/users"],
@@ -274,17 +275,33 @@ export function UsersTab() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Nuova Password</Label>
-              <Input
-                type="password"
-                placeholder="Inserisci nuova password (min. 6 caratteri)"
-                value={passwordToChange}
-                onChange={(e) => setPasswordToChange(e.target.value)}
-                data-testid="input-change-password"
-              />
+              <div className="relative">
+                <Input
+                  type={showPasswordValue ? "text" : "password"}
+                  placeholder="Inserisci nuova password (min. 6 caratteri)"
+                  value={passwordToChange}
+                  onChange={(e) => setPasswordToChange(e.target.value)}
+                  className="pr-10"
+                  data-testid="input-change-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordValue(!showPasswordValue)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="button-toggle-password-visibility"
+                  tabIndex={-1}
+                >
+                  {showPasswordValue ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setShowPasswordModal(false); setPasswordToChange(""); }}>
+            <Button variant="outline" onClick={() => { setShowPasswordModal(false); setPasswordToChange(""); setShowPasswordValue(false); }}>
               Annulla
             </Button>
             <Button 
