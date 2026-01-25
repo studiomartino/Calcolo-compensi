@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2 } from "lucide-react";
+import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2, FileSpreadsheet, FileText, Copy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import type { CompensoRecord, OperatorReport } from "@shared/schema";
 
 interface OperatorDashboardProps {
@@ -16,6 +18,7 @@ interface OperatorDashboardProps {
   selectedOperator: string | null;
   onSelectOperator: (operator: string | null) => void;
   onUpdateRecord?: (id: string, compensoOperatore: number) => void;
+  dateRange?: string;
 }
 
 export function OperatorDashboard({
@@ -24,10 +27,14 @@ export function OperatorDashboard({
   selectedOperator,
   onSelectOperator,
   onUpdateRecord,
+  dateRange,
 }: OperatorDashboardProps) {
   const [showAnomaliesModal, setShowAnomaliesModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showTextReportModal, setShowTextReportModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  const { toast } = useToast();
 
   const roundToTen = (value: number): number => {
     return Math.round(value / 10) * 10;
@@ -95,6 +102,17 @@ export function OperatorDashboard({
     };
   }, [records, operatorReports]);
 
+  const textReport = useMemo(() => {
+    const periodo = dateRange || "Non specificato";
+    return operatorReports.map((report) => {
+      return `Nome operatore: ${report.operatore}
+Periodo analisi: ${periodo}
+Compenso totale: ${roundToTen(report.compensoTotale)} €
+Compenso A: ${roundToTen(report.compensoCard)} €
+Compenso B: ${roundToTen(report.compensoCash)} €`;
+    }).join("\n\n---\n\n");
+  }, [operatorReports, dateRange]);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("it-IT", {
       style: "currency",
@@ -141,6 +159,24 @@ export function OperatorDashboard({
     setEditValue("");
   };
 
+  const handleCopyTextReport = () => {
+    navigator.clipboard.writeText(textReport);
+    toast({
+      title: "Report copiato",
+      description: "Il report testuale è stato copiato negli appunti",
+    });
+  };
+
+  const handleExportExcel = () => {
+    setShowExportModal(false);
+    onExportExcel();
+  };
+
+  const handleExportText = () => {
+    setShowExportModal(false);
+    setShowTextReportModal(true);
+  };
+
   const selectedReport = selectedOperator
     ? operatorReports.find((r) => r.operatore === selectedOperator)
     : null;
@@ -154,9 +190,9 @@ export function OperatorDashboard({
             Riepilogo compensi e statistiche per operatore
           </p>
         </div>
-        <Button onClick={onExportExcel} data-testid="button-export-excel">
+        <Button onClick={() => setShowExportModal(true)} data-testid="button-export">
           <Download className="mr-2 h-4 w-4" />
-          Esporta Excel
+          Esporta
         </Button>
       </div>
 
@@ -314,6 +350,53 @@ export function OperatorDashboard({
           Importi arrotondati alla decina di euro
         </p>
       </div>
+
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Download className="h-5 w-5" />
+              Esporta Report
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground mb-4">
+            Scegli il formato di esportazione
+          </p>
+          <div className="flex flex-col gap-3">
+            <Button onClick={handleExportExcel} className="w-full" data-testid="button-export-excel">
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Esporta Excel
+            </Button>
+            <Button onClick={handleExportText} variant="outline" className="w-full" data-testid="button-export-text">
+              <FileText className="mr-2 h-4 w-4" />
+              Esporta Testo
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showTextReportModal} onOpenChange={setShowTextReportModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Report Testuale
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-end mb-2">
+            <Button variant="outline" size="sm" onClick={handleCopyTextReport} data-testid="button-copy-report">
+              <Copy className="mr-2 h-4 w-4" />
+              Copia
+            </Button>
+          </div>
+          <Textarea 
+            value={textReport} 
+            readOnly 
+            className="min-h-[400px] font-mono text-sm"
+            data-testid="textarea-text-report"
+          />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showAnomaliesModal} onOpenChange={setShowAnomaliesModal}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">

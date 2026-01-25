@@ -379,6 +379,7 @@ export default function Home() {
                   selectedOperator={selectedOperator}
                   onSelectOperator={setSelectedOperator}
                   onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
+                  dateRange={currentDateRange}
                 />
               </div>
             </SheetContent>
