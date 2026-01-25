@@ -199,10 +199,7 @@ export function OperatorDashboard({
                 className={`rounded-lg border-2 p-5 ${color.bg} ${color.border}`}
                 data-testid={`operator-card-${report.operatore}`}
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-full ${color.accent} text-white font-bold text-lg`}>
-                    {report.operatore.charAt(0).toUpperCase()}
-                  </div>
+                <div className="flex items-center justify-between gap-3 mb-4">
                   <div className="flex-1 min-w-0">
                     <h4 className={`font-semibold text-lg truncate ${color.text}`}>{report.operatore}</h4>
                     <p className="text-sm text-muted-foreground">

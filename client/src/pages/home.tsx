@@ -365,7 +365,7 @@ export default function Home() {
                   Report Operatori
                 </Button>
               </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+            <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
