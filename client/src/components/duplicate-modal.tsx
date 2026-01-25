@@ -76,7 +76,7 @@ export function DuplicateModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
+      <DialogContent className="max-w-[72rem] h-[80vh] flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -106,7 +106,7 @@ export function DuplicateModal({
 
         <ScrollArea className="flex-1 min-h-0 border rounded-lg">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50 sticky top-0">
+            <thead className="bg-muted sticky top-0 z-10">
               <tr>
                 <th className="p-2 w-10"></th>
                 <th className="text-left p-2 font-medium">Data</th>
