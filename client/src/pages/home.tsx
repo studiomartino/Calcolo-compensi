@@ -9,18 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet } from "lucide-react";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
 
-type AppStep = "upload" | "mapping" | "data";
+type ImportStep = "upload" | "mapping";
 
 export default function Home() {
-  const [step, setStep] = useState<AppStep>("upload");
+  const [mainTab, setMainTab] = useState<string>("import");
+  const [importStep, setImportStep] = useState<ImportStep>("upload");
+  const [analysisSubTab, setAnalysisSubTab] = useState<string>("table");
   const [rawData, setRawData] = useState<Record<string, string>[]>([]);
   const [sourceColumns, setSourceColumns] = useState<string[]>([]);
   const [currentDateRange, setCurrentDateRange] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<string>("table");
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -46,8 +47,11 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
       setCurrentDateRange(data.dateRange || "");
-      setStep("data");
-      setActiveTab("table");
+      setMainTab("analysis");
+      setAnalysisSubTab("table");
+      setImportStep("upload");
+      setRawData([]);
+      setSourceColumns([]);
       toast({
         title: "Importazione completata",
         description: `${data.count} record importati - ${data.analysisName || "Analisi"}`,
@@ -131,7 +135,7 @@ export default function Home() {
   const handleDataLoaded = useCallback((data: Record<string, string>[], columns: string[]) => {
     setRawData(data);
     setSourceColumns(columns);
-    setStep("mapping");
+    setImportStep("mapping");
   }, []);
 
   const handleMappingComplete = useCallback((fieldMappings: Record<string, string>) => {
@@ -195,6 +199,7 @@ export default function Home() {
 
     const detailData = records.map((r) => ({
       "Categoria": r.categoriaCompenso === "card" ? "Carta" : "Contanti",
+      Data: r.data || "",
       Operatore: r.operatore,
       Paziente: r.paziente,
       Prestazione: r.prestazione,
@@ -220,155 +225,171 @@ export default function Home() {
     });
   }, [records, toast]);
 
-  const handleNewImport = () => {
-    setStep("upload");
-    setRawData([]);
-    setSourceColumns([]);
-  };
+  const renderImportContent = () => {
+    if (importStep === "mapping") {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={() => setImportStep("upload")} data-testid="button-back-to-upload">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Indietro
+            </Button>
+            <div>
+              <h2 className="text-xl font-semibold">Mappatura Colonne</h2>
+              <p className="text-muted-foreground text-sm">
+                Associa le colonne del file ai campi dell'applicazione
+              </p>
+            </div>
+          </div>
 
-  if (step === "upload") {
+          <ColumnMapper
+            sourceColumns={sourceColumns}
+            rawData={rawData}
+            savedMappings={mappings}
+            onMappingComplete={handleMappingComplete}
+            onSaveMapping={handleSaveMapping}
+            onDeleteMapping={handleDeleteMapping}
+          />
+        </div>
+      );
+    }
+
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-6">
+      <div className="flex flex-col items-center justify-center py-12">
         <div className="w-full max-w-2xl space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Gestione Compensi</h1>
-            <p className="text-muted-foreground text-lg">
-              Importa i dati e genera report per i tuoi collaboratori
+            <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h2 className="text-2xl font-semibold">Importa File</h2>
+            <p className="text-muted-foreground">
+              Carica un file CSV o Excel per iniziare l'analisi dei compensi
             </p>
           </div>
 
           <FileUpload onDataLoaded={handleDataLoaded} />
+        </div>
+      </div>
+    );
+  };
 
-          {isLoadingRecords ? (
-            <div className="flex items-center justify-center py-4">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-          ) : records.length > 0 ? (
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">
-                Hai già {records.length} record importati
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => setStep("data")}
-                data-testid="button-view-existing-data"
-              >
-                Visualizza dati esistenti
-              </Button>
-            </div>
-          ) : null}
+  const renderAnalysisContent = () => {
+    if (records.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 gap-4">
+          <FileSpreadsheet className="h-16 w-16 text-muted-foreground" />
+          <div className="text-center space-y-2">
+            <h3 className="text-lg font-medium">Nessun dato disponibile</h3>
+            <p className="text-muted-foreground">
+              Importa un file per visualizzare l'analisi dei compensi
+            </p>
+          </div>
+          <Button onClick={() => setMainTab("import")} data-testid="button-go-to-import">
+            <Upload className="mr-2 h-4 w-4" />
+            Vai all'importazione
+          </Button>
+        </div>
+      );
+    }
 
-          {analyses.length > 0 && (
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-muted-foreground">
+              {records.length} record {currentDateRange && `| Periodo: ${currentDateRange}`}
+            </p>
+          </div>
+        </div>
+
+        <Tabs value={analysisSubTab} onValueChange={setAnalysisSubTab}>
+          <TabsList>
+            <TabsTrigger value="table" data-testid="tab-table">
+              <Table className="mr-2 h-4 w-4" />
+              Tabella Dati
+            </TabsTrigger>
+            <TabsTrigger value="dashboard" data-testid="tab-dashboard">
+              <BarChart3 className="mr-2 h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="table" className="mt-6">
+            {isLoadingRecords ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <p className="text-sm text-muted-foreground">Caricamento dati...</p>
+              </div>
+            ) : (
+              <DataTable
+                records={records}
+                operators={operators}
+                onCategoryChange={handleCategoryChange}
+                onRecordEdit={handleRecordEdit}
+              />
+            )}
+          </TabsContent>
+
+          <TabsContent value="dashboard" className="mt-6">
+            {isLoadingRecords ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <p className="text-sm text-muted-foreground">Caricamento dashboard...</p>
+              </div>
+            ) : (
+              <OperatorDashboard
+                records={records}
+                onExportExcel={handleExportExcel}
+                selectedOperator={selectedOperator}
+                onSelectOperator={setSelectedOperator}
+              />
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b bg-card">
+        <div className="container py-4">
+          <h1 className="text-2xl font-bold tracking-tight">Gestione Compensi</h1>
+        </div>
+      </header>
+
+      <div className="container py-6">
+        <Tabs value={mainTab} onValueChange={setMainTab}>
+          <TabsList className="grid w-full max-w-md grid-cols-3">
+            <TabsTrigger value="import" data-testid="main-tab-import">
+              <Upload className="mr-2 h-4 w-4" />
+              Importazione
+            </TabsTrigger>
+            <TabsTrigger value="analysis" data-testid="main-tab-analysis">
+              <Table className="mr-2 h-4 w-4" />
+              Analisi
+            </TabsTrigger>
+            <TabsTrigger value="archive" data-testid="main-tab-archive">
+              <Archive className="mr-2 h-4 w-4" />
+              Archivio ({analyses.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="import" className="mt-6">
+            {renderImportContent()}
+          </TabsContent>
+
+          <TabsContent value="analysis" className="mt-6">
+            {renderAnalysisContent()}
+          </TabsContent>
+
+          <TabsContent value="archive" className="mt-6">
             <AnalysisArchive
               analyses={analyses}
               onDeleteAnalysis={handleDeleteAnalysis}
               isLoading={isLoadingAnalyses}
             />
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
-    );
-  }
-
-  if (step === "mapping") {
-    return (
-      <div className="container max-w-5xl py-8 space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => setStep("upload")} data-testid="button-back-to-upload">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Indietro
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Mappatura Colonne</h1>
-            <p className="text-muted-foreground">
-              Associa le colonne del file ai campi dell'applicazione
-            </p>
-          </div>
-        </div>
-
-        <ColumnMapper
-          sourceColumns={sourceColumns}
-          rawData={rawData}
-          savedMappings={mappings}
-          onMappingComplete={handleMappingComplete}
-          onSaveMapping={handleSaveMapping}
-          onDeleteMapping={handleDeleteMapping}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="container py-8 space-y-6">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Gestione Compensi</h1>
-          <p className="text-muted-foreground">
-            {records.length} record importati {currentDateRange && `| Periodo: ${currentDateRange}`}
-          </p>
-        </div>
-        <Button variant="outline" onClick={handleNewImport} data-testid="button-new-import">
-          <Upload className="mr-2 h-4 w-4" />
-          Nuova Importazione
-        </Button>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="table" data-testid="tab-table">
-            <Table className="mr-2 h-4 w-4" />
-            Tabella Dati
-          </TabsTrigger>
-          <TabsTrigger value="dashboard" data-testid="tab-dashboard">
-            <BarChart3 className="mr-2 h-4 w-4" />
-            Dashboard
-          </TabsTrigger>
-          <TabsTrigger value="archive" data-testid="tab-archive">
-            <Archive className="mr-2 h-4 w-4" />
-            Archivio ({analyses.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="table" className="mt-6">
-          {isLoadingRecords ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <p className="text-sm text-muted-foreground">Caricamento dati...</p>
-            </div>
-          ) : (
-            <DataTable
-              records={records}
-              operators={operators}
-              onCategoryChange={handleCategoryChange}
-              onRecordEdit={handleRecordEdit}
-            />
-          )}
-        </TabsContent>
-
-        <TabsContent value="dashboard" className="mt-6">
-          {isLoadingRecords ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <p className="text-sm text-muted-foreground">Caricamento dashboard...</p>
-            </div>
-          ) : (
-            <OperatorDashboard
-              records={records}
-              onExportExcel={handleExportExcel}
-              selectedOperator={selectedOperator}
-              onSelectOperator={setSelectedOperator}
-            />
-          )}
-        </TabsContent>
-
-        <TabsContent value="archive" className="mt-6">
-          <AnalysisArchive
-            analyses={analyses}
-            onDeleteAnalysis={handleDeleteAnalysis}
-            isLoading={isLoadingAnalyses}
-          />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
