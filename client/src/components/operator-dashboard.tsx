@@ -105,8 +105,8 @@ export function OperatorDashboard({
   const textReport = useMemo(() => {
     const periodo = dateRange || "Non specificato";
     return operatorReports.map((report) => {
-      return `Nome operatore: ${report.operatore}
-Periodo analisi: ${periodo}
+      return `${report.operatore}
+Periodo: ${periodo}
 Compenso totale: ${roundToTen(report.compensoTotale)} €
 Compenso A: ${roundToTen(report.compensoCard)} €
 Compenso B: ${roundToTen(report.compensoCash)} €`;

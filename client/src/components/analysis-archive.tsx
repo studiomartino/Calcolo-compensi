@@ -78,8 +78,8 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
     });
 
     return Array.from(operatorMap.entries()).map(([operatore, data]) => {
-      return `Nome operatore: ${operatore}
-Periodo analisi: ${exportAnalysis.dateRange}
+      return `${operatore}
+Periodo: ${exportAnalysis.dateRange}
 Compenso totale: ${roundToTen(data.total)} €
 Compenso A: ${roundToTen(data.card)} €
 Compenso B: ${roundToTen(data.cash)} €`;
