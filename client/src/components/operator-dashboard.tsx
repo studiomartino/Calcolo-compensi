@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2, FileSpreadsheet, FileText, Copy, Calendar, Plus, Trash2 } from "lucide-react";
+import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2, FileSpreadsheet, FileText, Copy, Calendar as CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import type { CompensoRecord, OperatorReport } from "@shared/schema";
 
@@ -45,7 +47,7 @@ export function OperatorDashboard({
   const [showDailyPaymentModal, setShowDailyPaymentModal] = useState(false);
   const [selectedDailyOperator, setSelectedDailyOperator] = useState<string | null>(null);
   const [dailyPaymentSettings, setDailyPaymentSettings] = useState<Record<string, DailyPaymentSettings>>({});
-  const [newDayInput, setNewDayInput] = useState("");
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const { toast } = useToast();
@@ -160,17 +162,9 @@ export function OperatorDashboard({
   };
 
   // Aggiungi giornata manuale
-  const addWorkedDay = (operatore: string) => {
-    if (!newDayInput) return;
+  const addWorkedDay = (operatore: string, date: Date) => {
     const settings = dailyPaymentSettings[operatore];
     if (!settings) return;
-    
-    // Verifica che la data sia valida
-    const date = new Date(newDayInput);
-    if (isNaN(date.getTime())) {
-      toast({ title: "Data non valida", variant: "destructive" });
-      return;
-    }
     
     const normalized = date.toISOString().split('T')[0];
     if (settings.workedDays.includes(normalized)) {
@@ -179,7 +173,7 @@ export function OperatorDashboard({
     }
     
     updateDailyPaymentSetting(operatore, "workedDays", [...settings.workedDays, normalized].sort());
-    setNewDayInput("");
+    setCalendarOpen(false);
   };
 
   // Rimuovi giornata
@@ -486,7 +480,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                               {dailyPaymentSettings[report.operatore].type === "fisso" ? "F" : "M"}
                             </span>
                           )}
-                          <Calendar className="h-4 w-4" />
+                          <CalendarIcon className="h-4 w-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -689,14 +683,14 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
       <Dialog open={showDailyPaymentModal} onOpenChange={(open) => {
         setShowDailyPaymentModal(open);
         if (!open) {
-          setNewDayInput("");
+          setCalendarOpen(false);
         }
       }}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
+                <CalendarIcon className="h-5 w-5" />
                 Pagamento a Giornata
               </div>
               {selectedDailyOperator && (
@@ -813,42 +807,30 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                           );
                         })}
                         
-                        <div className="p-2 hover:bg-muted/50">
-                          {newDayInput ? (
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="date"
-                                value={newDayInput}
-                                onChange={(e) => setNewDayInput(e.target.value)}
-                                className="flex-1 h-8"
-                                data-testid="input-new-day"
+                        <div className="p-2">
+                          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                            <PopoverTrigger asChild>
+                              <button
+                                className="flex items-center gap-2 text-sm text-primary hover:underline w-full"
+                                data-testid="button-show-add-day"
+                              >
+                                <Plus className="h-4 w-4" />
+                                Aggiungi giornata lavorata
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={undefined}
+                                onSelect={(date) => {
+                                  if (date && selectedDailyOperator) {
+                                    addWorkedDay(selectedDailyOperator, date);
+                                  }
+                                }}
+                                initialFocus
                               />
-                              <Button
-                                variant="default"
-                                size="sm"
-                                onClick={() => addWorkedDay(selectedDailyOperator)}
-                                data-testid="button-add-day"
-                              >
-                                Aggiungi
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setNewDayInput("")}
-                              >
-                                Annulla
-                              </Button>
-                            </div>
-                          ) : (
-                            <button
-                              className="flex items-center gap-2 text-sm text-primary hover:underline w-full"
-                              onClick={() => setNewDayInput(new Date().toISOString().split('T')[0])}
-                              data-testid="button-show-add-day"
-                            >
-                              <Plus className="h-4 w-4" />
-                              Aggiungi giornata lavorata
-                            </button>
-                          )}
+                            </PopoverContent>
+                          </Popover>
                         </div>
                       </div>
                     </div>
