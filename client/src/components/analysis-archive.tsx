@@ -283,7 +283,7 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
 
                     <div>
                       <h5 className="font-medium mb-2">Dettaglio per Operatore</h5>
-                      <ScrollArea className="max-h-[400px] rounded-lg border">
+                      <div className="rounded-lg border overflow-auto">
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -320,7 +320,7 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
                             ))}
                           </TableBody>
                         </Table>
-                      </ScrollArea>
+                      </div>
                     </div>
                   </div>
                 </CollapsibleContent>
