@@ -31,6 +31,7 @@ interface OperatorDashboardProps {
   onSelectOperator: (operator: string | null) => void;
   onUpdateRecord?: (id: string, compensoOperatore: number) => void;
   dateRange?: string;
+  operatorColors?: Record<string, string>;
 }
 
 export function OperatorDashboard({
@@ -40,6 +41,7 @@ export function OperatorDashboard({
   onSelectOperator,
   onUpdateRecord,
   dateRange,
+  operatorColors = {},
 }: OperatorDashboardProps) {
   const [showAnomaliesModal, setShowAnomaliesModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -422,28 +424,28 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
       <div>
         <h3 className="text-lg font-semibold mb-4">Report per Operatore</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {operatorReports.map((report, index) => {
-            const colors = [
-              { bg: "bg-blue-50 dark:bg-blue-950/40", border: "border-blue-200 dark:border-blue-800", accent: "bg-blue-500", text: "text-blue-700 dark:text-blue-300" },
-              { bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-800", accent: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-300" },
-              { bg: "bg-violet-50 dark:bg-violet-950/40", border: "border-violet-200 dark:border-violet-800", accent: "bg-violet-500", text: "text-violet-700 dark:text-violet-300" },
-              { bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200 dark:border-amber-800", accent: "bg-amber-500", text: "text-amber-700 dark:text-amber-300" },
-              { bg: "bg-rose-50 dark:bg-rose-950/40", border: "border-rose-200 dark:border-rose-800", accent: "bg-rose-500", text: "text-rose-700 dark:text-rose-300" },
-              { bg: "bg-cyan-50 dark:bg-cyan-950/40", border: "border-cyan-200 dark:border-cyan-800", accent: "bg-cyan-500", text: "text-cyan-700 dark:text-cyan-300" },
-              { bg: "bg-orange-50 dark:bg-orange-950/40", border: "border-orange-200 dark:border-orange-800", accent: "bg-orange-500", text: "text-orange-700 dark:text-orange-300" },
-              { bg: "bg-indigo-50 dark:bg-indigo-950/40", border: "border-indigo-200 dark:border-indigo-800", accent: "bg-indigo-500", text: "text-indigo-700 dark:text-indigo-300" },
-            ];
-            const color = colors[index % colors.length];
-
+          {operatorReports.map((report) => {
+            const hexColor = operatorColors[report.operatore] || "#6B7280";
+            
             return (
               <div
                 key={report.operatore}
-                className={`rounded-lg border-2 p-5 ${color.bg} ${color.border}`}
+                className="rounded-lg border-2 p-5"
+                style={{
+                  backgroundColor: `${hexColor}15`,
+                  borderColor: `${hexColor}50`,
+                }}
                 data-testid={`operator-card-${report.operatore}`}
               >
                 <div className="flex items-center justify-between gap-2 mb-4">
                   <div className="flex-1 min-w-0">
-                    <h4 className={`font-semibold text-lg truncate ${color.text}`}>{report.operatore}</h4>
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full shrink-0"
+                        style={{ backgroundColor: hexColor }}
+                      />
+                      <h4 className="font-semibold text-lg truncate">{report.operatore}</h4>
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {report.numeroRecord} prestazioni
                     </p>
@@ -505,7 +507,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                             <span className="text-sm font-medium text-muted-foreground">
                               Compenso Totale
                             </span>
-                            <span className={`text-xl font-bold ${color.text}`}>
+                            <span className="text-xl font-bold" style={{ color: hexColor }}>
                               {formatCurrency(roundToTen(isDailyEnabled && dailyPayment !== null ? dailyPayment : report.compensoTotale))}
                             </span>
                           </div>

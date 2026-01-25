@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ArrowRight, Check, Save, Trash2, FileText } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ArrowRight, Check, Save, Trash2, FileText, Palette, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,7 +9,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { appFieldLabels, appFieldNames, type AppFieldName, type ColumnMapping } from "@shared/schema";
+
+export const OPERATOR_COLORS = [
+  { name: "Blu scuro", hex: "#005493" },
+  { name: "Giallo", hex: "#FFFB00" },
+  { name: "Verde lime", hex: "#00F900" },
+  { name: "Rosso", hex: "#FF2600" },
+  { name: "Arancione", hex: "#FF9300" },
+  { name: "Argento", hex: "#C0C0C0" },
+  { name: "Verde menta", hex: "#9BD9B5" },
+  { name: "Verde scuro", hex: "#008F00" },
+  { name: "Ciano", hex: "#00FDFF" },
+  { name: "Rosa salmone", hex: "#FF7E79" },
+  { name: "Viola", hex: "#9437FF" },
+  { name: "Rosa chiaro", hex: "#FF8AD8" },
+  { name: "Fucsia", hex: "#FF2F92" },
+  { name: "Bordeaux", hex: "#941751" },
+  { name: "Bianco", hex: "#FFFFFF" },
+  { name: "Nero", hex: "#000000" },
+  { name: "Blu elettrico", hex: "#0433FF" },
+  { name: "Teal", hex: "#14B8A6" },
+];
 
 interface ColumnMapperProps {
   sourceColumns: string[];
@@ -18,6 +40,8 @@ interface ColumnMapperProps {
   onMappingComplete: (mappings: Record<string, string>) => void;
   onSaveMapping: (name: string, mappings: Record<string, string>) => void;
   onDeleteMapping: (id: string) => void;
+  operatorColors: Record<string, string>;
+  onUpdateOperatorColors: (colors: Record<string, string>) => void;
 }
 
 export function ColumnMapper({
@@ -27,6 +51,8 @@ export function ColumnMapper({
   onMappingComplete,
   onSaveMapping,
   onDeleteMapping,
+  operatorColors,
+  onUpdateOperatorColors,
 }: ColumnMapperProps) {
   const [mappings, setMappings] = useState<Record<AppFieldName, string>>({
     data: "",
@@ -39,6 +65,46 @@ export function ColumnMapper({
   });
   const [newMappingName, setNewMappingName] = useState("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showColorDialog, setShowColorDialog] = useState(false);
+  const [tempColors, setTempColors] = useState<Record<string, string>>({});
+
+  const operatorsInData = useMemo(() => {
+    if (!mappings.operatore) return [];
+    const ops = new Set<string>();
+    rawData.forEach((row) => {
+      const op = row[mappings.operatore];
+      if (op && op.trim()) ops.add(op.trim());
+    });
+    return Array.from(ops).sort();
+  }, [rawData, mappings.operatore]);
+
+  const newOperators = useMemo(() => {
+    return operatorsInData.filter((op) => !operatorColors[op]);
+  }, [operatorsInData, operatorColors]);
+
+  const openColorDialog = () => {
+    const initial: Record<string, string> = {};
+    operatorsInData.forEach((op) => {
+      initial[op] = operatorColors[op] || "";
+    });
+    setTempColors(initial);
+    setShowColorDialog(true);
+  };
+
+  const handleColorChange = (operator: string, color: string) => {
+    setTempColors((prev) => ({ ...prev, [operator]: color }));
+  };
+
+  const handleSaveColors = () => {
+    const updatedColors = { ...operatorColors };
+    Object.entries(tempColors).forEach(([op, color]) => {
+      if (color) {
+        updatedColors[op] = color;
+      }
+    });
+    onUpdateOperatorColors(updatedColors);
+    setShowColorDialog(false);
+  };
 
   const handleMappingChange = (appField: AppFieldName, sourceColumn: string) => {
     setMappings((prev) => ({ ...prev, [appField]: sourceColumn }));
@@ -144,9 +210,26 @@ export function ColumnMapper({
 
           {isMappingComplete && previewData.length > 0 && (
             <div className="space-y-3">
-              <h4 className="font-medium text-sm text-muted-foreground">
-                Anteprima dati mappati (prime 3 righe)
-              </h4>
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-sm text-muted-foreground">
+                  Anteprima dati mappati (prime 3 righe)
+                </h4>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={openColorDialog}
+                  className="gap-2"
+                  data-testid="button-operator-colors"
+                >
+                  <Palette className="h-4 w-4" />
+                  Colori Operatori
+                  {newOperators.length > 0 && (
+                    <Badge variant="destructive" className="ml-1">
+                      {newOperators.length} nuovi
+                    </Badge>
+                  )}
+                </Button>
+              </div>
               <ScrollArea className="rounded-lg border">
                 <Table>
                   <TableHeader>
@@ -276,6 +359,81 @@ export function ColumnMapper({
           </CardContent>
         </Card>
       )}
+
+      <Dialog open={showColorDialog} onOpenChange={setShowColorDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Palette className="h-5 w-5" />
+              Colori Operatori
+            </DialogTitle>
+            <DialogDescription>
+              Assegna un colore a ciascun operatore per distinguerli nei report
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {newOperators.length > 0 && (
+              <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <AlertCircle className="h-4 w-4 text-amber-500" />
+                <span className="text-sm">
+                  {newOperators.length} nuov{newOperators.length === 1 ? 'o' : 'i'} operator{newOperators.length === 1 ? 'e' : 'i'} senza colore assegnato
+                </span>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              {operatorsInData.map((operator) => (
+                <div key={operator} className="flex items-center gap-4 p-3 border rounded-lg">
+                  <div className="flex-1">
+                    <p className="font-medium">{operator}</p>
+                    {!operatorColors[operator] && (
+                      <span className="text-xs text-amber-500">Nuovo operatore</span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {OPERATOR_COLORS.map((color) => (
+                      <Tooltip key={color.hex}>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className={`w-6 h-6 rounded-md border-2 transition-all ${
+                              tempColors[operator] === color.hex
+                                ? "border-primary scale-110"
+                                : "border-transparent hover:scale-105"
+                            }`}
+                            style={{ backgroundColor: color.hex }}
+                            onClick={() => handleColorChange(operator, color.hex)}
+                            data-testid={`color-${operator}-${color.name}`}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p>{color.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                  {tempColors[operator] && (
+                    <div 
+                      className="w-8 h-8 rounded-md border"
+                      style={{ backgroundColor: tempColors[operator] }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowColorDialog(false)}>
+              Annulla
+            </Button>
+            <Button onClick={handleSaveColors} data-testid="button-save-colors">
+              Salva Colori
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

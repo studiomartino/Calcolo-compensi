@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FileUpload } from "@/components/file-upload";
-import { ColumnMapper } from "@/components/column-mapper";
+import { ColumnMapper, OPERATOR_COLORS } from "@/components/column-mapper";
 import { DataTable } from "@/components/data-table";
 import { OperatorDashboard } from "@/components/operator-dashboard";
 import { AnalysisArchive } from "@/components/analysis-archive";
@@ -15,6 +15,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
 
+const OPERATOR_COLORS_KEY = "operatorColors";
+
 type ImportStep = "upload" | "mapping";
 
 export default function Home() {
@@ -25,8 +27,39 @@ export default function Home() {
   const [currentDateRange, setCurrentDateRange] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [operatorColors, setOperatorColors] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem(OPERATOR_COLORS_KEY);
+    return saved ? JSON.parse(saved) : {};
+  });
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const handleUpdateOperatorColors = useCallback((colors: Record<string, string>) => {
+    setOperatorColors(colors);
+    localStorage.setItem(OPERATOR_COLORS_KEY, JSON.stringify(colors));
+  }, []);
+
+  const assignRandomColors = useCallback((operators: string[]) => {
+    const usedColors = new Set(Object.values(operatorColors));
+    const availableColors = OPERATOR_COLORS.filter((c) => !usedColors.has(c.hex));
+    const newColors = { ...operatorColors };
+    
+    operators.forEach((op) => {
+      if (!newColors[op]) {
+        if (availableColors.length > 0) {
+          const randomIndex = Math.floor(Math.random() * availableColors.length);
+          newColors[op] = availableColors[randomIndex].hex;
+          availableColors.splice(randomIndex, 1);
+        } else {
+          const randomIndex = Math.floor(Math.random() * OPERATOR_COLORS.length);
+          newColors[op] = OPERATOR_COLORS[randomIndex].hex;
+        }
+      }
+    });
+    
+    handleUpdateOperatorColors(newColors);
+    return newColors;
+  }, [operatorColors, handleUpdateOperatorColors]);
 
   const { data: records = [], isLoading: isLoadingRecords } = useQuery<CompensoRecord[]>({
     queryKey: ["/api/records"],
@@ -175,11 +208,24 @@ export default function Home() {
   }, []);
 
   const handleMappingComplete = useCallback((fieldMappings: Record<string, string>) => {
+    const operatorField = fieldMappings.operatore;
+    if (operatorField) {
+      const operators = new Set<string>();
+      rawData.forEach((row) => {
+        const op = row[operatorField];
+        if (op && op.trim()) operators.add(op.trim());
+      });
+      const operatorsWithoutColors = Array.from(operators).filter((op) => !operatorColors[op]);
+      if (operatorsWithoutColors.length > 0) {
+        assignRandomColors(operatorsWithoutColors);
+      }
+    }
+    
     importMutation.mutate({
       records: rawData,
       mappings: fieldMappings,
     });
-  }, [rawData, importMutation]);
+  }, [rawData, importMutation, operatorColors, assignRandomColors]);
 
   const handleCategoryChange = useCallback((ids: string[], category: CategoriaCompenso) => {
     updateCategoryMutation.mutate({ ids, category });
@@ -335,6 +381,8 @@ export default function Home() {
             onMappingComplete={handleMappingComplete}
             onSaveMapping={handleSaveMapping}
             onDeleteMapping={handleDeleteMapping}
+            operatorColors={operatorColors}
+            onUpdateOperatorColors={handleUpdateOperatorColors}
           />
         </div>
       );
@@ -422,6 +470,7 @@ export default function Home() {
                   onSelectOperator={setSelectedOperator}
                   onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
                   dateRange={currentDateRange}
+                  operatorColors={operatorColors}
                 />
               </div>
             </SheetContent>
