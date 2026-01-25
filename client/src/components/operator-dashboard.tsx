@@ -759,7 +759,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                       onValueChange={(value: "minimo" | "fisso") => 
                         updateDailyPaymentSetting(selectedDailyOperator, "type", value)
                       }
-                      className="gap-1"
+                      className="grid gap-1 mt-[5px] mb-[5px] pt-[0px] pb-[0px]"
                     >
                       <div className="flex items-center space-x-2 border rounded-md px-2 py-1.5 cursor-pointer hover-elevate">
                         <RadioGroupItem value="minimo" id="type-minimo" />
