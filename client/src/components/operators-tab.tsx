@@ -584,8 +584,8 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                         <th className="text-left p-2 font-medium w-[20%]">Paziente</th>
                         <th className="text-left p-2 font-medium">Prestazione</th>
                         <th className="text-left p-2 font-medium w-[80px]">Elementi</th>
-                        <th className="text-right p-2 font-medium w-[90px]">Prezzo Paz.</th>
-                        <th className="text-right p-2 font-medium w-[90px]">Compenso</th>
+                        <th className="text-right p-2 font-medium w-[104px]">Prezzo Paz.</th>
+                        <th className="text-right p-2 font-medium w-[104px]">Compenso</th>
                       </tr>
                     </thead>
                     <tbody>
