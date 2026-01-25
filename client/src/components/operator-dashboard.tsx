@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import type { CompensoRecord, OperatorReport } from "@shared/schema";
 
@@ -482,6 +483,11 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                           onClick={() => openDailyPaymentModal(report.operatore)}
                           data-testid={`button-daily-payment-${report.operatore}`}
                         >
+                          {dailyPaymentSettings[report.operatore]?.enabled && (
+                            <span className="text-xs font-bold mr-0.5">
+                              {dailyPaymentSettings[report.operatore].type === "fisso" ? "F" : "M"}
+                            </span>
+                          )}
                           <Calendar className="h-4 w-4" />
                         </Button>
                       </TooltipTrigger>
@@ -504,25 +510,13 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                       <>
                         <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-muted-foreground">
-                                {isDailyEnabled ? "Compenso Giornaliero" : "Compenso Totale"}
-                              </span>
-                              {isDailyEnabled && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {settings.type === "fisso" ? "Fisso" : "Minimo"}
-                                </Badge>
-                              )}
-                            </div>
+                            <span className="text-sm font-medium text-muted-foreground">
+                              Compenso Totale
+                            </span>
                             <span className={`text-xl font-bold ${color.text}`}>
                               {formatCurrency(roundToTen(isDailyEnabled && dailyPayment !== null ? dailyPayment : report.compensoTotale))}
                             </span>
                           </div>
-                          {isDailyEnabled && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {settings.workedDays.length} giorni × {formatCurrency(settings.dailyAmount)}/giorno
-                            </p>
-                          )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-2">
@@ -722,18 +716,16 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                 <Label htmlFor="daily-enabled" className="text-sm font-medium">
                   Attiva pagamento a giornata
                 </Label>
-                <Button
-                  variant={dailyPaymentSettings[selectedDailyOperator].enabled ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => updateDailyPaymentSetting(
+                <Switch
+                  id="daily-enabled"
+                  checked={dailyPaymentSettings[selectedDailyOperator].enabled}
+                  onCheckedChange={(checked) => updateDailyPaymentSetting(
                     selectedDailyOperator,
                     "enabled",
-                    !dailyPaymentSettings[selectedDailyOperator].enabled
+                    checked
                   )}
-                  data-testid="button-toggle-daily"
-                >
-                  {dailyPaymentSettings[selectedDailyOperator].enabled ? "Attivo" : "Disattivo"}
-                </Button>
+                  data-testid="switch-toggle-daily"
+                />
               </div>
 
               {dailyPaymentSettings[selectedDailyOperator].enabled && (
