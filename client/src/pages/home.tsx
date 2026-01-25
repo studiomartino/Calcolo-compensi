@@ -6,13 +6,14 @@ import { DataTable } from "@/components/data-table";
 import { OperatorDashboard } from "@/components/operator-dashboard";
 import { AnalysisArchive } from "@/components/analysis-archive";
 import { OperatorsTab } from "@/components/operators-tab";
+import { UsersTab } from "@/components/users-tab";
 import { DuplicateModal, DuplicateRecord } from "@/components/duplicate-modal";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users, FolderArchive, UserCheck } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, FolderArchive, UserCheck } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
@@ -21,7 +22,11 @@ const OPERATOR_COLORS_KEY = "operatorColors";
 
 type ImportStep = "upload" | "mapping";
 
-export default function Home() {
+interface HomeProps {
+  userRole: "admin" | "user";
+}
+
+export default function Home({ userRole }: HomeProps) {
   const [mainTab, setMainTab] = useState<string>("import");
   const [importStep, setImportStep] = useState<ImportStep>("upload");
   const [rawData, setRawData] = useState<Record<string, string>[]>([]);
@@ -490,7 +495,7 @@ export default function Home() {
             <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
               <SheetTrigger asChild>
                 <Button data-testid="button-open-reports">
-                  <Users className="mr-2 h-4 w-4" />
+                  <UsersIcon className="mr-2 h-4 w-4" />
                   Report Operatori
                 </Button>
               </SheetTrigger>
@@ -559,6 +564,12 @@ export default function Home() {
               <UserCheck className="mr-2 h-4 w-4" />
               Operatori
             </TabsTrigger>
+            {userRole === "admin" && (
+              <TabsTrigger value="users" data-testid="main-tab-users">
+                <UsersIcon className="mr-2 h-4 w-4" />
+                Utenti
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="import" className="mt-6">
@@ -586,6 +597,12 @@ export default function Home() {
               onUpdateOperatorColors={handleUpdateOperatorColors}
             />
           </TabsContent>
+
+          {userRole === "admin" && (
+            <TabsContent value="users" className="mt-6">
+              <UsersTab />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
 

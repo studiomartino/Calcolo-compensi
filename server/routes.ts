@@ -307,9 +307,10 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/records/:id", async (req, res) => {
+  app.get("/api/records/:id", requireAuth, async (req, res) => {
     try {
-      const record = await storage.getRecord(req.params.id);
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const record = await storage.getRecord(id);
       if (!record) {
         return res.status(404).json({ error: "Record non trovato" });
       }
@@ -319,7 +320,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/records/check-duplicates", async (req, res) => {
+  app.post("/api/records/check-duplicates", requireAuth, async (req, res) => {
     try {
       const { records: rawRecords, mappings } = req.body;
       
@@ -363,7 +364,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/records/import", async (req, res) => {
+  app.post("/api/records/import", requireAuth, async (req, res) => {
     try {
       const { records: rawRecords, mappings, preserveCategories } = req.body;
       
@@ -424,10 +425,11 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/records/:id", async (req, res) => {
+  app.patch("/api/records/:id", requireAuth, async (req, res) => {
     try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       const updates = updateRecordSchema.parse(req.body);
-      const record = await storage.updateRecord(req.params.id, updates);
+      const record = await storage.updateRecord(id, updates);
       
       if (!record) {
         return res.status(404).json({ error: "Record non trovato" });
@@ -442,7 +444,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/records/bulk/update", async (req, res) => {
+  app.patch("/api/records/bulk/update", requireAuth, async (req, res) => {
     try {
       const { ids, updates } = updateMultipleRecordsSchema.parse(req.body);
       const updatedRecords = await storage.updateRecords(ids, updates);
@@ -455,9 +457,10 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/records/:id", async (req, res) => {
+  app.delete("/api/records/:id", requireAuth, async (req, res) => {
     try {
-      const deleted = await storage.deleteRecord(req.params.id);
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const deleted = await storage.deleteRecord(id);
       if (!deleted) {
         return res.status(404).json({ error: "Record non trovato" });
       }
@@ -467,7 +470,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/mappings", async (req, res) => {
+  app.get("/api/mappings", requireAuth, async (req, res) => {
     try {
       const mappings = await storage.getMappings();
       res.json(mappings);
@@ -476,7 +479,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/mappings", async (req, res) => {
+  app.post("/api/mappings", requireAuth, async (req, res) => {
     try {
       const data = createMappingSchema.parse(req.body);
       const mapping = await storage.createMapping(data);
@@ -489,9 +492,10 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/mappings/:id", async (req, res) => {
+  app.delete("/api/mappings/:id", requireAuth, async (req, res) => {
     try {
-      const deleted = await storage.deleteMapping(req.params.id);
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const deleted = await storage.deleteMapping(id);
       if (!deleted) {
         return res.status(404).json({ error: "Mappatura non trovata" });
       }
@@ -501,7 +505,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/analyses", async (req, res) => {
+  app.get("/api/analyses", requireAuth, async (req, res) => {
     try {
       const analyses = await storage.getAnalyses();
       res.json(analyses);
@@ -510,9 +514,10 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/analyses/:id", async (req, res) => {
+  app.get("/api/analyses/:id", requireAuth, async (req, res) => {
     try {
-      const analysis = await storage.getAnalysis(req.params.id);
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const analysis = await storage.getAnalysis(id);
       if (!analysis) {
         return res.status(404).json({ error: "Analisi non trovata" });
       }
@@ -522,9 +527,10 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/analyses/:id", async (req, res) => {
+  app.delete("/api/analyses/:id", requireAuth, async (req, res) => {
     try {
-      const deleted = await storage.deleteAnalysis(req.params.id);
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const deleted = await storage.deleteAnalysis(id);
       if (!deleted) {
         return res.status(404).json({ error: "Analisi non trovata" });
       }
@@ -534,7 +540,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/analyses/bulk-delete", async (req, res) => {
+  app.post("/api/analyses/bulk-delete", requireAuth, async (req, res) => {
     try {
       const { ids } = req.body;
       if (!Array.isArray(ids) || ids.length === 0) {
@@ -551,7 +557,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/records/archive", async (req, res) => {
+  app.post("/api/records/archive", requireAuth, async (req, res) => {
     try {
       const existingRecords = await storage.getRecords();
       
