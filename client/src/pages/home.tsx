@@ -300,15 +300,7 @@ export default function Home() {
 
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="w-full max-w-2xl space-y-8">
-          <div className="text-center space-y-2">
-            <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h2 className="text-2xl font-semibold">Importa File</h2>
-            <p className="text-muted-foreground">
-              Carica un file CSV o Excel per iniziare l'analisi dei compensi
-            </p>
-          </div>
-
+        <div className="w-full max-w-2xl">
           <FileUpload onDataLoaded={handleDataLoaded} />
         </div>
       </div>
