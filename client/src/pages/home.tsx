@@ -330,7 +330,7 @@ export default function Home() {
       <div className="space-y-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground pl-[16px] pr-[16px]">
               {records.length} record {currentDateRange && `| Periodo: ${currentDateRange}`}
             </p>
           </div>
@@ -384,7 +384,6 @@ export default function Home() {
             </Sheet>
           </div>
         </div>
-
         {isLoadingRecords ? (
           <div className="flex flex-col items-center justify-center py-12 gap-3">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
