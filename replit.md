@@ -20,6 +20,24 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Archivio Analisi**: Storico delle analisi precedenti con dettagli espandibili
 - **Esportazione Excel**: Export completo con report e dettaglio prestazioni
 - **Rilevamento Duplicati**: Controllo automatico all'importazione con modale di gestione per selezionare quali duplicati importare
+- **Sistema Autenticazione**: Login con username/password, sessioni sicure con express-session
+- **Gestione Utenti**: Tab amministrazione utenti (solo admin) con CRUD completo
+
+## Sistema Autenticazione
+
+### Credenziali Admin Default
+- Username: `admin`
+- Password: `CalcoloCompensi2026!!`
+
+### Ruoli Utente
+- **admin**: Accesso completo + gestione utenti
+- **user**: Accesso alle funzionalità principali (no gestione utenti)
+
+### Sicurezza
+- Password hashate con bcrypt (10 rounds)
+- Sessioni gestite con express-session
+- Tutti gli endpoint dati protetti con middleware `requireAuth`
+- Endpoint gestione utenti protetti con middleware `requireAdmin`
 
 ## Architettura
 
@@ -51,11 +69,13 @@ client/src/
 │   ├── operator-dashboard.tsx # Dashboard e report carta/contanti
 │   ├── analysis-archive.tsx   # Archivio analisi storiche
 │   ├── duplicate-modal.tsx    # Modale gestione duplicati importazione
+│   ├── users-tab.tsx          # Gestione utenti (solo admin)
 │   ├── theme-provider.tsx     # Provider tema dark/light
 │   └── theme-toggle.tsx       # Toggle tema
 ├── pages/
-│   └── home.tsx               # Pagina principale
-└── App.tsx                    # Root component
+│   ├── home.tsx               # Pagina principale
+│   └── login.tsx              # Pagina di login
+└── App.tsx                    # Root component con autenticazione
 
 server/
 ├── routes.ts                  # API endpoints
@@ -78,6 +98,18 @@ shared/
 - `GET /api/analyses/:id` - Dettaglio singola analisi
 - `DELETE /api/analyses/:id` - Elimina un'analisi
 - `POST /api/records/check-duplicates` - Controlla duplicati pre-importazione
+- `POST /api/records/archive` - Archivia l'analisi corrente
+
+### Autenticazione (pubblici)
+- `POST /api/auth/login` - Login utente
+- `POST /api/auth/logout` - Logout utente
+- `GET /api/auth/me` - Verifica sessione corrente
+
+### Gestione Utenti (solo admin)
+- `GET /api/users` - Lista tutti gli utenti
+- `POST /api/users` - Crea nuovo utente
+- `PATCH /api/users/:id` - Aggiorna utente
+- `DELETE /api/users/:id` - Elimina utente
 
 ## Campi Dati
 
