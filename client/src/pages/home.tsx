@@ -5,12 +5,13 @@ import { ColumnMapper, OPERATOR_COLORS } from "@/components/column-mapper";
 import { DataTable } from "@/components/data-table";
 import { OperatorDashboard } from "@/components/operator-dashboard";
 import { AnalysisArchive } from "@/components/analysis-archive";
+import { OperatorsTab } from "@/components/operators-tab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users, FolderArchive } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users, FolderArchive, UserCheck } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
@@ -503,7 +504,7 @@ export default function Home() {
       </header>
       <div className="container py-6 pl-[16px] pr-[16px]">
         <Tabs value={mainTab} onValueChange={setMainTab}>
-          <TabsList className="grid w-full max-w-md grid-cols-3 px-4">
+          <TabsList className="grid w-full max-w-xl grid-cols-4 px-4">
             <TabsTrigger value="import" data-testid="main-tab-import">
               <Upload className="mr-2 h-4 w-4" />
               Importazione
@@ -515,6 +516,10 @@ export default function Home() {
             <TabsTrigger value="archive" data-testid="main-tab-archive">
               <Archive className="mr-2 h-4 w-4" />
               Archivio ({analyses.length})
+            </TabsTrigger>
+            <TabsTrigger value="operators" data-testid="main-tab-operators">
+              <UserCheck className="mr-2 h-4 w-4" />
+              Operatori
             </TabsTrigger>
           </TabsList>
 
@@ -533,6 +538,14 @@ export default function Home() {
               onBulkDeleteAnalyses={handleBulkDeleteAnalyses}
               onOpenAnalysis={handleOpenAnalysis}
               isLoading={isLoadingAnalyses}
+            />
+          </TabsContent>
+
+          <TabsContent value="operators" className="mt-6">
+            <OperatorsTab
+              analyses={analyses}
+              operatorColors={operatorColors}
+              onUpdateOperatorColors={handleUpdateOperatorColors}
             />
           </TabsContent>
         </Tabs>
