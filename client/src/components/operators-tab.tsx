@@ -604,7 +604,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                           <td className="p-2 whitespace-nowrap">{record.data || "-"}</td>
                           <td className="p-2">{record.paziente}</td>
                           <td className="p-2">{record.prestazione}</td>
-                          <td className="p-2">{record.elementiDentali || "-"}</td>
+                          <td className="p-2 text-center">{record.elementiDentali || "-"}</td>
                           <td className="p-2 text-right">€ {record.prezzoAlPaziente.toLocaleString("it-IT")}</td>
                           <td className="p-2 text-right font-medium">€ {record.compensoOperatore.toLocaleString("it-IT")}</td>
                         </tr>
