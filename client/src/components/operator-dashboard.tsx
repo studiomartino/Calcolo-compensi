@@ -479,12 +479,12 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                         <Button
                           variant="ghost"
                           size="icon"
-                          className={`h-8 w-8 ${dailyPaymentSettings[report.operatore]?.enabled ? 'bg-primary/10 text-primary' : ''}`}
+                          className={`h-8 ${dailyPaymentSettings[report.operatore]?.enabled ? 'w-12 bg-primary/10 text-primary' : 'w-8'}`}
                           onClick={() => openDailyPaymentModal(report.operatore)}
                           data-testid={`button-daily-payment-${report.operatore}`}
                         >
                           {dailyPaymentSettings[report.operatore]?.enabled && (
-                            <span className="text-xs font-bold mr-0.5">
+                            <span className="text-xs font-bold">
                               {dailyPaymentSettings[report.operatore].type === "fisso" ? "F" : "M"}
                             </span>
                           )}
