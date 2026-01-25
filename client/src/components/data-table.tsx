@@ -15,10 +15,10 @@ function TruncatedCell({ text, maxWidth = "150px" }: { text: string; maxWidth?: 
   if (!text) return <span className="text-muted-foreground">-</span>;
   
   return (
-    <Tooltip>
+    <Tooltip delayDuration={100}>
       <TooltipTrigger asChild>
         <span 
-          className="block truncate cursor-default" 
+          className="block cursor-default line-clamp-2 text-sm leading-tight" 
           style={{ maxWidth }}
         >
           {text}
@@ -380,7 +380,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                       />
                     </TableCell>
                     <TableCell className="px-2 text-center">
-                      <Tooltip>
+                      <Tooltip delayDuration={100}>
                         <TooltipTrigger asChild>
                           <Button
                             variant="ghost"
@@ -427,7 +427,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                     </TableCell>
                     <TableCell className="px-2 text-center">
                       {record.hasAnomaly ? (
-                        <Tooltip>
+                        <Tooltip delayDuration={100}>
                           <TooltipTrigger asChild>
                             <span className="cursor-help">
                               <AlertTriangle className="h-4 w-4 text-red-500 dark:text-red-400" />
