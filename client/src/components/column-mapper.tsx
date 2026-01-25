@@ -155,7 +155,7 @@ export function ColumnMapper({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
+          <div className="space-y-2 text-right ml-[250px] mr-[250px]">
             {appFieldNames.map((field) => (
               <div key={field} className="flex items-center gap-3 py-2 border-b last:border-b-0">
                 <Label className="font-medium text-sm w-[160px] shrink-0">
@@ -236,7 +236,6 @@ export function ColumnMapper({
           </Button>
         </CardFooter>
       </Card>
-
       {savedMappings.length > 0 && (
         <Card>
           <CardHeader className="pb-4">
