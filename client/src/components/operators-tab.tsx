@@ -577,7 +577,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
               <div className="flex-1 min-h-0 border rounded-lg overflow-hidden">
                 <ScrollArea className="h-full">
                   <table className="w-full text-sm">
-                    <thead className="bg-muted/50 sticky top-0">
+                    <thead className="bg-muted sticky top-0 z-10">
                       <tr>
                         <th className="text-left p-2 font-medium">Cat.</th>
                         <th className="text-left p-2 font-medium">Data</th>
