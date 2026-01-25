@@ -347,7 +347,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                 <TableHead className="w-[120px] px-2">Operatore</TableHead>
                 <TableHead className="w-[120px] px-2">Paziente</TableHead>
                 <TableHead className="w-[160px] px-2">Prestazione</TableHead>
-                <TableHead className="w-[100px] px-2 text-center">Elem. Dentali</TableHead>
+                <TableHead className="w-[100px] px-2 text-center">Elementi</TableHead>
                 <TableHead className="w-[100px] px-2 text-right">Prezzo Paz.</TableHead>
                 <TableHead className="w-[120px] px-2 text-right">Compenso Op.</TableHead>
                 <TableHead className="w-[40px] px-2 text-center"></TableHead>
