@@ -295,7 +295,6 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           </p>
         </div>
       </div>
-
       <div className="space-y-2">
         {operatorStats.map((stats) => {
           const isExpanded = expandedOperators.has(stats.operatore);
@@ -387,7 +386,6 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           );
         })}
       </div>
-
       <Dialog open={colorEditOperator !== null} onOpenChange={() => setColorEditOperator(null)}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
@@ -420,7 +418,6 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           </div>
         </DialogContent>
       </Dialog>
-
       <Dialog 
         open={selectedOperator !== null} 
         onOpenChange={() => setSelectedOperator(null)}
@@ -437,7 +434,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           </DialogHeader>
           
           {selectedOperator && filteredStats && (
-            <div className="flex-1 overflow-hidden flex flex-col gap-4">
+            <div className="flex-1 overflow-hidden flex flex-col gap-4 pl-[4px] pr-[4px]">
               <div className="text-sm text-muted-foreground">
                 Presente in {selectedOperator.totalAnalyses} {selectedOperator.totalAnalyses === 1 ? "analisi" : "analisi"}
               </div>
