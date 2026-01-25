@@ -25,7 +25,7 @@ function App() {
         <TooltipProvider>
           <div className="min-h-screen bg-background">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <div className="container flex h-16 items-center justify-between gap-4">
+              <div className="container flex h-16 items-center justify-between gap-4 pl-[16px] pr-[16px]">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                     <Calculator className="h-5 w-5" />
