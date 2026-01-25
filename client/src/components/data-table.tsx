@@ -222,7 +222,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           <div>
             <CardTitle className="text-xl">Dati Importati</CardTitle>
             <CardDescription className="mt-1">
-              {stats.total} record totali | {stats.anomalies} anomalie | Carta: {stats.cardCount} | Contanti: {stats.cashCount}
+              {stats.total} record totali | {stats.anomalies} anomalie | Compenso A: {stats.cardCount} | Compenso B: {stats.cashCount}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -266,7 +266,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             data-testid="button-set-card"
           >
             <CreditCard className="mr-1 h-4 w-4" />
-            Carta
+            Compenso A
           </Button>
           <Button
             size="sm"
@@ -325,8 +325,8 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tutte le categorie</SelectItem>
-              <SelectItem value="card">Carta</SelectItem>
-              <SelectItem value="cash">Contanti</SelectItem>
+              <SelectItem value="card">Compenso A</SelectItem>
+              <SelectItem value="cash">Compenso B</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -399,7 +399,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                         <TooltipContent>
                           <p>Clicca per cambiare categoria</p>
                           <p className="text-xs text-muted-foreground">
-                            Attuale: {record.categoriaCompenso === "card" ? "Carta" : "Contanti"}
+                            Attuale: {record.categoriaCompenso === "card" ? "Compenso A" : "Compenso B"}
                           </p>
                         </TooltipContent>
                       </Tooltip>

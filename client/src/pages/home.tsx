@@ -235,14 +235,14 @@ export default function Home() {
         Operatore: operatore,
         "Numero Prestazioni": operatorRecords.length,
         "Compenso Totale": roundToTen(compensoTotale),
-        "Compenso Carta": roundToTen(compensoCard),
-        "Compenso Contanti": roundToTen(compensoCash),
+        "Compenso A": roundToTen(compensoCard),
+        "Compenso B": roundToTen(compensoCash),
         "Anomalie": numeroAnomalie,
       };
     });
 
     const detailData = records.map((r) => ({
-      "Categoria": r.categoriaCompenso === "card" ? "Carta" : "Contanti",
+      "Categoria": r.categoriaCompenso === "card" ? "Compenso A" : "Compenso B",
       Data: r.data || "",
       Operatore: r.operatore,
       Paziente: r.paziente,

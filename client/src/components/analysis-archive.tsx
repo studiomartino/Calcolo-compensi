@@ -269,13 +269,13 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
                       </div>
                       <div className="rounded-lg bg-muted/50 p-4">
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
-                          <CreditCard className="h-3 w-3" /> Carta
+                          <CreditCard className="h-3 w-3" /> Compenso A
                         </p>
                         <p className="text-2xl font-bold">{formatCurrency(stats.cardCompenso)}</p>
                       </div>
                       <div className="rounded-lg bg-muted/50 p-4">
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
-                          <Banknote className="h-3 w-3" /> Contanti
+                          <Banknote className="h-3 w-3" /> Compenso B
                         </p>
                         <p className="text-2xl font-bold">{formatCurrency(stats.cashCompenso)}</p>
                       </div>
@@ -289,8 +289,8 @@ export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalys
                             <TableRow>
                               <TableHead>Operatore</TableHead>
                               <TableHead className="text-right">Prestazioni</TableHead>
-                              <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><CreditCard className="h-3 w-3" /> Carta</span></TableHead>
-                              <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><Banknote className="h-3 w-3" /> Contanti</span></TableHead>
+                              <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><CreditCard className="h-3 w-3" /> Compenso A</span></TableHead>
+                              <TableHead className="text-right"><span className="flex items-center justify-end gap-1"><Banknote className="h-3 w-3" /> Compenso B</span></TableHead>
                               <TableHead className="text-right">Totale</TableHead>
                             </TableRow>
                           </TableHeader>

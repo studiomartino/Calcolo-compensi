@@ -188,7 +188,7 @@ export function OperatorDashboard({
         <Card>
           <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 gap-2">
             <CreditCard className="h-4 w-4 text-muted-foreground" />
-            <CardTitle className="text-sm font-medium">Carta</CardTitle>
+            <CardTitle className="text-sm font-medium">Compenso A</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCard)}</div>
@@ -204,7 +204,7 @@ export function OperatorDashboard({
         <Card>
           <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 gap-2">
             <Banknote className="h-4 w-4 text-muted-foreground" />
-            <CardTitle className="text-sm font-medium">Contanti</CardTitle>
+            <CardTitle className="text-sm font-medium">Compenso B</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCash)}</div>
@@ -289,7 +289,7 @@ export function OperatorDashboard({
                     <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
                       <div className="flex items-center gap-1 mb-1">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-xs font-medium text-muted-foreground">Carta</span>
+                        <span className="text-xs font-medium text-muted-foreground">Compenso A</span>
                       </div>
                       <p className="text-lg font-semibold">
                         {formatCurrency(report.compensoCardArrotondato)}
@@ -298,7 +298,7 @@ export function OperatorDashboard({
                     <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
                       <div className="flex items-center gap-1 mb-1">
                         <Banknote className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-xs font-medium text-muted-foreground">Contanti</span>
+                        <span className="text-xs font-medium text-muted-foreground">Compenso B</span>
                       </div>
                       <p className="text-lg font-semibold">
                         {formatCurrency(report.compensoCashArrotondato)}
