@@ -698,19 +698,23 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           setNewDayInput("");
         }
       }}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Pagamento a Giornata
+            <DialogTitle className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Pagamento a Giornata
+              </div>
+              {selectedDailyOperator && (
+                <span className="text-base font-semibold bg-muted/50 px-3 py-1 rounded-lg">
+                  {selectedDailyOperator}
+                </span>
+              )}
             </DialogTitle>
           </DialogHeader>
           
           {selectedDailyOperator && dailyPaymentSettings[selectedDailyOperator] && (
             <div className="space-y-6">
-              <div className="p-3 bg-muted/50 rounded-lg">
-                <p className="font-semibold">{selectedDailyOperator}</p>
-              </div>
 
               <div className="flex gap-6">
                 <div className="flex-1 space-y-4">
