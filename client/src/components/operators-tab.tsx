@@ -548,7 +548,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                   />
                 </div>
                 
-                {allMonthLabels.length > 1 && (
+                {allMonthLabels.length >= 1 && (
                   <div className="flex items-center gap-3 flex-1">
                     <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                     <span className="text-sm text-muted-foreground whitespace-nowrap min-w-[60px]">
