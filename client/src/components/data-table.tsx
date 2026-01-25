@@ -202,6 +202,55 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="flex flex-wrap items-center gap-2 p-3 bg-muted/30 rounded-lg border">
+          <span className="text-sm font-medium text-muted-foreground mr-2">Azioni:</span>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setSelectedRecords(new Set(filteredRecords.map(r => r.id)))}
+            data-testid="button-select-all-visible"
+          >
+            <CheckCircle2 className="mr-1 h-4 w-4" />
+            Seleziona tutti
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setSelectedRecords(new Set())}
+            disabled={selectedRecords.size === 0}
+            data-testid="button-deselect-all"
+          >
+            <X className="mr-1 h-4 w-4" />
+            Deseleziona tutti
+          </Button>
+          <div className="h-6 w-px bg-border mx-1" />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleBulkCategoryChange("card")}
+            disabled={selectedRecords.size === 0}
+            data-testid="button-set-card"
+          >
+            <CreditCard className="mr-1 h-4 w-4" />
+            Carta
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleBulkCategoryChange("cash")}
+            disabled={selectedRecords.size === 0}
+            data-testid="button-set-cash"
+          >
+            <Banknote className="mr-1 h-4 w-4" />
+            Contante
+          </Button>
+          {selectedRecords.size > 0 && (
+            <Badge variant="secondary" className="ml-2">
+              {selectedRecords.size} selezionati
+            </Badge>
+          )}
+        </div>
+
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -247,42 +296,6 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             </SelectContent>
           </Select>
         </div>
-
-        {selectedRecords.size > 0 && (
-          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
-            <span className="text-sm font-medium">
-              {selectedRecords.size} record selezionati
-            </span>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleBulkCategoryChange("card")}
-                data-testid="button-bulk-card"
-              >
-                <CreditCard className="mr-1 h-4 w-4" />
-                Imposta Carta
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleBulkCategoryChange("cash")}
-                data-testid="button-bulk-cash"
-              >
-                <Banknote className="mr-1 h-4 w-4" />
-                Imposta Contanti
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setSelectedRecords(new Set())}
-                data-testid="button-clear-selection"
-              >
-                Annulla selezione
-              </Button>
-            </div>
-          </div>
-        )}
 
         <ScrollArea className="rounded-lg border">
           <Table>
