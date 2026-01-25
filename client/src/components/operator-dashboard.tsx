@@ -711,8 +711,8 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
             <div className="space-y-6">
 
               <div className="flex gap-6">
-                <div className="flex-1 space-y-4">
-                  <div className="flex items-center gap-3">
+                <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex items-center gap-3 border rounded-lg p-3">
                     <Switch
                       id="daily-enabled"
                       checked={dailyPaymentSettings[selectedDailyOperator].enabled}
@@ -729,7 +729,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                   </div>
 
                   {dailyPaymentSettings[selectedDailyOperator].enabled && (
-                    <div className="space-y-2">
+                    <div className="border rounded-lg p-3 mt-2">
                       <Label htmlFor="daily-amount" className="text-sm font-medium">
                         Importo giornaliero (€)
                       </Label>
@@ -745,6 +745,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                           parseFloat(e.target.value) || 0
                         )}
                         placeholder="Es. 150"
+                        className="mt-1"
                         data-testid="input-daily-amount"
                       />
                     </div>
