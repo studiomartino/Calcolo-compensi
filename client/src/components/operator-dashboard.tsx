@@ -710,9 +710,9 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           {selectedDailyOperator && dailyPaymentSettings[selectedDailyOperator] && (
             <div className="space-y-6">
 
-              <div className="flex gap-6">
-                <div className="flex-1 flex flex-col justify-between">
-                  <div className="flex items-center gap-3 border rounded-lg p-3">
+              <div className="flex gap-4">
+                <div className="flex-1 flex flex-col justify-between gap-1">
+                  <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
                     <Switch
                       id="daily-enabled"
                       checked={dailyPaymentSettings[selectedDailyOperator].enabled}
@@ -723,15 +723,15 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                       )}
                       data-testid="switch-toggle-daily"
                     />
-                    <Label htmlFor="daily-enabled" className="text-sm font-medium">
+                    <Label htmlFor="daily-enabled" className="text-sm">
                       Attiva
                     </Label>
                   </div>
 
                   {dailyPaymentSettings[selectedDailyOperator].enabled && (
-                    <div className="border rounded-lg p-3 mt-2">
-                      <Label htmlFor="daily-amount" className="text-sm font-medium">
-                        Importo giornaliero (€)
+                    <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
+                      <Label htmlFor="daily-amount" className="text-sm whitespace-nowrap">
+                        €/giorno
                       </Label>
                       <Input
                         id="daily-amount"
@@ -744,8 +744,8 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                           "dailyAmount",
                           parseFloat(e.target.value) || 0
                         )}
-                        placeholder="Es. 150"
-                        className="mt-1"
+                        placeholder="150"
+                        className="h-7 w-24"
                         data-testid="input-daily-amount"
                       />
                     </div>
@@ -759,15 +759,15 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                       onValueChange={(value: "minimo" | "fisso") => 
                         updateDailyPaymentSetting(selectedDailyOperator, "type", value)
                       }
-                      className="space-y-2"
+                      className="gap-1"
                     >
-                      <div className="flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover-elevate">
+                      <div className="flex items-center space-x-2 border rounded-md px-2 py-1.5 cursor-pointer hover-elevate">
                         <RadioGroupItem value="minimo" id="type-minimo" />
-                        <Label htmlFor="type-minimo" className="cursor-pointer font-medium">Minimo</Label>
+                        <Label htmlFor="type-minimo" className="cursor-pointer text-sm">Minimo</Label>
                       </div>
-                      <div className="flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover-elevate">
+                      <div className="flex items-center space-x-2 border rounded-md px-2 py-1.5 cursor-pointer hover-elevate">
                         <RadioGroupItem value="fisso" id="type-fisso" />
-                        <Label htmlFor="type-fisso" className="cursor-pointer font-medium">Fisso</Label>
+                        <Label htmlFor="type-fisso" className="cursor-pointer text-sm">Fisso</Label>
                       </div>
                     </RadioGroup>
                   </div>
