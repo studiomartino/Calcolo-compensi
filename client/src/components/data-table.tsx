@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { AlertTriangle, Search, Filter, CheckCircle2, Edit2, Check, X, CreditCard, Banknote } from "lucide-react";
+import { AlertTriangle, Search, Filter, CheckCircle2, Edit2, Check, X, CreditCard, Banknote, Calendar } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,6 +10,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { CompensoRecord, CategoriaCompenso } from "@shared/schema";
+
+function TruncatedCell({ text, maxWidth = "150px" }: { text: string; maxWidth?: string }) {
+  if (!text) return <span className="text-muted-foreground">-</span>;
+  
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span 
+          className="block truncate cursor-default" 
+          style={{ maxWidth }}
+        >
+          {text}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs">
+        <p className="whitespace-pre-wrap">{text}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 interface DataTableProps {
   records: CompensoRecord[];
@@ -65,6 +85,20 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
       style: "currency",
       currency: "EUR",
     }).format(amount);
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "-";
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("it-IT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(date);
+    } catch {
+      return dateString;
+    }
   };
 
   const handleStartEdit = (id: string, field: string, currentValue: string | number) => {
@@ -300,28 +334,29 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
         <ScrollArea className="rounded-lg border">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[40px] px-2">
                   <Checkbox
                     checked={allFilteredSelected}
                     onCheckedChange={handleSelectAll}
                     data-testid="checkbox-select-all"
                   />
                 </TableHead>
-                <TableHead className="w-[100px]">Categoria</TableHead>
-                <TableHead>Operatore</TableHead>
-                <TableHead>Paziente</TableHead>
-                <TableHead>Prestazione</TableHead>
-                <TableHead>Elementi Dentali</TableHead>
-                <TableHead className="text-right">Prezzo Paziente</TableHead>
-                <TableHead className="text-right">Compenso Operatore</TableHead>
-                <TableHead className="w-[80px] text-center">Stato</TableHead>
+                <TableHead className="w-[50px] px-2 text-center">Cat.</TableHead>
+                <TableHead className="w-[90px] px-2 text-center">Data</TableHead>
+                <TableHead className="w-[120px] px-2">Operatore</TableHead>
+                <TableHead className="w-[120px] px-2">Paziente</TableHead>
+                <TableHead className="w-[160px] px-2">Prestazione</TableHead>
+                <TableHead className="w-[100px] px-2">Elem. Dentali</TableHead>
+                <TableHead className="w-[100px] px-2 text-right">Prezzo Paz.</TableHead>
+                <TableHead className="w-[120px] px-2 text-right">Compenso Op.</TableHead>
+                <TableHead className="w-[40px] px-2 text-center"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredRecords.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="h-32 text-center">
+                  <TableCell colSpan={10} className="h-32 text-center">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Filter className="h-8 w-8" />
                       <p>Nessun record trovato con i filtri selezionati</p>
@@ -332,30 +367,32 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                 filteredRecords.map((record) => (
                   <TableRow
                     key={record.id}
-                    className={record.hasAnomaly ? "bg-amber-50/50 dark:bg-amber-950/20" : ""}
+                    className={record.hasAnomaly 
+                      ? "bg-red-50 dark:bg-red-950/40 border-l-2 border-l-red-400 dark:border-l-red-600" 
+                      : ""}
                     data-testid={`row-${record.id}`}
                   >
-                    <TableCell>
+                    <TableCell className="px-2">
                       <Checkbox
                         checked={selectedRecords.has(record.id)}
                         onCheckedChange={(checked) => handleSelectRecord(record.id, checked as boolean)}
                         data-testid={`checkbox-select-${record.id}`}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-2 text-center">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             onClick={() => handleSingleCategoryToggle(record)}
-                            className="text-xl hover-elevate"
+                            className="h-8 w-8 hover-elevate"
                             data-testid={`button-category-${record.id}`}
                           >
                             {record.categoriaCompenso === "card" ? (
-                              <CreditCard className="h-4 w-4" />
+                              <CreditCard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                             ) : (
-                              <Banknote className="h-4 w-4" />
+                              <Banknote className="h-4 w-4 text-green-600 dark:text-green-400" />
                             )}
                           </Button>
                         </TooltipTrigger>
@@ -367,31 +404,34 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                         </TooltipContent>
                       </Tooltip>
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {record.operatore}
+                    <TableCell className="px-2 text-center text-sm tabular-nums">
+                      {formatDate(record.data || "")}
                     </TableCell>
-                    <TableCell>
-                      {record.paziente}
+                    <TableCell className="px-2 font-medium">
+                      <TruncatedCell text={record.operatore} maxWidth="110px" />
                     </TableCell>
-                    <TableCell>
-                      {record.prestazione}
+                    <TableCell className="px-2">
+                      <TruncatedCell text={record.paziente} maxWidth="110px" />
                     </TableCell>
-                    <TableCell>
-                      {record.elementiDentali}
+                    <TableCell className="px-2">
+                      <TruncatedCell text={record.prestazione} maxWidth="150px" />
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="px-2">
+                      <TruncatedCell text={record.elementiDentali} maxWidth="90px" />
+                    </TableCell>
+                    <TableCell className="px-2 text-right font-mono text-sm">
                       {formatCurrency(record.prezzoAlPaziente)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="px-2 text-right">
                       {renderEditableCell(record, "compensoOperatore", record.compensoOperatore, true)}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="px-2 text-center">
                       {record.hasAnomaly ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800 cursor-help">
-                              <AlertTriangle className="h-3 w-3" />
-                            </Badge>
+                            <span className="cursor-help">
+                              <AlertTriangle className="h-4 w-4 text-red-500 dark:text-red-400" />
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="font-medium">Anomalia Rilevata</p>
@@ -402,9 +442,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800">
-                          <CheckCircle2 className="h-3 w-3" />
-                        </Badge>
+                        <CheckCircle2 className="h-4 w-4 text-green-500 dark:text-green-400" />
                       )}
                     </TableCell>
                   </TableRow>
