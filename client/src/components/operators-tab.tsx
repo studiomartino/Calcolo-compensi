@@ -344,28 +344,28 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
               {isExpanded && (
                 <div className="px-4 pb-4 pt-2 border-t bg-muted/20">
                   <ul className="text-sm space-y-1">
-                    <li className="flex justify-between">
-                      <span className="text-muted-foreground">Analisi:</span>
+                    <li>
+                      <span className="text-muted-foreground">Analisi: </span>
                       <span className="font-medium">{stats.totalAnalyses}</span>
                     </li>
-                    <li className="flex justify-between">
-                      <span className="text-muted-foreground">Compenso medio mensile:</span>
+                    <li>
+                      <span className="text-muted-foreground">Compenso medio mensile: </span>
                       <span className="font-medium">{formatCurrency(stats.totalCompensation / stats.monthsCount)}</span>
                     </li>
-                    <li className="flex justify-between">
-                      <span className="text-muted-foreground">Cat. A medio mensile:</span>
+                    <li>
+                      <span className="text-muted-foreground">Cat. A medio mensile: </span>
                       <span className="font-medium">{formatCurrency(stats.totalCompensationA / stats.monthsCount)}</span>
                     </li>
-                    <li className="flex justify-between">
-                      <span className="text-muted-foreground">Cat. B medio mensile:</span>
+                    <li>
+                      <span className="text-muted-foreground">Cat. B medio mensile: </span>
                       <span className="font-medium">{formatCurrency(stats.totalCompensationB / stats.monthsCount)}</span>
                     </li>
-                    <li className="flex justify-between">
-                      <span className="text-muted-foreground">Prestazioni medie mensili:</span>
+                    <li>
+                      <span className="text-muted-foreground">Prestazioni medie mensili: </span>
                       <span className="font-medium">{(stats.totalPrestazioni / stats.monthsCount).toFixed(1)}</span>
                     </li>
-                    <li className="flex justify-between">
-                      <span className="text-muted-foreground">Giornate medie mensili:</span>
+                    <li>
+                      <span className="text-muted-foreground">Giornate medie mensili: </span>
                       <span className="font-medium">{(stats.totalGiornate / stats.monthsCount).toFixed(1)}</span>
                     </li>
                   </ul>
