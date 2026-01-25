@@ -7,9 +7,10 @@ import { OperatorDashboard } from "@/components/operator-dashboard";
 import { AnalysisArchive } from "@/components/analysis-archive";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users } from "lucide-react";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
 
@@ -18,11 +19,11 @@ type ImportStep = "upload" | "mapping";
 export default function Home() {
   const [mainTab, setMainTab] = useState<string>("import");
   const [importStep, setImportStep] = useState<ImportStep>("upload");
-  const [analysisSubTab, setAnalysisSubTab] = useState<string>("table");
   const [rawData, setRawData] = useState<Record<string, string>[]>([]);
   const [sourceColumns, setSourceColumns] = useState<string[]>([]);
   const [currentDateRange, setCurrentDateRange] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
+  const [isReportOpen, setIsReportOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -48,7 +49,6 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
       setCurrentDateRange(data.dateRange || "");
       setMainTab("analysis");
-      setAnalysisSubTab("table");
       setImportStep("upload");
       setRawData([]);
       setSourceColumns([]);
@@ -298,52 +298,45 @@ export default function Home() {
               {records.length} record {currentDateRange && `| Periodo: ${currentDateRange}`}
             </p>
           </div>
+          <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
+            <SheetTrigger asChild>
+              <Button data-testid="button-open-reports">
+                <Users className="mr-2 h-4 w-4" />
+                Report Operatori
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Report Operatori
+                </SheetTitle>
+              </SheetHeader>
+              <div className="mt-6">
+                <OperatorDashboard
+                  records={records}
+                  onExportExcel={handleExportExcel}
+                  selectedOperator={selectedOperator}
+                  onSelectOperator={setSelectedOperator}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
-        <Tabs value={analysisSubTab} onValueChange={setAnalysisSubTab}>
-          <TabsList>
-            <TabsTrigger value="table" data-testid="tab-table">
-              <Table className="mr-2 h-4 w-4" />
-              Tabella Dati
-            </TabsTrigger>
-            <TabsTrigger value="dashboard" data-testid="tab-dashboard">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Dashboard
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="table" className="mt-6">
-            {isLoadingRecords ? (
-              <div className="flex flex-col items-center justify-center py-12 gap-3">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                <p className="text-sm text-muted-foreground">Caricamento dati...</p>
-              </div>
-            ) : (
-              <DataTable
-                records={records}
-                operators={operators}
-                onCategoryChange={handleCategoryChange}
-                onRecordEdit={handleRecordEdit}
-              />
-            )}
-          </TabsContent>
-
-          <TabsContent value="dashboard" className="mt-6">
-            {isLoadingRecords ? (
-              <div className="flex flex-col items-center justify-center py-12 gap-3">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                <p className="text-sm text-muted-foreground">Caricamento dashboard...</p>
-              </div>
-            ) : (
-              <OperatorDashboard
-                records={records}
-                onExportExcel={handleExportExcel}
-                selectedOperator={selectedOperator}
-                onSelectOperator={setSelectedOperator}
-              />
-            )}
-          </TabsContent>
-        </Tabs>
+        {isLoadingRecords ? (
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Caricamento dati...</p>
+          </div>
+        ) : (
+          <DataTable
+            records={records}
+            operators={operators}
+            onCategoryChange={handleCategoryChange}
+            onRecordEdit={handleRecordEdit}
+          />
+        )}
       </div>
     );
   };
