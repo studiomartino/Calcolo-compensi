@@ -112,9 +112,9 @@ export function OperatorDashboard({
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
-            <CardTitle className="text-sm font-medium">Compenso Totale</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 gap-2">
             <Calculator className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Compenso Totale</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCompenso)}</div>
@@ -125,43 +125,41 @@ export function OperatorDashboard({
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-1">
-              <CreditCard className="h-4 w-4" /> Carta
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 gap-2">
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Carta</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCard)}</div>
-            <div className="mt-2">
-              <Progress value={globalStats.cardPercentage} className="h-2" />
-            </div>
             <p className="text-xs text-muted-foreground mt-1">
               {globalStats.cardPercentage.toFixed(1)}% del totale
             </p>
+            <div className="mt-2">
+              <Progress value={globalStats.cardPercentage} className="h-2" />
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-1">
-              <Banknote className="h-4 w-4" /> Contanti
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 gap-2">
+            <Banknote className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Contanti</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalStats.totalCash)}</div>
-            <div className="mt-2">
-              <Progress value={globalStats.cashPercentage} className="h-2" />
-            </div>
             <p className="text-xs text-muted-foreground mt-1">
               {globalStats.cashPercentage.toFixed(1)}% del totale
             </p>
+            <div className="mt-2">
+              <Progress value={globalStats.cashPercentage} className="h-2" />
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 gap-2">
-            <CardTitle className="text-sm font-medium">Operatori</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Operatori</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{globalStats.totalOperators}</div>
