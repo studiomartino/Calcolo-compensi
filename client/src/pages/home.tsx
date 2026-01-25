@@ -547,7 +547,7 @@ export default function Home({ userRole }: HomeProps) {
       </header>
       <div className="container py-6 pl-[16px] pr-[16px]">
         <Tabs value={mainTab} onValueChange={setMainTab}>
-          <TabsList className="grid w-full max-w-xl grid-cols-4 px-4">
+          <TabsList className={`grid w-full px-4 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"}`}>
             <TabsTrigger value="import" data-testid="main-tab-import">
               <Upload className="mr-2 h-4 w-4" />
               Importazione
