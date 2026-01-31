@@ -1,0 +1,192 @@
+## 1. GESTIONE ELIMINAZIONE E DISATTIVAZIONE ENTITÀ
+
+### 1.1 Problema Attuale
+
+L'eliminazione di Utenti, Laboratori, Pazienti e Prestazioni fallisce con errore 500 quando esistono lavorazioni associate (violazione foreign key).
+
+### 1.2 Soluzione: Impedire Eliminazione + Sistema di Disattivazione
+
+#### A) Impedire l'eliminazione se esistono riferimenti
+
+- Prima di eliminare, verificare lato backend se esistono lavorazioni associate
+- Se sì, restituire errore 409 (Conflict) con messaggio specifico
+- Il frontend mostra un toast/modal informativo:
+  - **Utenti:** "Impossibile eliminare l'utente: esistono lavorazioni associate. Puoi disattivarlo per impedirne l'uso futuro."
+  - **Laboratori:** "Impossibile eliminare il laboratorio: esistono lavorazioni associate. Puoi disattivarlo per impedirne l'uso futuro."
+  - **Pazienti:** "Impossibile eliminare il paziente: esistono lavorazioni associate. Puoi disattivarlo per impedirne l'uso futuro."
+  - **Prestazioni:** "Impossibile eliminare la prestazione: è associata a lavorazioni esistenti. Puoi disattivarla per impedirne l'uso futuro."
+
+#### B) Aggiungere campo "attivo" a tutte le entità
+
+Modificare il database aggiungendo a ogni tabella:
+```sql
+ALTER TABLE utenti ADD COLUMN attivo BOOLEAN DEFAULT true;
+ALTER TABLE laboratori ADD COLUMN attivo BOOLEAN DEFAULT true;
+ALTER TABLE pazienti ADD COLUMN attivo BOOLEAN DEFAULT true;
+ALTER TABLE prestazioni ADD COLUMN attivo BOOLEAN DEFAULT true;
+```
+
+#### C) Funzionalità Disattiva/Riattiva
+
+- Aggiungere un pulsante/toggle "Disattiva" nelle azioni di ogni riga (accanto a modifica/elimina)
+- Icona suggerita: occhio barrato per disattivare, occhio normale per riattivare
+- Al click, mostrare conferma: "Vuoi disattivare [nome entità]? Non sarà più selezionabile per nuove lavorazioni."
+- Le entità disattivate:
+  - Appaiono in grigio/semitrasparente negli elenchi
+  - NON appaiono nei dropdown/autocomplete durante la creazione di nuove lavorazioni
+  - Rimangono visibili nelle lavorazioni esistenti (storico)
+
+#### D) Filtro per stato attivo/disattivato
+
+In ogni sezione (Utenti, Pazienti, Laboratori, Prestazioni) aggiungere un filtro:
+
+- Dropdown o toggle con opzioni: "Tutti", "Solo attivi", "Solo disattivati"
+- Default: "Solo attivi"
+
+---
+
+## 2. CORREZIONI UI/UX
+
+### 2.1 Slider Range Età (Pazienti)
+
+**Problema:** Manca il thumb sinistro sullo slider per il range d'età.
+
+**Soluzione:** Implementare correttamente un range slider con due thumb (min e max) usando un componente appropriato.
+
+### 2.2 Autocomplete Paziente (Nuova Lavorazione)
+
+**Problema:** L'opzione "Aggiungi nuovo paziente" appare sempre, anche quando ci sono corrispondenze.
+
+**Soluzione:** Mostrare "Aggiungi nuovo paziente" SOLO quando:
+
+- Il campo di ricerca non è vuoto E
+- Non ci sono risultati corrispondenti nella lista pazienti
+
+### 2.3 Campo Prestazioni nel Modale Lavorazione
+
+**Problema:** Il campo prestazioni non è un campo ricerca con suggerimenti.
+
+**Soluzione:**
+
+- Trasformare in un campo di ricerca con autocomplete
+- Mostrare massimo 8 suggerimenti filtrati in base al testo digitato
+- RIMUOVERE completamente l'opzione "Crea nuova prestazione"
+- L'utente può solo selezionare prestazioni esistenti (e attive)
+
+### 2.4 Icone Dark/Light Mode
+
+**Problema:** Le icone sono invertite rispetto alla modalità attuale.
+
+**Soluzione:**
+
+- In modalità DARK mostrare icona sole (per passare a light)
+- In modalità LIGHT mostrare icona luna (per passare a dark)
+
+### 2.5 Validazioni Form - Campi Obbligatori
+
+**Problema:** Non è chiaro quali campi sono obbligatori.
+
+**Soluzione:**
+
+- Aggiungere asterisco rosso (*) accanto all'etichetta di ogni campo obbligatorio
+- Quando il form non è valido/completo, rendere il pulsante "Salva" semitrasparente (opacity: 0.5) e disabilitato
+
+**Campi obbligatori per entità:**
+
+**Utenti:**
+- Nome *
+- Cognome *
+- Albo *
+- Email *
+
+**Pazienti:**
+- Nome *
+- Cognome *
+- Data di nascita *
+- Sesso *
+
+**Laboratori:**
+- Nome *
+- Indirizzo *
+- Comune *
+- Telefono *
+
+**Prestazioni:**
+- Nome *
+- Codice *
+- Categoria *
+
+**Lavorazioni:**
+- Utente/Operatore *
+- Laboratorio *
+- Paziente *
+- Almeno una prestazione *
+
+---
+
+## 3. NUOVE FUNZIONALITÀ
+
+### 3.1 Filtri Prestazioni
+
+Aggiungere nella sezione Prestazioni due nuovi filtri:
+
+- **Implantoprotesi:** dropdown con opzioni "Tutti", "Sì", "No"
+- **Componenti bocca:** multi-select o checkbox per filtrare per arcata/zona (superiore, inferiore, anteriore, posteriore, ecc.)
+
+### 3.2 Autocomplete Comuni Italiani
+
+Per TUTTI i form che contengono un indirizzo:
+
+1. **Acquisire lista comuni:** Importare un file JSON con tutti i comuni italiani contenente:
+   - Nome comune
+   - Sigla provincia
+   - Nome provincia
+   - CAP (o lista CAP se multipli)
+
+2. **Campo Comune come ricerca:**
+   - Alla digitazione, mostrare dropdown con max 5 comuni filtrati
+   - Formato suggerimento: "Nome Comune (Sigla Provincia)"
+
+3. **Autocompletamento campi correlati:**
+   - Alla selezione di un comune, compilare automaticamente:
+     - Campo Provincia (sigla)
+     - Campo CAP (se univoco; se multipli, lasciare modificabile o mostrare dropdown)
+
+### 3.3 Ordinamento Colonne in Tutti gli Elenchi
+
+Per TUTTE le tabelle (Utenti, Pazienti, Laboratori, Prestazioni, Lavorazioni):
+
+1. Rendere cliccabili le intestazioni delle colonne
+
+2. Comportamento al click:
+   - Primo click → ordinamento crescente (A→Z, 0→9, date vecchie→recenti)
+   - Secondo click → ordinamento decrescente (Z→A, 9→0, date recenti→vecchie)
+   - Terzo click → torna a crescente (ciclo)
+
+3. Indicatore visivo:
+   - Freccia ↑ per ordinamento crescente
+   - Freccia ↓ per ordinamento decrescente
+   - Nessuna freccia sulle colonne non ordinate
+
+4. Funziona per tutti i tipi: testo, numeri, date, booleani
+
+---
+
+## 4. NOTE IMPLEMENTATIVE
+
+### Backend
+
+- Gestire errori foreign key restituendo codice 409 (Conflict) invece di 500
+- Aggiungere endpoint PATCH per attivare/disattivare entità
+- Filtrare per `attivo = true` nei dropdown delle lavorazioni
+
+### Frontend
+
+- Intercettare errori 409 e mostrare messaggi user-friendly
+- Aggiornare tutti i componenti lista per supportare ordinamento
+- Aggiungere stati visuali per entità disattivate
+
+### Database
+
+- Migration per aggiungere colonna `attivo` con default `true`
+- Indici sulle colonne frequentemente ordinate
