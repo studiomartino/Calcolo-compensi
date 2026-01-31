@@ -938,7 +938,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                           </span>
                         </div>
                         {isMinimo && result && (
-                          <div className="flex items-center justify-between text-sm text-muted-foreground border-t pt-2">
+                          <div className="grid grid-cols-2 text-sm text-muted-foreground border-t pt-2">
                             <div className="flex items-center gap-1">
                               <CreditCard className="h-3 w-3" />
                               <span>A: {formatCurrency(roundToTen(result.cardTotal))}</span>
