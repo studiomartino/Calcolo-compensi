@@ -835,7 +835,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                 </div>
 
                 {dailyPaymentSettings[selectedDailyOperator].enabled && (
-                  <div className="flex-1">
+                  <div className="flex-1 mt-[24px] mb-[24px] pt-[0px] pb-[0px]">
                     <RadioGroup
                       value={dailyPaymentSettings[selectedDailyOperator].type}
                       onValueChange={(value: "minimo" | "fisso") => 
