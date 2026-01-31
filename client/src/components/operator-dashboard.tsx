@@ -728,7 +728,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           setCalendarOpen(false);
         }
       }}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -744,7 +744,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
           </DialogHeader>
           
           {selectedDailyOperator && dailyPaymentSettings[selectedDailyOperator] && (
-            <div className="space-y-6">
+            <div className="space-y-6 flex-1 flex flex-col min-h-0">
 
               <div className="flex gap-4">
                 <div className="flex-1 flex flex-col justify-between gap-1">
@@ -859,14 +859,14 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
               {dailyPaymentSettings[selectedDailyOperator].enabled && (
                 <>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
+                  <div className="space-y-3 flex-1 flex flex-col min-h-0">
+                    <div className="flex items-center justify-between shrink-0">
                       <Label className="text-sm font-medium">
                         Giornate lavorate ({dailyPaymentSettings[selectedDailyOperator].workedDays.length})
                       </Label>
                     </div>
 
-                    <div className="max-h-56 overflow-y-auto border rounded-lg">
+                    <div className="flex-1 min-h-[200px] max-h-[250px] overflow-y-auto border rounded-lg">
                       <div className="divide-y">
                         {dailyPaymentSettings[selectedDailyOperator].workedDays.map((day) => {
                           const dayRecords = records.filter(
@@ -930,7 +930,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                     const isMinimo = settings?.type === "minimo";
                     
                     return (
-                      <div className="p-3 bg-primary/10 rounded-lg space-y-2">
+                      <div className="p-3 bg-primary/10 rounded-lg space-y-2 shrink-0">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">Compenso calcolato:</span>
                           <span className="text-lg font-bold">
