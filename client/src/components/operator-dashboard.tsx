@@ -21,7 +21,15 @@ interface DailyPaymentSettings {
   enabled: boolean;
   type: "minimo" | "fisso";
   dailyAmount: number;
+  dailyAmountA: number; // Compenso minimo A (card)
+  dailyAmountB: number; // Compenso minimo B (cash)
   workedDays: string[]; // Array of date strings YYYY-MM-DD
+}
+
+interface DailyPaymentResult {
+  total: number;
+  cardTotal: number;
+  cashTotal: number;
 }
 
 interface OperatorDashboardProps {
@@ -105,27 +113,53 @@ export function OperatorDashboard({
   };
 
   // Calcola il compenso giornaliero per un operatore
-  const calculateDailyPayment = (operatore: string): number | null => {
+  const calculateDailyPayment = (operatore: string): DailyPaymentResult | null => {
     const settings = dailyPaymentSettings[operatore];
     if (!settings?.enabled) return null;
 
     const workedDays = settings.workedDays;
-    if (workedDays.length === 0) return 0;
+    if (workedDays.length === 0) return { total: 0, cardTotal: 0, cashTotal: 0 };
 
     if (settings.type === "fisso") {
-      // Fisso: importo fisso per ogni giorno
-      return workedDays.length * settings.dailyAmount;
+      // Fisso: importo fisso per ogni giorno (tutto come Compenso A)
+      const total = workedDays.length * settings.dailyAmount;
+      return { total, cardTotal: total, cashTotal: 0 };
     } else {
-      // Minimo: per ogni giorno, prendi il maggiore tra minimo e somma prestazioni
-      let total = 0;
+      // Minimo: per ogni giorno, confronta somma reale (A+B) con somma minimi (A+B)
+      let totalCard = 0;
+      let totalCash = 0;
+      const minA = settings.dailyAmountA || 0;
+      const minB = settings.dailyAmountB || 0;
+      const minSum = minA + minB;
+
       workedDays.forEach((day) => {
         const dayRecords = records.filter(
           (r) => r.operatore === operatore && r.data && parseItalianDate(r.data) === day
         );
-        const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
-        total += Math.max(settings.dailyAmount, daySum);
+        const dayCard = dayRecords
+          .filter((r) => r.categoriaCompenso === "card")
+          .reduce((sum, r) => sum + r.compensoOperatore, 0);
+        const dayCash = dayRecords
+          .filter((r) => r.categoriaCompenso === "cash")
+          .reduce((sum, r) => sum + r.compensoOperatore, 0);
+        const dayRealSum = dayCard + dayCash;
+
+        // Se la somma reale >= somma minimi, usa valori reali
+        // Altrimenti usa i minimi
+        if (dayRealSum >= minSum) {
+          totalCard += dayCard;
+          totalCash += dayCash;
+        } else {
+          totalCard += minA;
+          totalCash += minB;
+        }
       });
-      return total;
+
+      return { 
+        total: totalCard + totalCash, 
+        cardTotal: totalCard, 
+        cashTotal: totalCash 
+      };
     }
   };
 
@@ -141,6 +175,8 @@ export function OperatorDashboard({
           enabled: false,
           type: "minimo",
           dailyAmount: 0,
+          dailyAmountA: 0,
+          dailyAmountB: 0,
           workedDays,
         },
       }));
@@ -498,7 +534,11 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                   {(() => {
                     const dailyPayment = calculateDailyPayment(report.operatore);
                     const settings = dailyPaymentSettings[report.operatore];
-                    const isDailyEnabled = settings?.enabled;
+                    const isDailyEnabled = settings?.enabled && dailyPayment !== null;
+                    
+                    const displayTotal = isDailyEnabled ? dailyPayment.total : report.compensoTotale;
+                    const displayCard = isDailyEnabled ? dailyPayment.cardTotal : report.compensoCard;
+                    const displayCash = isDailyEnabled ? dailyPayment.cashTotal : report.compensoCash;
                     
                     return (
                       <>
@@ -508,7 +548,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                               Compenso Totale
                             </span>
                             <span className="text-xl font-bold" style={{ color: hexColor }}>
-                              {formatCurrency(roundToTen(isDailyEnabled && dailyPayment !== null ? dailyPayment : report.compensoTotale))}
+                              {formatCurrency(roundToTen(displayTotal))}
                             </span>
                           </div>
                         </div>
@@ -519,7 +559,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                             <div className="flex items-center justify-between">
                               <CreditCard className="h-4 w-4 text-muted-foreground" />
                               <span className="text-lg font-semibold">
-                                {formatCurrency(report.compensoCardArrotondato)}
+                                {formatCurrency(roundToTen(displayCard))}
                               </span>
                             </div>
                           </div>
@@ -528,7 +568,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                             <div className="flex items-center justify-between">
                               <Banknote className="h-4 w-4 text-muted-foreground" />
                               <span className="text-lg font-semibold">
-                                {formatCurrency(report.compensoCashArrotondato)}
+                                {formatCurrency(roundToTen(displayCash))}
                               </span>
                             </div>
                           </div>
@@ -724,7 +764,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                     </Label>
                   </div>
 
-                  {dailyPaymentSettings[selectedDailyOperator].enabled && (
+                  {dailyPaymentSettings[selectedDailyOperator].enabled && dailyPaymentSettings[selectedDailyOperator].type === "fisso" && (
                     <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
                       <Label htmlFor="daily-amount" className="text-sm whitespace-nowrap">
                         €/giorno
@@ -744,6 +784,52 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                         className="h-7 w-24"
                         data-testid="input-daily-amount"
                       />
+                    </div>
+                  )}
+                  {dailyPaymentSettings[selectedDailyOperator].enabled && dailyPaymentSettings[selectedDailyOperator].type === "minimo" && (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />
+                        <Label htmlFor="daily-amount-a" className="text-sm whitespace-nowrap">
+                          Min A
+                        </Label>
+                        <Input
+                          id="daily-amount-a"
+                          type="number"
+                          step="10"
+                          min="0"
+                          value={dailyPaymentSettings[selectedDailyOperator].dailyAmountA || ""}
+                          onChange={(e) => updateDailyPaymentSetting(
+                            selectedDailyOperator,
+                            "dailyAmountA",
+                            parseFloat(e.target.value) || 0
+                          )}
+                          placeholder="100"
+                          className="h-7 w-20"
+                          data-testid="input-daily-amount-a"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
+                        <Banknote className="h-4 w-4 text-muted-foreground" />
+                        <Label htmlFor="daily-amount-b" className="text-sm whitespace-nowrap">
+                          Min B
+                        </Label>
+                        <Input
+                          id="daily-amount-b"
+                          type="number"
+                          step="10"
+                          min="0"
+                          value={dailyPaymentSettings[selectedDailyOperator].dailyAmountB || ""}
+                          onChange={(e) => updateDailyPaymentSetting(
+                            selectedDailyOperator,
+                            "dailyAmountB",
+                            parseFloat(e.target.value) || 0
+                          )}
+                          placeholder="50"
+                          className="h-7 w-20"
+                          data-testid="input-daily-amount-b"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -838,14 +924,34 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                     </div>
                   </div>
 
-                  <div className="p-3 bg-primary/10 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Compenso calcolato:</span>
-                      <span className="text-lg font-bold">
-                        {formatCurrency(roundToTen(calculateDailyPayment(selectedDailyOperator) || 0))}
-                      </span>
-                    </div>
-                  </div>
+                  {(() => {
+                    const result = calculateDailyPayment(selectedDailyOperator);
+                    const settings = dailyPaymentSettings[selectedDailyOperator];
+                    const isMinimo = settings?.type === "minimo";
+                    
+                    return (
+                      <div className="p-3 bg-primary/10 rounded-lg space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Compenso calcolato:</span>
+                          <span className="text-lg font-bold">
+                            {formatCurrency(roundToTen(result?.total || 0))}
+                          </span>
+                        </div>
+                        {isMinimo && result && (
+                          <div className="flex items-center justify-between text-sm text-muted-foreground border-t pt-2">
+                            <div className="flex items-center gap-1">
+                              <CreditCard className="h-3 w-3" />
+                              <span>A: {formatCurrency(roundToTen(result.cardTotal))}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Banknote className="h-3 w-3" />
+                              <span>B: {formatCurrency(roundToTen(result.cashTotal))}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </>
               )}
 
