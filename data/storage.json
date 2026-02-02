@@ -17946,5 +17946,12 @@
       "role": "user",
       "createdAt": "2026-01-25T14:55:00.666Z"
     }
+  ],
+  "paymentStatus": [
+    {
+      "operatore": "FRANCESCA GE",
+      "paidA": false,
+      "paidB": false
+    }
   ]
 }
