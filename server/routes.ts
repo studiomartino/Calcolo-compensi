@@ -63,6 +63,11 @@ const createMappingSchema = z.object({
   mappings: z.record(z.string(), z.string()),
 });
 
+const updatePaymentStatusSchema = z.object({
+  field: z.enum(['paidA', 'paidB']),
+  value: z.boolean(),
+});
+
 function parseNumber(value: string): number {
   if (!value || value.trim() === "") return 0;
   const cleaned = value.replace(/[€$\s]/g, "").replace(",", ".");
@@ -582,12 +587,13 @@ export async function registerRoutes(
   app.patch("/api/payment-status/:operatore", requireAuth, async (req, res) => {
     try {
       const operatore = req.params.operatore as string;
-      const { field, value } = req.body;
+      const parsed = updatePaymentStatusSchema.safeParse(req.body);
       
-      if (!field || !['paidA', 'paidB'].includes(field)) {
-        return res.status(400).json({ error: "Campo non valido" });
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Dati non validi", details: parsed.error.errors });
       }
       
+      const { field, value } = parsed.data;
       const status = await storage.updatePaymentStatus(operatore, field, value);
       res.json(status);
     } catch (error) {

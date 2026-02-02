@@ -17,6 +17,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Navigazione a Tab**: Menu con tre sezioni principali (Importazione, Analisi, Archivio)
 - **Rilevamento Anomalie**: Evidenziazione automatica quando compenso operatore = prezzo paziente
 - **Dashboard Operatori**: Report con compensi arrotondati alla decina, statistiche carta/contanti
+- **Badge Pagato**: Badge cliccabile in ogni riquadro Compenso A e B per tracciare lo stato di pagamento (verde = pagato, rosso = non pagato)
 - **Archivio Analisi**: Storico delle analisi precedenti con dettagli espandibili
 - **Esportazione Excel**: Export completo con report e dettaglio prestazioni
 - **Rilevamento Duplicati**: Controllo automatico all'importazione con modale di gestione per selezionare quali duplicati importare

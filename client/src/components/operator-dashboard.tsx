@@ -603,17 +603,18 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                               </span>
                             </div>
                             <div className="flex justify-center mt-2">
-                              <Badge
-                                className={`cursor-pointer text-xs px-3 py-0.5 ${
+                              <button
+                                className={`text-xs font-medium rounded-full px-3 py-1 transition-colors ${
                                   paymentStatusMap[report.operatore]?.paidA
-                                    ? 'bg-green-500 hover:bg-green-600 text-white'
-                                    : 'bg-red-500 hover:bg-red-600 text-white'
-                                }`}
-                                onClick={() => togglePaymentStatus(report.operatore, 'paidA')}
+                                    ? 'bg-green-500 dark:bg-green-600 text-white'
+                                    : 'bg-red-500 dark:bg-red-600 text-white'
+                                } ${updatePaymentStatusMutation.isPending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover-elevate'}`}
+                                onClick={() => !updatePaymentStatusMutation.isPending && togglePaymentStatus(report.operatore, 'paidA')}
+                                disabled={updatePaymentStatusMutation.isPending}
                                 data-testid={`badge-paid-a-${report.operatore}`}
                               >
                                 Pagato
-                              </Badge>
+                              </button>
                             </div>
                           </div>
                           <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
@@ -625,17 +626,18 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                               </span>
                             </div>
                             <div className="flex justify-center mt-2">
-                              <Badge
-                                className={`cursor-pointer text-xs px-3 py-0.5 ${
+                              <button
+                                className={`text-xs font-medium rounded-full px-3 py-1 transition-colors ${
                                   paymentStatusMap[report.operatore]?.paidB
-                                    ? 'bg-green-500 hover:bg-green-600 text-white'
-                                    : 'bg-red-500 hover:bg-red-600 text-white'
-                                }`}
-                                onClick={() => togglePaymentStatus(report.operatore, 'paidB')}
+                                    ? 'bg-green-500 dark:bg-green-600 text-white'
+                                    : 'bg-red-500 dark:bg-red-600 text-white'
+                                } ${updatePaymentStatusMutation.isPending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover-elevate'}`}
+                                onClick={() => !updatePaymentStatusMutation.isPending && togglePaymentStatus(report.operatore, 'paidB')}
+                                disabled={updatePaymentStatusMutation.isPending}
                                 data-testid={`badge-paid-b-${report.operatore}`}
                               >
                                 Pagato
-                              </Badge>
+                              </button>
                             </div>
                           </div>
                         </div>
