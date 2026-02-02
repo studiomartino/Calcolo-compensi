@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import bcrypt from "bcryptjs";
-import type { CompensoRecord, InsertCompensoRecord, ColumnMapping, InsertColumnMapping, Analysis, InsertAnalysis, User, InsertUser, PublicUser } from "@shared/schema";
+import type { CompensoRecord, InsertCompensoRecord, ColumnMapping, InsertColumnMapping, Analysis, InsertAnalysis, User, InsertUser, PublicUser, OperatorPaymentStatus } from "@shared/schema";
 
 const DATA_FILE = "./data/storage.json";
 
@@ -10,6 +10,7 @@ interface StorageData {
   mappings: ColumnMapping[];
   analyses: Analysis[];
   users: User[];
+  paymentStatus: OperatorPaymentStatus[];
 }
 
 export interface IStorage {
@@ -39,6 +40,10 @@ export interface IStorage {
   updateUserPassword(id: string, newPassword: string): Promise<boolean>;
   deleteUser(id: string): Promise<boolean>;
   validateUser(username: string, password: string): Promise<User | null>;
+
+  getPaymentStatus(): Promise<OperatorPaymentStatus[]>;
+  updatePaymentStatus(operatore: string, field: 'paidA' | 'paidB', value: boolean): Promise<OperatorPaymentStatus>;
+  clearPaymentStatus(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -46,12 +51,14 @@ export class MemStorage implements IStorage {
   private mappings: Map<string, ColumnMapping>;
   private analyses: Map<string, Analysis>;
   private users: Map<string, User>;
+  private paymentStatus: Map<string, OperatorPaymentStatus>;
 
   constructor() {
     this.records = new Map();
     this.mappings = new Map();
     this.analyses = new Map();
     this.users = new Map();
+    this.paymentStatus = new Map();
     this.loadFromFile();
     this.ensureAdminUser();
   }
@@ -91,6 +98,9 @@ export class MemStorage implements IStorage {
         if (parsed.users) {
           parsed.users.forEach(u => this.users.set(u.id, u));
         }
+        if (parsed.paymentStatus) {
+          parsed.paymentStatus.forEach(p => this.paymentStatus.set(p.operatore, p));
+        }
         console.log(`Loaded ${this.records.size} records, ${this.mappings.size} mappings, ${this.analyses.size} analyses, ${this.users.size} users from file`);
       }
     } catch (error) {
@@ -105,6 +115,7 @@ export class MemStorage implements IStorage {
         mappings: Array.from(this.mappings.values()),
         analyses: Array.from(this.analyses.values()),
         users: Array.from(this.users.values()),
+        paymentStatus: Array.from(this.paymentStatus.values()),
       };
       
       const dir = "./data";
@@ -335,6 +346,26 @@ export class MemStorage implements IStorage {
 
     const isValid = await bcrypt.compare(password, user.password);
     return isValid ? user : null;
+  }
+
+  async getPaymentStatus(): Promise<OperatorPaymentStatus[]> {
+    return Array.from(this.paymentStatus.values());
+  }
+
+  async updatePaymentStatus(operatore: string, field: 'paidA' | 'paidB', value: boolean): Promise<OperatorPaymentStatus> {
+    let status = this.paymentStatus.get(operatore);
+    if (!status) {
+      status = { operatore, paidA: false, paidB: false };
+    }
+    status[field] = value;
+    this.paymentStatus.set(operatore, status);
+    this.saveToFile();
+    return status;
+  }
+
+  async clearPaymentStatus(): Promise<void> {
+    this.paymentStatus.clear();
+    this.saveToFile();
   }
 }
 

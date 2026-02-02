@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Users, AlertTriangle, Calculator, Download, CreditCard, Banknote, Check, X, Edit2, FileSpreadsheet, FileText, Copy, Calendar as CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import type { CompensoRecord, OperatorReport } from "@shared/schema";
+import type { CompensoRecord, OperatorReport, OperatorPaymentStatus } from "@shared/schema";
 
 interface DailyPaymentSettings {
   enabled: boolean;
@@ -61,6 +63,44 @@ export function OperatorDashboard({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const { toast } = useToast();
+
+  // Query payment status
+  const { data: paymentStatusList = [] } = useQuery<OperatorPaymentStatus[]>({
+    queryKey: ['/api/payment-status'],
+  });
+
+  // Create a map for easy lookup
+  const paymentStatusMap = useMemo(() => {
+    const map: Record<string, OperatorPaymentStatus> = {};
+    paymentStatusList.forEach(status => {
+      map[status.operatore] = status;
+    });
+    return map;
+  }, [paymentStatusList]);
+
+  // Mutation to update payment status
+  const updatePaymentStatusMutation = useMutation({
+    mutationFn: async ({ operatore, field, value }: { operatore: string; field: 'paidA' | 'paidB'; value: boolean }) => {
+      const res = await apiRequest('PATCH', `/api/payment-status/${encodeURIComponent(operatore)}`, { field, value });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/payment-status'] });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Impossibile aggiornare lo stato di pagamento",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const togglePaymentStatus = (operatore: string, field: 'paidA' | 'paidB') => {
+    const currentStatus = paymentStatusMap[operatore];
+    const currentValue = currentStatus ? currentStatus[field] : false;
+    updatePaymentStatusMutation.mutate({ operatore, field, value: !currentValue });
+  };
 
   const roundToTen = (value: number): number => {
     return Math.round(value / 10) * 10;
@@ -562,6 +602,19 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                                 {formatCurrency(roundToTen(displayCard))}
                               </span>
                             </div>
+                            <div className="flex justify-center mt-2">
+                              <Badge
+                                className={`cursor-pointer text-xs px-3 py-0.5 ${
+                                  paymentStatusMap[report.operatore]?.paidA
+                                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                                    : 'bg-red-500 hover:bg-red-600 text-white'
+                                }`}
+                                onClick={() => togglePaymentStatus(report.operatore, 'paidA')}
+                                data-testid={`badge-paid-a-${report.operatore}`}
+                              >
+                                Pagato
+                              </Badge>
+                            </div>
                           </div>
                           <div className="rounded-md bg-background/80 dark:bg-background/40 p-3 border">
                             <span className="text-xs font-medium text-muted-foreground">Compenso B</span>
@@ -570,6 +623,19 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                               <span className="text-lg font-semibold">
                                 {formatCurrency(roundToTen(displayCash))}
                               </span>
+                            </div>
+                            <div className="flex justify-center mt-2">
+                              <Badge
+                                className={`cursor-pointer text-xs px-3 py-0.5 ${
+                                  paymentStatusMap[report.operatore]?.paidB
+                                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                                    : 'bg-red-500 hover:bg-red-600 text-white'
+                                }`}
+                                onClick={() => togglePaymentStatus(report.operatore, 'paidB')}
+                                data-testid={`badge-paid-b-${report.operatore}`}
+                              >
+                                Pagato
+                              </Badge>
                             </div>
                           </div>
                         </div>

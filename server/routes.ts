@@ -570,5 +570,39 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/payment-status", requireAuth, async (req, res) => {
+    try {
+      const status = await storage.getPaymentStatus();
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero stato pagamenti" });
+    }
+  });
+
+  app.patch("/api/payment-status/:operatore", requireAuth, async (req, res) => {
+    try {
+      const operatore = req.params.operatore as string;
+      const { field, value } = req.body;
+      
+      if (!field || !['paidA', 'paidB'].includes(field)) {
+        return res.status(400).json({ error: "Campo non valido" });
+      }
+      
+      const status = await storage.updatePaymentStatus(operatore, field, value);
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nell'aggiornamento stato pagamento" });
+    }
+  });
+
+  app.delete("/api/payment-status", requireAuth, async (req, res) => {
+    try {
+      await storage.clearPaymentStatus();
+      res.json({ message: "Stato pagamenti resettato" });
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel reset stato pagamenti" });
+    }
+  });
+
   return httpServer;
 }

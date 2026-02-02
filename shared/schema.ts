@@ -107,3 +107,11 @@ export type LoginCredentials = z.infer<typeof loginSchema>;
 
 export const publicUserSchema = userSchema.omit({ password: true });
 export type PublicUser = z.infer<typeof publicUserSchema>;
+
+export const operatorPaymentStatusSchema = z.object({
+  operatore: z.string(),
+  paidA: z.boolean().default(false),
+  paidB: z.boolean().default(false),
+});
+
+export type OperatorPaymentStatus = z.infer<typeof operatorPaymentStatusSchema>;
