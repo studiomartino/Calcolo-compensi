@@ -579,6 +579,18 @@ export default function Home({ userRole }: HomeProps) {
             {renderImportContent()}
           </TabsContent>
 
+          <TabsContent value="analysis" className="flex-1 min-h-0 flex flex-col">
+            <DataTable
+              records={records}
+              onRecordEdit={handleRecordEdit}
+              onBulkCategoryUpdate={handleBulkCategoryUpdate}
+              isLoading={isLoadingRecords}
+              selectedOperator={selectedOperator}
+              onSelectOperator={setSelectedOperator}
+              operatorColors={operatorColors}
+            />
+          </TabsContent>
+
           <TabsContent value="archive" className="flex-1 min-h-0 overflow-y-auto">
             <AnalysisArchive
               analyses={analyses}
