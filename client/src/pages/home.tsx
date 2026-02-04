@@ -496,33 +496,30 @@ export default function Home({ userRole }: HomeProps) {
       <div className="flex-1 container py-4 px-4 min-h-0 flex flex-col">
         <Tabs value={mainTab} onValueChange={setMainTab} className="flex-1 flex flex-col min-h-0">
           <div className="flex items-center justify-between gap-4 mb-4 shrink-0">
-            <div className="flex items-center gap-4 flex-1">
-              <h1 className="text-xl font-bold tracking-tight shrink-0">Gestione Compensi</h1>
-              <TabsList className={`grid px-2 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"} flex-1`}>
-                <TabsTrigger value="import" data-testid="main-tab-import" className="h-8 text-xs">
-                  <Upload className="mr-1.5 h-3.5 w-3.5" />
-                  Importazione
+            <TabsList className={`grid px-2 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"} flex-1`}>
+              <TabsTrigger value="import" data-testid="main-tab-import" className="h-8 text-xs">
+                <Upload className="mr-1.5 h-3.5 w-3.5" />
+                Importazione
+              </TabsTrigger>
+              <TabsTrigger value="analysis" data-testid="main-tab-analysis" className="h-8 text-xs">
+                <Table className="mr-1.5 h-3.5 w-3.5" />
+                Analisi
+              </TabsTrigger>
+              <TabsTrigger value="archive" data-testid="main-tab-archive" className="h-8 text-xs">
+                <Archive className="mr-1.5 h-3.5 w-3.5" />
+                Storico Analisi ({analyses.length})
+              </TabsTrigger>
+              <TabsTrigger value="operators" data-testid="main-tab-operators" className="h-8 text-xs">
+                <UserCheck className="mr-1.5 h-3.5 w-3.5" />
+                Operatori
+              </TabsTrigger>
+              {userRole === "admin" && (
+                <TabsTrigger value="users" data-testid="main-tab-users" className="h-8 text-xs">
+                  <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
+                  Utenti
                 </TabsTrigger>
-                <TabsTrigger value="analysis" data-testid="main-tab-analysis" className="h-8 text-xs">
-                  <Table className="mr-1.5 h-3.5 w-3.5" />
-                  Analisi
-                </TabsTrigger>
-                <TabsTrigger value="archive" data-testid="main-tab-archive" className="h-8 text-xs">
-                  <Archive className="mr-1.5 h-3.5 w-3.5" />
-                  Storico Analisi ({analyses.length})
-                </TabsTrigger>
-                <TabsTrigger value="operators" data-testid="main-tab-operators" className="h-8 text-xs">
-                  <UserCheck className="mr-1.5 h-3.5 w-3.5" />
-                  Operatori
-                </TabsTrigger>
-                {userRole === "admin" && (
-                  <TabsTrigger value="users" data-testid="main-tab-users" className="h-8 text-xs">
-                    <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
-                    Utenti
-                  </TabsTrigger>
-                )}
-              </TabsList>
-            </div>
+              )}
+            </TabsList>
 
             <div className="flex items-center gap-2">
               <AlertDialog>
