@@ -52,7 +52,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 
 ### Backend (server/)
 - Express.js
-- In-memory storage (MemStorage)
+- PostgreSQL database con Drizzle ORM
 - API REST per CRUD operazioni
 
 ### Shared (shared/)
@@ -80,7 +80,8 @@ client/src/
 
 server/
 ├── routes.ts                  # API endpoints
-└── storage.ts                 # In-memory storage
+├── storage.ts                 # Database storage con Drizzle ORM
+└── db.ts                      # Connessione PostgreSQL
 
 shared/
 └── schema.ts                  # Tipi e validazione
