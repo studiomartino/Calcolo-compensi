@@ -494,98 +494,101 @@ export default function Home({ userRole }: HomeProps) {
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <header className="border-b bg-card shrink-0">
-        <div className="container py-3 px-4 flex items-center justify-between">
+        <div className="container py-3 px-4">
           <h1 className="text-xl font-bold tracking-tight">Gestione Compensi</h1>
-          <div className="flex items-center gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
-                  <FolderArchive className="mr-1.5 h-3.5 w-3.5" />
-                  Archivia Analisi
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    L'analisi corrente con {records.length} record verrà spostata nell'archivio.
-                    I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annulla</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
-                    Archivia
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
-              <SheetTrigger asChild>
-                <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
-                  <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
-                  Report Operatori
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5" />
-                    Report Operatori
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="mt-6">
-                  <OperatorDashboard
-                    records={records}
-                    onExportExcel={handleExportExcel}
-                    selectedOperator={selectedOperator}
-                    onSelectOperator={setSelectedOperator}
-                    onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
-                    dateRange={currentDateRange}
-                    operatorColors={operatorColors}
-                  />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
         </div>
       </header>
       <div className="flex-1 container py-4 px-4 min-h-0 flex flex-col">
         <Tabs value={mainTab} onValueChange={setMainTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className={`grid w-full px-2 shrink-0 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"}`}>
-            <TabsTrigger value="import" data-testid="main-tab-import" className="h-8 text-xs">
-              <Upload className="mr-1.5 h-3.5 w-3.5" />
-              Importazione
-            </TabsTrigger>
-            <TabsTrigger value="analysis" data-testid="main-tab-analysis" className="h-8 text-xs">
-              <Table className="mr-1.5 h-3.5 w-3.5" />
-              Analisi
-            </TabsTrigger>
-            <TabsTrigger value="archive" data-testid="main-tab-archive" className="h-8 text-xs">
-              <Archive className="mr-1.5 h-3.5 w-3.5" />
-              Archivio ({analyses.length})
-            </TabsTrigger>
-            <TabsTrigger value="operators" data-testid="main-tab-operators" className="h-8 text-xs">
-              <UserCheck className="mr-1.5 h-3.5 w-3.5" />
-              Operatori
-            </TabsTrigger>
-            {userRole === "admin" && (
-              <TabsTrigger value="users" data-testid="main-tab-users" className="h-8 text-xs">
-                <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
-                Utenti
+          <div className="flex items-center justify-between gap-4 mb-4 shrink-0">
+            <TabsList className={`grid px-2 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"} flex-1`}>
+              <TabsTrigger value="import" data-testid="main-tab-import" className="h-8 text-xs">
+                <Upload className="mr-1.5 h-3.5 w-3.5" />
+                Importazione
               </TabsTrigger>
-            )}
-          </TabsList>
+              <TabsTrigger value="analysis" data-testid="main-tab-analysis" className="h-8 text-xs">
+                <Table className="mr-1.5 h-3.5 w-3.5" />
+                Analisi
+              </TabsTrigger>
+              <TabsTrigger value="archive" data-testid="main-tab-archive" className="h-8 text-xs">
+                <Archive className="mr-1.5 h-3.5 w-3.5" />
+                Archivio ({analyses.length})
+              </TabsTrigger>
+              <TabsTrigger value="operators" data-testid="main-tab-operators" className="h-8 text-xs">
+                <UserCheck className="mr-1.5 h-3.5 w-3.5" />
+                Operatori
+              </TabsTrigger>
+              {userRole === "admin" && (
+                <TabsTrigger value="users" data-testid="main-tab-users" className="h-8 text-xs">
+                  <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
+                  Utenti
+                </TabsTrigger>
+              )}
+            </TabsList>
 
-          <TabsContent value="import" className="mt-4 flex-1 min-h-0 overflow-y-auto">
+            <div className="flex items-center gap-2">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
+                    <FolderArchive className="mr-1.5 h-3.5 w-3.5" />
+                    Archivia Analisi
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      L'analisi corrente con {records.length} record verrà spostata nell'archivio.
+                      I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annulla</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
+                      Archivia
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
+                <SheetTrigger asChild>
+                  <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
+                    <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
+                    Report Operatori
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5" />
+                      Report Operatori
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <OperatorDashboard
+                      records={records}
+                      onExportExcel={handleExportExcel}
+                      selectedOperator={selectedOperator}
+                      onSelectOperator={setSelectedOperator}
+                      onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
+                      dateRange={currentDateRange}
+                      operatorColors={operatorColors}
+                    />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+
+          <TabsContent value="import" className="flex-1 min-h-0 overflow-y-auto">
             {renderImportContent()}
           </TabsContent>
 
-          <TabsContent value="analysis" className="mt-4 flex-1 min-h-0 flex flex-col">
+          <TabsContent value="analysis" className="flex-1 min-h-0 flex flex-col">
             {renderAnalysisContent()}
           </TabsContent>
 
-          <TabsContent value="archive" className="mt-4 flex-1 min-h-0 overflow-y-auto">
+          <TabsContent value="archive" className="flex-1 min-h-0 overflow-y-auto">
             <AnalysisArchive
               analyses={analyses}
               onDeleteAnalysis={handleDeleteAnalysis}
@@ -595,7 +598,7 @@ export default function Home({ userRole }: HomeProps) {
             />
           </TabsContent>
 
-          <TabsContent value="operators" className="mt-4 flex-1 min-h-0 overflow-y-auto">
+          <TabsContent value="operators" className="flex-1 min-h-0 overflow-y-auto">
             <OperatorsTab
               analyses={analyses}
               operatorColors={operatorColors}
@@ -604,7 +607,7 @@ export default function Home({ userRole }: HomeProps) {
           </TabsContent>
 
           {userRole === "admin" && (
-            <TabsContent value="users" className="mt-4 flex-1 min-h-0 overflow-y-auto">
+            <TabsContent value="users" className="flex-1 min-h-0 overflow-y-auto">
               <UsersTab />
             </TabsContent>
           )}
