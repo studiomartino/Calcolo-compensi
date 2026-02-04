@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { CompensoRecord, CategoriaCompenso } from "@shared/schema";
 
 function TruncatedCell({ text, maxWidth = "150px" }: { text: string; maxWidth?: string }) {
@@ -401,20 +400,20 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           </Select>
         </div>
 
-        <ScrollArea className="flex-1 rounded-md border min-h-0 bg-card overflow-auto">
-          <Table className="relative border-collapse">
-            <TableHeader className="sticky top-0 z-20 bg-muted/95 backdrop-blur-sm shadow-sm">
+        <div className="flex-1 rounded-md border min-h-0 bg-card overflow-auto">
+          <Table className="relative">
+            <TableHeader className="sticky top-0 z-20 bg-muted shadow-sm">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[40px] px-2">
+                  <TableHead className="w-[40px] px-2 bg-muted">
                     <Checkbox
                       checked={allFilteredSelected}
                       onCheckedChange={handleSelectAll}
                       data-testid="checkbox-select-all"
                     />
                   </TableHead>
-                  <TableHead className="w-[50px] px-2 text-center">Cat.</TableHead>
+                  <TableHead className="w-[50px] px-2 text-center bg-muted">Cat.</TableHead>
                   <TableHead 
-                    className="w-[90px] px-2 text-center cursor-pointer select-none"
+                    className="w-[90px] px-2 text-center cursor-pointer select-none bg-muted"
                     onClick={() => handleSort("data")}
                     data-testid="header-sort-data"
                   >
@@ -422,7 +421,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                     Data
                   </TableHead>
                   <TableHead 
-                    className="w-[120px] px-2 cursor-pointer select-none"
+                    className="w-[120px] px-2 cursor-pointer select-none bg-muted"
                     onClick={() => handleSort("operatore")}
                     data-testid="header-sort-operatore"
                   >
@@ -430,7 +429,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                     Operatore
                   </TableHead>
                   <TableHead 
-                    className="w-[120px] px-2 cursor-pointer select-none"
+                    className="w-[120px] px-2 cursor-pointer select-none bg-muted"
                     onClick={() => handleSort("paziente")}
                     data-testid="header-sort-paziente"
                   >
@@ -438,17 +437,17 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                     Paziente
                   </TableHead>
                   <TableHead 
-                    className="w-[160px] px-2 cursor-pointer select-none"
+                    className="w-[160px] px-2 cursor-pointer select-none bg-muted"
                     onClick={() => handleSort("prestazione")}
                     data-testid="header-sort-prestazione"
                   >
                     <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
                     Prestazione
                   </TableHead>
-                  <TableHead className="w-[100px] px-2 text-center text-xs">Elementi</TableHead>
-                  <TableHead className="w-[100px] px-2 text-center text-xs">Prezzo Paz.</TableHead>
-                  <TableHead className="w-[120px] px-2 text-center text-xs">Compenso Op.</TableHead>
-                  <TableHead className="w-[40px] px-2 text-center"></TableHead>
+                  <TableHead className="w-[100px] px-2 text-center text-xs bg-muted">Elementi</TableHead>
+                  <TableHead className="w-[100px] px-2 text-center text-xs bg-muted">Prezzo Paz.</TableHead>
+                  <TableHead className="w-[120px] px-2 text-center text-xs bg-muted">Compenso Op.</TableHead>
+                  <TableHead className="w-[40px] px-2 text-center bg-muted"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -548,8 +547,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
               )}
             </TableBody>
           </Table>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+        </div>
 
         <div className="flex items-center justify-between text-[11px] text-muted-foreground shrink-0 px-1 pt-2">
           <span>
