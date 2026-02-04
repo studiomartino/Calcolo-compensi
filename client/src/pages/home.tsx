@@ -506,7 +506,7 @@ export default function Home({ userRole }: HomeProps) {
                 Analisi
               </TabsTrigger>
               <TabsTrigger value="archive" data-testid="main-tab-archive" className="h-8 text-xs">
-                <Archive className="mr-1.5 h-3.5 w-3.5" />
+                <Archive className="mr-1.5 h-4 w-4" />
                 Storico Analisi ({analyses.length})
               </TabsTrigger>
               <TabsTrigger value="operators" data-testid="main-tab-operators" className="h-8 text-xs">
