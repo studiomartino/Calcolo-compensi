@@ -342,7 +342,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             data-testid="button-set-cash"
           >
             <Banknote className="mr-1 h-4 w-4" />
-            Contante
+            Compenso B
           </Button>
           {selectedRecords.size > 0 && (
             <Badge variant="secondary" className="ml-2">
