@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import type { CompensoRecord, CategoriaCompenso } from "@shared/schema";
 
 function TruncatedCell({ text, maxWidth = "150px" }: { text: string; maxWidth?: string }) {
@@ -50,6 +51,9 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
   const [selectedRecords, setSelectedRecords] = useState<Set<string>>(new Set());
   const [sortColumn, setSortColumn] = useState<SortColumn>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [anomalyDialogOpen, setAnomalyDialogOpen] = useState(false);
+  const [anomalyEditingCell, setAnomalyEditingCell] = useState<{ id: string; field: string } | null>(null);
+  const [anomalyEditValue, setAnomalyEditValue] = useState<string>("");
 
   const filteredRecords = useMemo(() => {
     let result = records.filter((record) => {
@@ -145,6 +149,10 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
     return { total, anomalies, cardCount, cashCount };
   }, [records]);
 
+  const anomalyRecords = useMemo(() => {
+    return records.filter((r) => r.hasAnomaly);
+  }, [records]);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("it-IT", {
       style: "currency",
@@ -187,6 +195,29 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
   const handleCancelEdit = () => {
     setEditingCell(null);
     setEditValue("");
+  };
+
+  const handleAnomalyStartEdit = (id: string, field: string, currentValue: string | number) => {
+    setAnomalyEditingCell({ id, field });
+    setAnomalyEditValue(String(currentValue));
+  };
+
+  const handleAnomalySaveEdit = (id: string, field: keyof CompensoRecord) => {
+    if (field === "prezzoAlPaziente" || field === "compensoOperatore") {
+      const numValue = parseFloat(anomalyEditValue.replace(",", "."));
+      if (!isNaN(numValue)) {
+        onRecordEdit(id, field, numValue);
+      }
+    } else {
+      onRecordEdit(id, field, anomalyEditValue);
+    }
+    setAnomalyEditingCell(null);
+    setAnomalyEditValue("");
+  };
+
+  const handleAnomalyCancelEdit = () => {
+    setAnomalyEditingCell(null);
+    setAnomalyEditValue("");
   };
 
   const handleSelectAll = (checked: boolean) => {
@@ -292,10 +323,121 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           </div>
           <div className="flex items-center gap-2">
             {stats.anomalies > 0 && (
-              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800 py-0 h-5 text-[10px]">
-                <AlertTriangle className="mr-1 h-3 w-3" />
-                {stats.anomalies} Anomalie
-              </Badge>
+              <Dialog open={anomalyDialogOpen} onOpenChange={setAnomalyDialogOpen}>
+                <DialogTrigger asChild>
+                  <Badge 
+                    variant="outline" 
+                    className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800 py-0 h-5 text-[10px] cursor-pointer hover-elevate"
+                    data-testid="badge-anomalies"
+                  >
+                    <AlertTriangle className="mr-1 h-3 w-3" />
+                    {stats.anomalies} Anomalie
+                  </Badge>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-amber-500" />
+                      Anomalie Rilevate ({anomalyRecords.length})
+                    </DialogTitle>
+                    <DialogDescription>
+                      Record con compenso operatore uguale al prezzo paziente. Clicca sui valori per modificarli.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex-1 overflow-auto mt-4">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[90px]">Data</TableHead>
+                          <TableHead className="w-[120px]">Operatore</TableHead>
+                          <TableHead className="w-[120px]">Paziente</TableHead>
+                          <TableHead>Prestazione</TableHead>
+                          <TableHead className="w-[110px] text-center">Prezzo Paz.</TableHead>
+                          <TableHead className="w-[130px] text-center">Compenso Op.</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {anomalyRecords.map((record) => (
+                          <TableRow key={record.id} className="bg-red-50/50 dark:bg-red-950/20">
+                            <TableCell className="text-sm tabular-nums">
+                              {formatDate(record.data || "")}
+                            </TableCell>
+                            <TableCell className="font-medium text-sm">
+                              {record.operatore}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {record.paziente}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {record.prestazione}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {anomalyEditingCell?.id === record.id && anomalyEditingCell?.field === "prezzoAlPaziente" ? (
+                                <div className="flex items-center gap-1 justify-center">
+                                  <Input
+                                    value={anomalyEditValue}
+                                    onChange={(e) => setAnomalyEditValue(e.target.value)}
+                                    className="h-7 w-20 text-sm"
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") handleAnomalySaveEdit(record.id, "prezzoAlPaziente");
+                                      if (e.key === "Escape") handleAnomalyCancelEdit();
+                                    }}
+                                  />
+                                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleAnomalySaveEdit(record.id, "prezzoAlPaziente")}>
+                                    <Check className="h-3 w-3" />
+                                  </Button>
+                                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleAnomalyCancelEdit}>
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div 
+                                  className="group flex items-center justify-center gap-1 cursor-pointer font-mono text-sm"
+                                  onClick={() => handleAnomalyStartEdit(record.id, "prezzoAlPaziente", record.prezzoAlPaziente)}
+                                >
+                                  <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  {formatCurrency(record.prezzoAlPaziente)}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {anomalyEditingCell?.id === record.id && anomalyEditingCell?.field === "compensoOperatore" ? (
+                                <div className="flex items-center gap-1 justify-center">
+                                  <Input
+                                    value={anomalyEditValue}
+                                    onChange={(e) => setAnomalyEditValue(e.target.value)}
+                                    className="h-7 w-20 text-sm"
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") handleAnomalySaveEdit(record.id, "compensoOperatore");
+                                      if (e.key === "Escape") handleAnomalyCancelEdit();
+                                    }}
+                                  />
+                                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleAnomalySaveEdit(record.id, "compensoOperatore")}>
+                                    <Check className="h-3 w-3" />
+                                  </Button>
+                                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleAnomalyCancelEdit}>
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div 
+                                  className="group flex items-center justify-center gap-1 cursor-pointer font-mono text-sm"
+                                  onClick={() => handleAnomalyStartEdit(record.id, "compensoOperatore", record.compensoOperatore)}
+                                >
+                                  <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  {formatCurrency(record.compensoOperatore)}
+                                </div>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
         </div>
