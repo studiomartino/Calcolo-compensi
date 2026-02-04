@@ -282,18 +282,18 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
   const someFilteredSelected = filteredRecords.some(r => selectedRecords.has(r.id));
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
+    <Card className="flex flex-col min-h-0 h-full">
+      <CardHeader className="py-3 shrink-0">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <CardTitle className="text-xl">Dati Importati</CardTitle>
-            <CardDescription className="mt-1">
+            <CardTitle className="text-lg">Dati Importati</CardTitle>
+            <CardDescription className="text-xs mt-0.5">
               {stats.total} record totali | {stats.anomalies} anomalie | Compenso A: {stats.cardCount} | Compenso B: {stats.cashCount}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
             {stats.anomalies > 0 && (
-              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800">
+              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800 py-0 h-5 text-[10px]">
                 <AlertTriangle className="mr-1 h-3 w-3" />
                 {stats.anomalies} Anomalie
               </Badge>
@@ -301,70 +301,74 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2 p-3 bg-muted/30 rounded-lg border">
-          <span className="text-sm font-medium text-muted-foreground mr-2">Azioni:</span>
+      <CardContent className="flex flex-col min-h-0 flex-1 p-4 pt-0 space-y-3">
+        <div className="flex flex-wrap items-center gap-2 p-2 bg-muted/30 rounded-lg border shrink-0">
+          <span className="text-xs font-medium text-muted-foreground mr-1">Azioni:</span>
           <Button
             size="sm"
             variant="outline"
+            className="h-7 text-xs px-2"
             onClick={() => setSelectedRecords(new Set(filteredRecords.map(r => r.id)))}
             data-testid="button-select-all-visible"
           >
-            <CheckCircle2 className="mr-1 h-4 w-4" />
+            <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
             Seleziona tutti
           </Button>
           <Button
             size="sm"
             variant="outline"
+            className="h-7 text-xs px-2"
             onClick={() => setSelectedRecords(new Set())}
             disabled={selectedRecords.size === 0}
             data-testid="button-deselect-all"
           >
-            <X className="mr-1 h-4 w-4" />
+            <X className="mr-1 h-3.5 w-3.5" />
             Deseleziona tutti
           </Button>
-          <div className="h-6 w-px bg-border mx-1" />
+          <div className="h-4 w-px bg-border mx-1" />
           <Button
             size="sm"
             variant="outline"
+            className="h-7 text-xs px-2"
             onClick={() => handleBulkCategoryChange("card")}
             disabled={selectedRecords.size === 0}
             data-testid="button-set-card"
           >
-            <CreditCard className="mr-1 h-4 w-4" />
+            <CreditCard className="mr-1 h-3.5 w-3.5" />
             Compenso A
           </Button>
           <Button
             size="sm"
             variant="outline"
+            className="h-7 text-xs px-2"
             onClick={() => handleBulkCategoryChange("cash")}
             disabled={selectedRecords.size === 0}
             data-testid="button-set-cash"
           >
-            <Banknote className="mr-1 h-4 w-4" />
+            <Banknote className="mr-1 h-3.5 w-3.5" />
             Compenso B
           </Button>
           {selectedRecords.size > 0 && (
-            <Badge variant="secondary" className="ml-2">
+            <Badge variant="secondary" className="ml-1 h-5 text-[10px]">
               {selectedRecords.size} selezionati
             </Badge>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Cerca per operatore, paziente o prestazione..."
+              placeholder="Cerca..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
+              className="pl-8 h-8 text-sm"
               data-testid="input-search"
             />
           </div>
           <Select value={operatorFilter} onValueChange={setOperatorFilter}>
-            <SelectTrigger className="w-[180px]" data-testid="select-operator-filter">
-              <SelectValue placeholder="Tutti gli operatori" />
+            <SelectTrigger className="w-[160px] h-8 text-sm" data-testid="select-operator-filter">
+              <SelectValue placeholder="Operatori" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tutti gli operatori</SelectItem>
@@ -376,8 +380,8 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             </SelectContent>
           </Select>
           <Select value={anomalyFilter} onValueChange={setAnomalyFilter}>
-            <SelectTrigger className="w-[150px]" data-testid="select-anomaly-filter">
-              <SelectValue placeholder="Tutti i record" />
+            <SelectTrigger className="w-[140px] h-8 text-sm" data-testid="select-anomaly-filter">
+              <SelectValue placeholder="Record" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tutti i record</SelectItem>
@@ -386,8 +390,8 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px]" data-testid="select-category-filter">
-              <SelectValue placeholder="Tutte le categorie" />
+            <SelectTrigger className="w-[160px] h-8 text-sm" data-testid="select-category-filter">
+              <SelectValue placeholder="Categorie" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tutte le categorie</SelectItem>
@@ -397,57 +401,57 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           </Select>
         </div>
 
-        <ScrollArea className="rounded-lg border">
+        <ScrollArea className="flex-1 rounded-md border min-h-0 bg-card">
           <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[40px] px-2">
-                  <Checkbox
-                    checked={allFilteredSelected}
-                    onCheckedChange={handleSelectAll}
-                    data-testid="checkbox-select-all"
-                  />
-                </TableHead>
-                <TableHead className="w-[50px] px-2 text-center">Cat.</TableHead>
-                <TableHead 
-                  className="w-[90px] px-2 text-center cursor-pointer select-none"
-                  onClick={() => handleSort("data")}
-                  data-testid="header-sort-data"
-                >
-                  <span className="text-muted-foreground mr-1">{renderSortIcon("data")}</span>
-                  Data
-                </TableHead>
-                <TableHead 
-                  className="w-[120px] px-2 cursor-pointer select-none"
-                  onClick={() => handleSort("operatore")}
-                  data-testid="header-sort-operatore"
-                >
-                  <span className="text-muted-foreground mr-1">{renderSortIcon("operatore")}</span>
-                  Operatore
-                </TableHead>
-                <TableHead 
-                  className="w-[120px] px-2 cursor-pointer select-none"
-                  onClick={() => handleSort("paziente")}
-                  data-testid="header-sort-paziente"
-                >
-                  <span className="text-muted-foreground mr-1">{renderSortIcon("paziente")}</span>
-                  Paziente
-                </TableHead>
-                <TableHead 
-                  className="w-[160px] px-2 cursor-pointer select-none"
-                  onClick={() => handleSort("prestazione")}
-                  data-testid="header-sort-prestazione"
-                >
-                  <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
-                  Prestazione
-                </TableHead>
-                <TableHead className="w-[100px] px-2 text-center">Elementi</TableHead>
-                <TableHead className="w-[100px] px-2 text-center">Prezzo Paz.</TableHead>
-                <TableHead className="w-[120px] px-2 text-center">Compenso Op.</TableHead>
-                <TableHead className="w-[40px] px-2 text-center"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <TableHeader className="sticky top-0 z-20 bg-muted/95 backdrop-blur-sm">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-[40px] px-2">
+                    <Checkbox
+                      checked={allFilteredSelected}
+                      onCheckedChange={handleSelectAll}
+                      data-testid="checkbox-select-all"
+                    />
+                  </TableHead>
+                  <TableHead className="w-[50px] px-2 text-center">Cat.</TableHead>
+                  <TableHead 
+                    className="w-[90px] px-2 text-center cursor-pointer select-none"
+                    onClick={() => handleSort("data")}
+                    data-testid="header-sort-data"
+                  >
+                    <span className="text-muted-foreground mr-1">{renderSortIcon("data")}</span>
+                    Data
+                  </TableHead>
+                  <TableHead 
+                    className="w-[120px] px-2 cursor-pointer select-none"
+                    onClick={() => handleSort("operatore")}
+                    data-testid="header-sort-operatore"
+                  >
+                    <span className="text-muted-foreground mr-1">{renderSortIcon("operatore")}</span>
+                    Operatore
+                  </TableHead>
+                  <TableHead 
+                    className="w-[120px] px-2 cursor-pointer select-none"
+                    onClick={() => handleSort("paziente")}
+                    data-testid="header-sort-paziente"
+                  >
+                    <span className="text-muted-foreground mr-1">{renderSortIcon("paziente")}</span>
+                    Paziente
+                  </TableHead>
+                  <TableHead 
+                    className="w-[160px] px-2 cursor-pointer select-none"
+                    onClick={() => handleSort("prestazione")}
+                    data-testid="header-sort-prestazione"
+                  >
+                    <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
+                    Prestazione
+                  </TableHead>
+                  <TableHead className="w-[100px] px-2 text-center text-xs">Elementi</TableHead>
+                  <TableHead className="w-[100px] px-2 text-center text-xs">Prezzo Paz.</TableHead>
+                  <TableHead className="w-[120px] px-2 text-center text-xs">Compenso Op.</TableHead>
+                  <TableHead className="w-[40px] px-2 text-center"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
               {filteredRecords.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={10} className="h-32 text-center">
@@ -547,7 +551,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center justify-between text-[11px] text-muted-foreground shrink-0 px-1 pt-2">
           <span>
             Visualizzati {filteredRecords.length} di {records.length} record
           </span>

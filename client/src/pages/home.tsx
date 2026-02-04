@@ -466,13 +466,8 @@ export default function Home({ userRole }: HomeProps) {
     }
 
     return (
-      <div className="space-y-6 w-full">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-muted-foreground">
-              {records.length} record {currentDateRange && `| Periodo: ${currentDateRange}`}
-            </p>
-          </div>
+      <div className="flex-1 flex flex-col min-h-0 w-full">
+        <div className="flex items-center justify-between gap-4 flex-wrap pb-4">
           <div className="flex items-center gap-2">
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -544,48 +539,48 @@ export default function Home({ userRole }: HomeProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container py-4 pl-[16px] pr-[16px]">
-          <h1 className="text-2xl font-bold tracking-tight">Gestione Compensi</h1>
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
+      <header className="border-b bg-card shrink-0">
+        <div className="container py-3 px-4">
+          <h1 className="text-xl font-bold tracking-tight">Gestione Compensi</h1>
         </div>
       </header>
-      <div className="container py-6 pl-[16px] pr-[16px]">
-        <Tabs value={mainTab} onValueChange={setMainTab}>
-          <TabsList className={`grid w-full px-4 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"}`}>
-            <TabsTrigger value="import" data-testid="main-tab-import">
-              <Upload className="mr-2 h-4 w-4" />
+      <div className="flex-1 container py-4 px-4 min-h-0 flex flex-col">
+        <Tabs value={mainTab} onValueChange={setMainTab} className="flex-1 flex flex-col min-h-0">
+          <TabsList className={`grid w-full px-2 shrink-0 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"}`}>
+            <TabsTrigger value="import" data-testid="main-tab-import" className="h-8 text-xs">
+              <Upload className="mr-1.5 h-3.5 w-3.5" />
               Importazione
             </TabsTrigger>
-            <TabsTrigger value="analysis" data-testid="main-tab-analysis">
-              <Table className="mr-2 h-4 w-4" />
+            <TabsTrigger value="analysis" data-testid="main-tab-analysis" className="h-8 text-xs">
+              <Table className="mr-1.5 h-3.5 w-3.5" />
               Analisi
             </TabsTrigger>
-            <TabsTrigger value="archive" data-testid="main-tab-archive">
-              <Archive className="mr-2 h-4 w-4" />
+            <TabsTrigger value="archive" data-testid="main-tab-archive" className="h-8 text-xs">
+              <Archive className="mr-1.5 h-3.5 w-3.5" />
               Archivio ({analyses.length})
             </TabsTrigger>
-            <TabsTrigger value="operators" data-testid="main-tab-operators">
-              <UserCheck className="mr-2 h-4 w-4" />
+            <TabsTrigger value="operators" data-testid="main-tab-operators" className="h-8 text-xs">
+              <UserCheck className="mr-1.5 h-3.5 w-3.5" />
               Operatori
             </TabsTrigger>
             {userRole === "admin" && (
-              <TabsTrigger value="users" data-testid="main-tab-users">
-                <UsersIcon className="mr-2 h-4 w-4" />
+              <TabsTrigger value="users" data-testid="main-tab-users" className="h-8 text-xs">
+                <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
                 Utenti
               </TabsTrigger>
             )}
           </TabsList>
 
-          <TabsContent value="import" className="mt-6">
+          <TabsContent value="import" className="mt-4 flex-1 min-h-0 overflow-y-auto">
             {renderImportContent()}
           </TabsContent>
 
-          <TabsContent value="analysis" className="mt-6">
+          <TabsContent value="analysis" className="mt-4 flex-1 min-h-0 flex flex-col">
             {renderAnalysisContent()}
           </TabsContent>
 
-          <TabsContent value="archive" className="mt-6">
+          <TabsContent value="archive" className="mt-4 flex-1 min-h-0 overflow-y-auto">
             <AnalysisArchive
               analyses={analyses}
               onDeleteAnalysis={handleDeleteAnalysis}
@@ -595,7 +590,7 @@ export default function Home({ userRole }: HomeProps) {
             />
           </TabsContent>
 
-          <TabsContent value="operators" className="mt-6">
+          <TabsContent value="operators" className="mt-4 flex-1 min-h-0 overflow-y-auto">
             <OperatorsTab
               analyses={analyses}
               operatorColors={operatorColors}
@@ -604,7 +599,7 @@ export default function Home({ userRole }: HomeProps) {
           </TabsContent>
 
           {userRole === "admin" && (
-            <TabsContent value="users" className="mt-6">
+            <TabsContent value="users" className="mt-4 flex-1 min-h-0 overflow-y-auto">
               <UsersTab />
             </TabsContent>
           )}
