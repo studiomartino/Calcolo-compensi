@@ -198,6 +198,16 @@ export async function registerRoutes(
     })
   );
 
+  app.get("/api/auth/users-public", async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      // Restituiamo solo gli username per il menù a tendina (pubblico)
+      res.json(users.map(u => ({ id: u.id, username: u.username })));
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero degli utenti" });
+    }
+  });
+
   app.post("/api/auth/login", async (req, res) => {
     try {
       const credentials = loginSchema.parse(req.body);
