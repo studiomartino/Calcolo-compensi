@@ -38,6 +38,9 @@ interface DataTableProps {
   onRecordEdit: (id: string, field: keyof CompensoRecord, value: string | number) => void;
 }
 
+type SortColumn = "data" | "operatore" | "paziente" | "prestazione" | null;
+type SortDirection = "asc" | "desc";
+
 export function DataTable({ records, operators, onCategoryChange, onRecordEdit }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [operatorFilter, setOperatorFilter] = useState<string>("all");
@@ -46,9 +49,11 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
   const [editingCell, setEditingCell] = useState<{ id: string; field: string } | null>(null);
   const [editValue, setEditValue] = useState<string>("");
   const [selectedRecords, setSelectedRecords] = useState<Set<string>>(new Set());
+  const [sortColumn, setSortColumn] = useState<SortColumn>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const filteredRecords = useMemo(() => {
-    return records.filter((record) => {
+    let result = records.filter((record) => {
       const matchesSearch =
         searchTerm === "" ||
         record.operatore.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -70,7 +75,68 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
 
       return matchesSearch && matchesOperator && matchesAnomaly && matchesCategory;
     });
-  }, [records, searchTerm, operatorFilter, anomalyFilter, categoryFilter]);
+
+    if (sortColumn) {
+      result = [...result].sort((a, b) => {
+        let comparison: number;
+        
+        if (sortColumn === "data") {
+          const parseDate = (dateStr: string): number => {
+            if (!dateStr) return 0;
+            const formats = [
+              /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/,
+              /^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/,
+              /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2})$/,
+            ];
+            for (const format of formats) {
+              const match = dateStr.trim().match(format);
+              if (match) {
+                let day: number, month: number, year: number;
+                if (format === formats[1]) {
+                  year = parseInt(match[1]);
+                  month = parseInt(match[2]) - 1;
+                  day = parseInt(match[3]);
+                } else {
+                  day = parseInt(match[1]);
+                  month = parseInt(match[2]) - 1;
+                  year = parseInt(match[3]);
+                  if (year < 100) year += year < 50 ? 2000 : 1900;
+                }
+                return new Date(year, month, day).getTime();
+              }
+            }
+            const parsed = new Date(dateStr);
+            return isNaN(parsed.getTime()) ? 0 : parsed.getTime();
+          };
+          comparison = parseDate(a.data || "") - parseDate(b.data || "");
+        } else {
+          const valueA = (a[sortColumn] || "").toLowerCase();
+          const valueB = (b[sortColumn] || "").toLowerCase();
+          comparison = valueA.localeCompare(valueB, "it");
+        }
+        
+        return sortDirection === "asc" ? comparison : -comparison;
+      });
+    }
+
+    return result;
+  }, [records, searchTerm, operatorFilter, anomalyFilter, categoryFilter, sortColumn, sortDirection]);
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const renderSortIcon = (column: SortColumn) => {
+    if (sortColumn === column) {
+      return sortDirection === "asc" ? "↑" : "↓";
+    }
+    return "↑↓";
+  };
 
   const stats = useMemo(() => {
     const total = records.length;
@@ -343,10 +409,38 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   />
                 </TableHead>
                 <TableHead className="w-[50px] px-2 text-center">Cat.</TableHead>
-                <TableHead className="w-[90px] px-2 text-center">Data</TableHead>
-                <TableHead className="w-[120px] px-2">Operatore</TableHead>
-                <TableHead className="w-[120px] px-2">Paziente</TableHead>
-                <TableHead className="w-[160px] px-2">Prestazione</TableHead>
+                <TableHead 
+                  className="w-[90px] px-2 text-center cursor-pointer select-none"
+                  onClick={() => handleSort("data")}
+                  data-testid="header-sort-data"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("data")}</span>
+                  Data
+                </TableHead>
+                <TableHead 
+                  className="w-[120px] px-2 cursor-pointer select-none"
+                  onClick={() => handleSort("operatore")}
+                  data-testid="header-sort-operatore"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("operatore")}</span>
+                  Operatore
+                </TableHead>
+                <TableHead 
+                  className="w-[120px] px-2 cursor-pointer select-none"
+                  onClick={() => handleSort("paziente")}
+                  data-testid="header-sort-paziente"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("paziente")}</span>
+                  Paziente
+                </TableHead>
+                <TableHead 
+                  className="w-[160px] px-2 cursor-pointer select-none"
+                  onClick={() => handleSort("prestazione")}
+                  data-testid="header-sort-prestazione"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
+                  Prestazione
+                </TableHead>
                 <TableHead className="w-[100px] px-2 text-center">Elementi</TableHead>
                 <TableHead className="w-[100px] px-2 text-center">Prezzo Paz.</TableHead>
                 <TableHead className="w-[120px] px-2 text-center">Compenso Op.</TableHead>
