@@ -542,7 +542,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           </Select>
         </div>
 
-        <div className="flex-1 rounded-md border min-h-0 bg-card overflow-y-auto">
+        <div className="flex-1 rounded-md border min-h-0 bg-card flex flex-col">
           <Table style={{ tableLayout: 'fixed', width: '100%' }}>
             <colgroup>
               <col style={{ width: '40px' }} />
@@ -558,16 +558,16 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
             </colgroup>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="px-2 bg-muted sticky top-0 z-20">
+                <TableHead className="px-2 bg-muted">
                   <Checkbox
                     checked={allFilteredSelected}
                     onCheckedChange={handleSelectAll}
                     data-testid="checkbox-select-all"
                   />
                 </TableHead>
-                <TableHead className="px-2 text-center bg-muted sticky top-0 z-20">Cat.</TableHead>
+                <TableHead className="px-2 text-center bg-muted">Cat.</TableHead>
                 <TableHead 
-                  className="px-2 text-center cursor-pointer select-none bg-muted sticky top-0 z-20"
+                  className="px-2 text-center cursor-pointer select-none bg-muted"
                   onClick={() => handleSort("data")}
                   data-testid="header-sort-data"
                 >
@@ -575,7 +575,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   Data
                 </TableHead>
                 <TableHead 
-                  className="px-2 cursor-pointer select-none bg-muted sticky top-0 z-20"
+                  className="px-2 cursor-pointer select-none bg-muted"
                   onClick={() => handleSort("operatore")}
                   data-testid="header-sort-operatore"
                 >
@@ -583,7 +583,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   Operatore
                 </TableHead>
                 <TableHead 
-                  className="px-2 cursor-pointer select-none bg-muted sticky top-0 z-20"
+                  className="px-2 cursor-pointer select-none bg-muted"
                   onClick={() => handleSort("paziente")}
                   data-testid="header-sort-paziente"
                 >
@@ -591,20 +591,35 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   Paziente
                 </TableHead>
                 <TableHead 
-                  className="px-2 cursor-pointer select-none bg-muted sticky top-0 z-20"
+                  className="px-2 cursor-pointer select-none bg-muted"
                   onClick={() => handleSort("prestazione")}
                   data-testid="header-sort-prestazione"
                 >
                   <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
                   Prestazione
                 </TableHead>
-                <TableHead className="px-2 text-center text-xs bg-muted sticky top-0 z-20">Elementi</TableHead>
-                <TableHead className="px-2 text-center text-xs bg-muted sticky top-0 z-20">Prezzo Paz.</TableHead>
-                <TableHead className="px-2 text-center text-xs bg-muted sticky top-0 z-20">Compenso Op.</TableHead>
-                <TableHead className="px-2 text-center bg-muted sticky top-0 z-20"></TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted">Elementi</TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted">Prezzo Paz.</TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted">Compenso Op.</TableHead>
+                <TableHead className="px-2 text-center bg-muted"></TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+          </Table>
+          <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+            <Table style={{ tableLayout: 'fixed', width: '100%' }}>
+              <colgroup>
+                <col style={{ width: '40px' }} />
+                <col style={{ width: '50px' }} />
+                <col style={{ width: '90px' }} />
+                <col style={{ width: '120px' }} />
+                <col style={{ width: '120px' }} />
+                <col style={{ width: '160px' }} />
+                <col style={{ width: '100px' }} />
+                <col style={{ width: '100px' }} />
+                <col style={{ width: '120px' }} />
+                <col style={{ width: '40px' }} />
+              </colgroup>
+              <TableBody>
               {filteredRecords.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={10} className="h-32 text-center">
@@ -700,7 +715,8 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                 ))
               )}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </div>
 
         <div className="flex items-center justify-between text-[11px] text-muted-foreground shrink-0 px-1 pt-2">
