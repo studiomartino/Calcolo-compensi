@@ -469,56 +469,9 @@ export default function Home({ userRole }: HomeProps) {
       <div className="flex-1 flex flex-col min-h-0 w-full">
         <div className="flex items-center justify-between gap-4 flex-wrap pb-4">
           <div className="flex items-center gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" data-testid="button-archive-current">
-                  <FolderArchive className="mr-2 h-4 w-4" />
-                  Archivia Analisi
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    L'analisi corrente con {records.length} record verrà spostata nell'archivio.
-                    I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annulla</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
-                    Archivia
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
-              <SheetTrigger asChild>
-                <Button data-testid="button-open-reports">
-                  <UsersIcon className="mr-2 h-4 w-4" />
-                  Report Operatori
-                </Button>
-              </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Report Operatori
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-6">
-                <OperatorDashboard
-                  records={records}
-                  onExportExcel={handleExportExcel}
-                  selectedOperator={selectedOperator}
-                  onSelectOperator={setSelectedOperator}
-                  onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
-                  dateRange={currentDateRange}
-                  operatorColors={operatorColors}
-                />
-              </div>
-            </SheetContent>
-            </Sheet>
+            <p className="text-muted-foreground text-sm">
+              {currentDateRange && `Periodo: ${currentDateRange}`}
+            </p>
           </div>
         </div>
         {isLoadingRecords ? (
@@ -541,8 +494,60 @@ export default function Home({ userRole }: HomeProps) {
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <header className="border-b bg-card shrink-0">
-        <div className="container py-3 px-4">
+        <div className="container py-3 px-4 flex items-center justify-between">
           <h1 className="text-xl font-bold tracking-tight">Gestione Compensi</h1>
+          <div className="flex items-center gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
+                  <FolderArchive className="mr-1.5 h-3.5 w-3.5" />
+                  Archivia Analisi
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    L'analisi corrente con {records.length} record verrà spostata nell'archivio.
+                    I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annulla</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
+                    Archivia
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
+              <SheetTrigger asChild>
+                <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
+                  <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
+                  Report Operatori
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Report Operatori
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="mt-6">
+                  <OperatorDashboard
+                    records={records}
+                    onExportExcel={handleExportExcel}
+                    selectedOperator={selectedOperator}
+                    onSelectOperator={setSelectedOperator}
+                    onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
+                    dateRange={currentDateRange}
+                    operatorColors={operatorColors}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </header>
       <div className="flex-1 container py-4 px-4 min-h-0 flex flex-col">
