@@ -556,18 +556,18 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
               <col style={{ width: '120px' }} />
               <col style={{ width: '40px' }} />
             </colgroup>
-            <TableHeader className="sticky top-0 z-20 bg-muted">
+            <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="px-2 bg-muted">
+                <TableHead className="px-2 bg-muted sticky top-0 z-20">
                   <Checkbox
                     checked={allFilteredSelected}
                     onCheckedChange={handleSelectAll}
                     data-testid="checkbox-select-all"
                   />
                 </TableHead>
-                <TableHead className="px-2 text-center bg-muted">Cat.</TableHead>
+                <TableHead className="px-2 text-center bg-muted sticky top-0 z-20">Cat.</TableHead>
                 <TableHead 
-                  className="px-2 text-center cursor-pointer select-none bg-muted"
+                  className="px-2 text-center cursor-pointer select-none bg-muted sticky top-0 z-20"
                   onClick={() => handleSort("data")}
                   data-testid="header-sort-data"
                 >
@@ -575,7 +575,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   Data
                 </TableHead>
                 <TableHead 
-                  className="px-2 cursor-pointer select-none bg-muted"
+                  className="px-2 cursor-pointer select-none bg-muted sticky top-0 z-20"
                   onClick={() => handleSort("operatore")}
                   data-testid="header-sort-operatore"
                 >
@@ -583,7 +583,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   Operatore
                 </TableHead>
                 <TableHead 
-                  className="px-2 cursor-pointer select-none bg-muted"
+                  className="px-2 cursor-pointer select-none bg-muted sticky top-0 z-20"
                   onClick={() => handleSort("paziente")}
                   data-testid="header-sort-paziente"
                 >
@@ -591,17 +591,17 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                   Paziente
                 </TableHead>
                 <TableHead 
-                  className="px-2 cursor-pointer select-none bg-muted"
+                  className="px-2 cursor-pointer select-none bg-muted sticky top-0 z-20"
                   onClick={() => handleSort("prestazione")}
                   data-testid="header-sort-prestazione"
                 >
                   <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
                   Prestazione
                 </TableHead>
-                <TableHead className="px-2 text-center text-xs bg-muted">Elementi</TableHead>
-                <TableHead className="px-2 text-center text-xs bg-muted">Prezzo Paz.</TableHead>
-                <TableHead className="px-2 text-center text-xs bg-muted">Compenso Op.</TableHead>
-                <TableHead className="px-2 text-center bg-muted"></TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted sticky top-0 z-20">Elementi</TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted sticky top-0 z-20">Prezzo Paz.</TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted sticky top-0 z-20">Compenso Op.</TableHead>
+                <TableHead className="px-2 text-center bg-muted sticky top-0 z-20"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
