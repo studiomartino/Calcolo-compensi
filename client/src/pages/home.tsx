@@ -112,10 +112,15 @@ export default function Home({ userRole }: HomeProps) {
 
   const updateCategoryMutation = useMutation({
     mutationFn: async ({ ids, category }: { ids: string[]; category: CategoriaCompenso }) => {
-      return apiRequest("PATCH", "/api/records/bulk/update", { ids, updates: { categoriaCompenso: category } });
+      const response = await apiRequest("PATCH", "/api/records/bulk/update", { ids, updates: { categoriaCompenso: category } });
+      return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
+    onSuccess: (data: { updated: number; records: CompensoRecord[] }) => {
+      queryClient.setQueryData<CompensoRecord[]>(["/api/records"], (oldRecords) => {
+        if (!oldRecords) return oldRecords;
+        const updatedMap = new Map(data.records.map(r => [r.id, r]));
+        return oldRecords.map(record => updatedMap.get(record.id) || record);
+      });
     },
   });
 
