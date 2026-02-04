@@ -25,6 +25,7 @@ export function UsersTab() {
   const [newRole, setNewRole] = useState<UserRole>("user");
   const [passwordToChange, setPasswordToChange] = useState("");
   const [showPasswordValue, setShowPasswordValue] = useState(false);
+  const [showNewPasswordValue, setShowNewPasswordValue] = useState(false);
 
   const { data: users = [], isLoading } = useQuery<PublicUser[]>({
     queryKey: ["/api/users"],
@@ -228,13 +229,29 @@ export function UsersTab() {
             </div>
             <div className="space-y-2">
               <Label>Password</Label>
-              <Input
-                type="password"
-                placeholder="Inserisci password (min. 6 caratteri)"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                data-testid="input-new-password"
-              />
+              <div className="relative">
+                <Input
+                  type={showNewPasswordValue ? "text" : "password"}
+                  placeholder="Inserisci password (min. 6 caratteri)"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="pr-10"
+                  data-testid="input-new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPasswordValue(!showNewPasswordValue)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="button-toggle-new-password-visibility"
+                  tabIndex={-1}
+                >
+                  {showNewPasswordValue ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Ruolo</Label>
