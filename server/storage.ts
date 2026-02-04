@@ -1,17 +1,24 @@
 import { randomUUID } from "crypto";
-import { readFileSync, writeFileSync, existsSync } from "fs";
 import bcrypt from "bcryptjs";
-import type { CompensoRecord, InsertCompensoRecord, ColumnMapping, InsertColumnMapping, Analysis, InsertAnalysis, User, InsertUser, PublicUser, OperatorPaymentStatus } from "@shared/schema";
-
-const DATA_FILE = "./data/storage.json";
-
-interface StorageData {
-  records: CompensoRecord[];
-  mappings: ColumnMapping[];
-  analyses: Analysis[];
-  users: User[];
-  paymentStatus: OperatorPaymentStatus[];
-}
+import { eq, desc, ilike } from "drizzle-orm";
+import { db } from "./db";
+import { 
+  usersTable, 
+  recordsTable, 
+  mappingsTable, 
+  analysesTable, 
+  paymentStatusTable,
+  type CompensoRecord, 
+  type InsertCompensoRecord, 
+  type ColumnMapping, 
+  type InsertColumnMapping, 
+  type Analysis, 
+  type InsertAnalysis, 
+  type User, 
+  type InsertUser, 
+  type PublicUser, 
+  type OperatorPaymentStatus 
+} from "@shared/schema";
 
 export interface IStorage {
   getRecords(): Promise<CompensoRecord[]>;
@@ -44,141 +51,140 @@ export interface IStorage {
   getPaymentStatus(): Promise<OperatorPaymentStatus[]>;
   updatePaymentStatus(operatore: string, field: 'paidA' | 'paidB', value: boolean): Promise<OperatorPaymentStatus>;
   clearPaymentStatus(): Promise<void>;
+  
+  initializeDatabase(): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private records: Map<string, CompensoRecord>;
-  private mappings: Map<string, ColumnMapping>;
-  private analyses: Map<string, Analysis>;
-  private users: Map<string, User>;
-  private paymentStatus: Map<string, OperatorPaymentStatus>;
-
-  constructor() {
-    this.records = new Map();
-    this.mappings = new Map();
-    this.analyses = new Map();
-    this.users = new Map();
-    this.paymentStatus = new Map();
-    this.loadFromFile();
-    this.ensureAdminUser();
-  }
-
-  private async ensureAdminUser(): Promise<void> {
-    const adminExists = Array.from(this.users.values()).some(u => u.username === "admin");
-    if (!adminExists) {
-      const hashedPassword = await bcrypt.hash("CalcoloCompensi2026!!", 10);
-      const adminUser: User = {
-        id: randomUUID(),
-        username: "admin",
-        password: hashedPassword,
-        role: "admin",
-        createdAt: new Date().toISOString(),
-      };
-      this.users.set(adminUser.id, adminUser);
-      this.saveToFile();
-      console.log("Admin user created");
-    }
-  }
-
-  private loadFromFile(): void {
-    try {
-      if (existsSync(DATA_FILE)) {
-        const data = readFileSync(DATA_FILE, "utf-8");
-        const parsed: StorageData = JSON.parse(data);
-        
-        if (parsed.records) {
-          parsed.records.forEach(r => this.records.set(r.id, r));
-        }
-        if (parsed.mappings) {
-          parsed.mappings.forEach(m => this.mappings.set(m.id, m));
-        }
-        if (parsed.analyses) {
-          parsed.analyses.forEach(a => this.analyses.set(a.id, a));
-        }
-        if (parsed.users) {
-          parsed.users.forEach(u => this.users.set(u.id, u));
-        }
-        if (parsed.paymentStatus) {
-          parsed.paymentStatus.forEach(p => this.paymentStatus.set(p.operatore, p));
-        }
-        console.log(`Loaded ${this.records.size} records, ${this.mappings.size} mappings, ${this.analyses.size} analyses, ${this.users.size} users from file`);
-      }
-    } catch (error) {
-      console.error("Error loading data from file:", error);
-    }
-  }
-
-  private saveToFile(): void {
-    try {
-      const data: StorageData = {
-        records: Array.from(this.records.values()),
-        mappings: Array.from(this.mappings.values()),
-        analyses: Array.from(this.analyses.values()),
-        users: Array.from(this.users.values()),
-        paymentStatus: Array.from(this.paymentStatus.values()),
-      };
-      
-      const dir = "./data";
-      if (!existsSync(dir)) {
-        const { mkdirSync } = require("fs");
-        mkdirSync(dir, { recursive: true });
-      }
-      
-      writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-    } catch (error) {
-      console.error("Error saving data to file:", error);
-    }
-  }
-
+class DatabaseStorage implements IStorage {
   private checkAnomaly(prezzoAlPaziente: number, compensoOperatore: number): boolean {
     return Math.abs(prezzoAlPaziente - compensoOperatore) < 0.02;
   }
 
+  async initializeDatabase(): Promise<void> {
+    await this.ensureAdminUser();
+  }
+
+  private async ensureAdminUser(): Promise<void> {
+    const existingAdmin = await db.select().from(usersTable).where(eq(usersTable.username, "admin")).limit(1);
+    if (existingAdmin.length === 0) {
+      const hashedPassword = await bcrypt.hash("CalcoloCompensi2026!!", 10);
+      await db.insert(usersTable).values({
+        id: randomUUID(),
+        username: "admin",
+        password: hashedPassword,
+        role: "admin",
+      });
+      console.log("Admin user created in database");
+    }
+  }
+
   async getRecords(): Promise<CompensoRecord[]> {
-    return Array.from(this.records.values());
+    const rows = await db.select().from(recordsTable);
+    return rows.map(r => ({
+      id: r.id,
+      categoriaCompenso: r.categoriaCompenso as "card" | "cash",
+      data: r.data || undefined,
+      operatore: r.operatore,
+      paziente: r.paziente,
+      prestazione: r.prestazione,
+      elementiDentali: r.elementiDentali,
+      prezzoAlPaziente: r.prezzoAlPaziente,
+      compensoOperatore: r.compensoOperatore,
+      hasAnomaly: r.hasAnomaly,
+    }));
   }
 
   async getRecord(id: string): Promise<CompensoRecord | undefined> {
-    return this.records.get(id);
+    const rows = await db.select().from(recordsTable).where(eq(recordsTable.id, id)).limit(1);
+    if (rows.length === 0) return undefined;
+    const r = rows[0];
+    return {
+      id: r.id,
+      categoriaCompenso: r.categoriaCompenso as "card" | "cash",
+      data: r.data || undefined,
+      operatore: r.operatore,
+      paziente: r.paziente,
+      prestazione: r.prestazione,
+      elementiDentali: r.elementiDentali,
+      prezzoAlPaziente: r.prezzoAlPaziente,
+      compensoOperatore: r.compensoOperatore,
+      hasAnomaly: r.hasAnomaly,
+    };
   }
 
   async createRecord(record: InsertCompensoRecord): Promise<CompensoRecord> {
     const id = randomUUID();
     const hasAnomaly = this.checkAnomaly(record.prezzoAlPaziente, record.compensoOperatore);
-    const newRecord: CompensoRecord = { 
-      ...record, 
+    
+    await db.insert(recordsTable).values({
       id,
-      hasAnomaly,
       categoriaCompenso: record.categoriaCompenso || "card",
+      data: record.data || null,
+      operatore: record.operatore,
+      paziente: record.paziente,
+      prestazione: record.prestazione,
+      elementiDentali: record.elementiDentali,
+      prezzoAlPaziente: record.prezzoAlPaziente,
+      compensoOperatore: record.compensoOperatore,
+      hasAnomaly,
+    });
+
+    return {
+      id,
+      categoriaCompenso: record.categoriaCompenso || "card",
+      data: record.data,
+      operatore: record.operatore,
+      paziente: record.paziente,
+      prestazione: record.prestazione,
+      elementiDentali: record.elementiDentali,
+      prezzoAlPaziente: record.prezzoAlPaziente,
+      compensoOperatore: record.compensoOperatore,
+      hasAnomaly,
     };
-    this.records.set(id, newRecord);
-    this.saveToFile();
-    return newRecord;
   }
 
   async createRecords(records: InsertCompensoRecord[]): Promise<CompensoRecord[]> {
     const createdRecords: CompensoRecord[] = [];
+    
     for (const record of records) {
       const id = randomUUID();
       const hasAnomaly = this.checkAnomaly(record.prezzoAlPaziente, record.compensoOperatore);
-      const newRecord: CompensoRecord = { 
-        ...record, 
+      
+      await db.insert(recordsTable).values({
         id,
-        hasAnomaly,
         categoriaCompenso: record.categoriaCompenso || "card",
-      };
-      this.records.set(id, newRecord);
-      createdRecords.push(newRecord);
+        data: record.data || null,
+        operatore: record.operatore,
+        paziente: record.paziente,
+        prestazione: record.prestazione,
+        elementiDentali: record.elementiDentali,
+        prezzoAlPaziente: record.prezzoAlPaziente,
+        compensoOperatore: record.compensoOperatore,
+        hasAnomaly,
+      });
+
+      createdRecords.push({
+        id,
+        categoriaCompenso: record.categoriaCompenso || "card",
+        data: record.data,
+        operatore: record.operatore,
+        paziente: record.paziente,
+        prestazione: record.prestazione,
+        elementiDentali: record.elementiDentali,
+        prezzoAlPaziente: record.prezzoAlPaziente,
+        compensoOperatore: record.compensoOperatore,
+        hasAnomaly,
+      });
     }
-    this.saveToFile();
+    
     return createdRecords;
   }
 
   async updateRecord(id: string, updates: Partial<CompensoRecord>): Promise<CompensoRecord | undefined> {
-    const record = this.records.get(id);
-    if (!record) return undefined;
+    const existing = await this.getRecord(id);
+    if (!existing) return undefined;
 
-    const updatedRecord = { ...record, ...updates };
+    const updatedRecord = { ...existing, ...updates };
     
     if ('prezzoAlPaziente' in updates || 'compensoOperatore' in updates) {
       updatedRecord.hasAnomaly = this.checkAnomaly(
@@ -187,108 +193,167 @@ export class MemStorage implements IStorage {
       );
     }
 
-    this.records.set(id, updatedRecord);
-    this.saveToFile();
+    await db.update(recordsTable).set({
+      categoriaCompenso: updatedRecord.categoriaCompenso,
+      data: updatedRecord.data || null,
+      operatore: updatedRecord.operatore,
+      paziente: updatedRecord.paziente,
+      prestazione: updatedRecord.prestazione,
+      elementiDentali: updatedRecord.elementiDentali,
+      prezzoAlPaziente: updatedRecord.prezzoAlPaziente,
+      compensoOperatore: updatedRecord.compensoOperatore,
+      hasAnomaly: updatedRecord.hasAnomaly,
+    }).where(eq(recordsTable.id, id));
+
     return updatedRecord;
   }
 
   async updateRecords(ids: string[], updates: Partial<CompensoRecord>): Promise<CompensoRecord[]> {
     const updatedRecords: CompensoRecord[] = [];
     for (const id of ids) {
-      const record = this.records.get(id);
-      if (record) {
-        const updatedRecord = { ...record, ...updates };
-        if ('prezzoAlPaziente' in updates || 'compensoOperatore' in updates) {
-          updatedRecord.hasAnomaly = this.checkAnomaly(
-            updatedRecord.prezzoAlPaziente,
-            updatedRecord.compensoOperatore
-          );
-        }
-        this.records.set(id, updatedRecord);
-        updatedRecords.push(updatedRecord);
-      }
+      const updated = await this.updateRecord(id, updates);
+      if (updated) updatedRecords.push(updated);
     }
-    this.saveToFile();
     return updatedRecords;
   }
 
   async deleteRecord(id: string): Promise<boolean> {
-    const result = this.records.delete(id);
-    if (result) this.saveToFile();
-    return result;
+    const result = await db.delete(recordsTable).where(eq(recordsTable.id, id));
+    return true;
   }
 
   async clearRecords(): Promise<void> {
-    this.records.clear();
-    this.saveToFile();
+    await db.delete(recordsTable);
   }
 
   async getMappings(): Promise<ColumnMapping[]> {
-    return Array.from(this.mappings.values());
+    const rows = await db.select().from(mappingsTable);
+    return rows.map(r => ({
+      id: r.id,
+      name: r.name,
+      mappings: r.mappings as Record<string, string>,
+      createdAt: r.createdAt.toISOString(),
+    }));
   }
 
   async getMapping(id: string): Promise<ColumnMapping | undefined> {
-    return this.mappings.get(id);
+    const rows = await db.select().from(mappingsTable).where(eq(mappingsTable.id, id)).limit(1);
+    if (rows.length === 0) return undefined;
+    const r = rows[0];
+    return {
+      id: r.id,
+      name: r.name,
+      mappings: r.mappings as Record<string, string>,
+      createdAt: r.createdAt.toISOString(),
+    };
   }
 
   async createMapping(mapping: InsertColumnMapping): Promise<ColumnMapping> {
     const id = randomUUID();
-    const newMapping: ColumnMapping = {
-      ...mapping,
+    const createdAt = new Date();
+    
+    await db.insert(mappingsTable).values({
       id,
-      createdAt: new Date().toISOString(),
+      name: mapping.name,
+      mappings: mapping.mappings,
+    });
+
+    return {
+      id,
+      name: mapping.name,
+      mappings: mapping.mappings,
+      createdAt: createdAt.toISOString(),
     };
-    this.mappings.set(id, newMapping);
-    this.saveToFile();
-    return newMapping;
   }
 
   async deleteMapping(id: string): Promise<boolean> {
-    const result = this.mappings.delete(id);
-    if (result) this.saveToFile();
-    return result;
+    await db.delete(mappingsTable).where(eq(mappingsTable.id, id));
+    return true;
   }
 
   async getAnalyses(): Promise<Analysis[]> {
-    return Array.from(this.analyses.values()).sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    const rows = await db.select().from(analysesTable).orderBy(desc(analysesTable.createdAt));
+    return rows.map(r => ({
+      id: r.id,
+      name: r.name,
+      dateRange: r.dateRange,
+      records: r.records as CompensoRecord[],
+      createdAt: r.createdAt.toISOString(),
+    }));
   }
 
   async getAnalysis(id: string): Promise<Analysis | undefined> {
-    return this.analyses.get(id);
+    const rows = await db.select().from(analysesTable).where(eq(analysesTable.id, id)).limit(1);
+    if (rows.length === 0) return undefined;
+    const r = rows[0];
+    return {
+      id: r.id,
+      name: r.name,
+      dateRange: r.dateRange,
+      records: r.records as CompensoRecord[],
+      createdAt: r.createdAt.toISOString(),
+    };
   }
 
   async createAnalysis(analysis: InsertAnalysis): Promise<Analysis> {
     const id = randomUUID();
-    const newAnalysis: Analysis = {
-      ...analysis,
+    const createdAt = new Date();
+    
+    await db.insert(analysesTable).values({
       id,
-      createdAt: new Date().toISOString(),
+      name: analysis.name,
+      dateRange: analysis.dateRange,
+      records: analysis.records,
+    });
+
+    return {
+      id,
+      name: analysis.name,
+      dateRange: analysis.dateRange,
+      records: analysis.records,
+      createdAt: createdAt.toISOString(),
     };
-    this.analyses.set(id, newAnalysis);
-    this.saveToFile();
-    return newAnalysis;
   }
 
   async deleteAnalysis(id: string): Promise<boolean> {
-    const result = this.analyses.delete(id);
-    if (result) this.saveToFile();
-    return result;
+    await db.delete(analysesTable).where(eq(analysesTable.id, id));
+    return true;
   }
 
   async getUsers(): Promise<PublicUser[]> {
-    return Array.from(this.users.values()).map(({ password, ...rest }) => rest);
+    const rows = await db.select().from(usersTable);
+    return rows.map(r => ({
+      id: r.id,
+      username: r.username,
+      role: r.role as "admin" | "user",
+      createdAt: r.createdAt.toISOString(),
+    }));
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const rows = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
+    if (rows.length === 0) return undefined;
+    const r = rows[0];
+    return {
+      id: r.id,
+      username: r.username,
+      password: r.password,
+      role: r.role as "admin" | "user",
+      createdAt: r.createdAt.toISOString(),
+    };
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      u => u.username.toLowerCase() === username.toLowerCase()
-    );
+    const rows = await db.select().from(usersTable).where(ilike(usersTable.username, username)).limit(1);
+    if (rows.length === 0) return undefined;
+    const r = rows[0];
+    return {
+      id: r.id,
+      username: r.username,
+      password: r.password,
+      role: r.role as "admin" | "user",
+      createdAt: r.createdAt.toISOString(),
+    };
   }
 
   async createUser(user: InsertUser): Promise<PublicUser> {
@@ -299,45 +364,46 @@ export class MemStorage implements IStorage {
 
     const id = randomUUID();
     const hashedPassword = await bcrypt.hash(user.password, 10);
-    const newUser: User = {
+    const createdAt = new Date();
+
+    await db.insert(usersTable).values({
       id,
       username: user.username,
       password: hashedPassword,
       role: user.role || "user",
-      createdAt: new Date().toISOString(),
+    });
+
+    return {
+      id,
+      username: user.username,
+      role: user.role || "user",
+      createdAt: createdAt.toISOString(),
     };
-    this.users.set(id, newUser);
-    this.saveToFile();
-    
-    const { password, ...publicUser } = newUser;
-    return publicUser;
   }
 
   async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
-    const user = this.users.get(id);
+    const user = await this.getUser(id);
     if (!user) return false;
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    this.users.set(id, user);
-    this.saveToFile();
+    await db.update(usersTable).set({ password: hashedPassword }).where(eq(usersTable.id, id));
     return true;
   }
 
   async deleteUser(id: string): Promise<boolean> {
-    const user = this.users.get(id);
+    const user = await this.getUser(id);
     if (!user) return false;
     
     if (user.role === "admin") {
-      const adminCount = Array.from(this.users.values()).filter(u => u.role === "admin").length;
+      const allUsers = await this.getUsers();
+      const adminCount = allUsers.filter(u => u.role === "admin").length;
       if (adminCount <= 1) {
         throw new Error("Impossibile eliminare l'ultimo amministratore");
       }
     }
 
-    const result = this.users.delete(id);
-    if (result) this.saveToFile();
-    return result;
+    await db.delete(usersTable).where(eq(usersTable.id, id));
+    return true;
   }
 
   async validateUser(username: string, password: string): Promise<User | null> {
@@ -349,24 +415,36 @@ export class MemStorage implements IStorage {
   }
 
   async getPaymentStatus(): Promise<OperatorPaymentStatus[]> {
-    return Array.from(this.paymentStatus.values());
+    const rows = await db.select().from(paymentStatusTable);
+    return rows.map(r => ({
+      operatore: r.operatore,
+      paidA: r.paidA,
+      paidB: r.paidB,
+    }));
   }
 
   async updatePaymentStatus(operatore: string, field: 'paidA' | 'paidB', value: boolean): Promise<OperatorPaymentStatus> {
-    let status = this.paymentStatus.get(operatore);
-    if (!status) {
-      status = { operatore, paidA: false, paidB: false };
+    const existing = await db.select().from(paymentStatusTable).where(eq(paymentStatusTable.operatore, operatore)).limit(1);
+    
+    if (existing.length === 0) {
+      const newStatus = { operatore, paidA: false, paidB: false, [field]: value };
+      await db.insert(paymentStatusTable).values(newStatus);
+      return newStatus;
     }
-    status[field] = value;
-    this.paymentStatus.set(operatore, status);
-    this.saveToFile();
-    return status;
+
+    await db.update(paymentStatusTable).set({ [field]: value }).where(eq(paymentStatusTable.operatore, operatore));
+    
+    const updated = await db.select().from(paymentStatusTable).where(eq(paymentStatusTable.operatore, operatore)).limit(1);
+    return {
+      operatore: updated[0].operatore,
+      paidA: updated[0].paidA,
+      paidB: updated[0].paidB,
+    };
   }
 
   async clearPaymentStatus(): Promise<void> {
-    this.paymentStatus.clear();
-    this.saveToFile();
+    await db.delete(paymentStatusTable);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

@@ -1,4 +1,49 @@
 import { z } from "zod";
+import { pgTable, text, varchar, integer, boolean, doublePrecision, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+
+// Database Tables
+export const usersTable = pgTable("users", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  password: text("password").notNull(),
+  role: varchar("role", { length: 20 }).notNull().default("user"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const recordsTable = pgTable("records", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  categoriaCompenso: varchar("categoria_compenso", { length: 10 }).notNull().default("card"),
+  data: varchar("data", { length: 50 }),
+  operatore: varchar("operatore", { length: 255 }).notNull(),
+  paziente: varchar("paziente", { length: 255 }).notNull(),
+  prestazione: text("prestazione").notNull(),
+  elementiDentali: text("elementi_dentali").notNull(),
+  prezzoAlPaziente: doublePrecision("prezzo_al_paziente").notNull(),
+  compensoOperatore: doublePrecision("compenso_operatore").notNull(),
+  hasAnomaly: boolean("has_anomaly").notNull().default(false),
+});
+
+export const mappingsTable = pgTable("mappings", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  mappings: jsonb("mappings").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const analysesTable = pgTable("analyses", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  dateRange: varchar("date_range", { length: 255 }).notNull(),
+  records: jsonb("records").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const paymentStatusTable = pgTable("payment_status", {
+  operatore: varchar("operatore", { length: 255 }).primaryKey(),
+  paidA: boolean("paid_a").notNull().default(false),
+  paidB: boolean("paid_b").notNull().default(false),
+});
 
 export const categoriaCompensoEnum = z.enum(["card", "cash"]);
 export type CategoriaCompenso = z.infer<typeof categoriaCompensoEnum>;
