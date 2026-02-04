@@ -400,57 +400,69 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           </Select>
         </div>
 
-        <div className="flex-1 rounded-md border min-h-0 bg-card overflow-auto">
-          <Table className="relative">
-            <TableHeader className="sticky top-0 z-20 bg-muted shadow-sm">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[40px] px-2 bg-muted">
-                    <Checkbox
-                      checked={allFilteredSelected}
-                      onCheckedChange={handleSelectAll}
-                      data-testid="checkbox-select-all"
-                    />
-                  </TableHead>
-                  <TableHead className="w-[50px] px-2 text-center bg-muted">Cat.</TableHead>
-                  <TableHead 
-                    className="w-[90px] px-2 text-center cursor-pointer select-none bg-muted"
-                    onClick={() => handleSort("data")}
-                    data-testid="header-sort-data"
-                  >
-                    <span className="text-muted-foreground mr-1">{renderSortIcon("data")}</span>
-                    Data
-                  </TableHead>
-                  <TableHead 
-                    className="w-[120px] px-2 cursor-pointer select-none bg-muted"
-                    onClick={() => handleSort("operatore")}
-                    data-testid="header-sort-operatore"
-                  >
-                    <span className="text-muted-foreground mr-1">{renderSortIcon("operatore")}</span>
-                    Operatore
-                  </TableHead>
-                  <TableHead 
-                    className="w-[120px] px-2 cursor-pointer select-none bg-muted"
-                    onClick={() => handleSort("paziente")}
-                    data-testid="header-sort-paziente"
-                  >
-                    <span className="text-muted-foreground mr-1">{renderSortIcon("paziente")}</span>
-                    Paziente
-                  </TableHead>
-                  <TableHead 
-                    className="w-[160px] px-2 cursor-pointer select-none bg-muted"
-                    onClick={() => handleSort("prestazione")}
-                    data-testid="header-sort-prestazione"
-                  >
-                    <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
-                    Prestazione
-                  </TableHead>
-                  <TableHead className="w-[100px] px-2 text-center text-xs bg-muted">Elementi</TableHead>
-                  <TableHead className="w-[100px] px-2 text-center text-xs bg-muted">Prezzo Paz.</TableHead>
-                  <TableHead className="w-[120px] px-2 text-center text-xs bg-muted">Compenso Op.</TableHead>
-                  <TableHead className="w-[40px] px-2 text-center bg-muted"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+        <div className="flex-1 rounded-md border min-h-0 bg-card overflow-y-auto">
+          <Table style={{ tableLayout: 'fixed', width: '100%' }}>
+            <colgroup>
+              <col style={{ width: '40px' }} />
+              <col style={{ width: '50px' }} />
+              <col style={{ width: '90px' }} />
+              <col style={{ width: '120px' }} />
+              <col style={{ width: '120px' }} />
+              <col style={{ width: '160px' }} />
+              <col style={{ width: '100px' }} />
+              <col style={{ width: '100px' }} />
+              <col style={{ width: '120px' }} />
+              <col style={{ width: '40px' }} />
+            </colgroup>
+            <TableHeader className="sticky top-0 z-20 bg-muted">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="px-2 bg-muted">
+                  <Checkbox
+                    checked={allFilteredSelected}
+                    onCheckedChange={handleSelectAll}
+                    data-testid="checkbox-select-all"
+                  />
+                </TableHead>
+                <TableHead className="px-2 text-center bg-muted">Cat.</TableHead>
+                <TableHead 
+                  className="px-2 text-center cursor-pointer select-none bg-muted"
+                  onClick={() => handleSort("data")}
+                  data-testid="header-sort-data"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("data")}</span>
+                  Data
+                </TableHead>
+                <TableHead 
+                  className="px-2 cursor-pointer select-none bg-muted"
+                  onClick={() => handleSort("operatore")}
+                  data-testid="header-sort-operatore"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("operatore")}</span>
+                  Operatore
+                </TableHead>
+                <TableHead 
+                  className="px-2 cursor-pointer select-none bg-muted"
+                  onClick={() => handleSort("paziente")}
+                  data-testid="header-sort-paziente"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("paziente")}</span>
+                  Paziente
+                </TableHead>
+                <TableHead 
+                  className="px-2 cursor-pointer select-none bg-muted"
+                  onClick={() => handleSort("prestazione")}
+                  data-testid="header-sort-prestazione"
+                >
+                  <span className="text-muted-foreground mr-1">{renderSortIcon("prestazione")}</span>
+                  Prestazione
+                </TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted">Elementi</TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted">Prezzo Paz.</TableHead>
+                <TableHead className="px-2 text-center text-xs bg-muted">Compenso Op.</TableHead>
+                <TableHead className="px-2 text-center bg-muted"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filteredRecords.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={10} className="h-32 text-center">
