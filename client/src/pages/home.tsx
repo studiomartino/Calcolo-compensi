@@ -438,7 +438,7 @@ export default function Home({ userRole }: HomeProps) {
     }
 
     return (
-      <div className="flex flex-col items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-12 pt-[20px] pb-[20px]">
         <div className="w-full max-w-2xl">
           <FileUpload onDataLoaded={handleDataLoaded} />
         </div>
