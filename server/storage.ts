@@ -57,6 +57,9 @@ export interface IStorage {
 
 class DatabaseStorage implements IStorage {
   private checkAnomaly(prezzoAlPaziente: number, compensoOperatore: number): boolean {
+    if (prezzoAlPaziente === 0 && compensoOperatore === 0) {
+      return false;
+    }
     return Math.abs(prezzoAlPaziente - compensoOperatore) < 0.02;
   }
 
