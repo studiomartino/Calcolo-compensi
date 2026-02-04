@@ -401,9 +401,9 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
           </Select>
         </div>
 
-        <ScrollArea className="flex-1 rounded-md border min-h-0 bg-card">
-          <Table>
-            <TableHeader className="sticky top-0 z-20 bg-muted/95 backdrop-blur-sm">
+        <ScrollArea className="flex-1 rounded-md border min-h-0 bg-card overflow-auto">
+          <Table className="relative border-collapse">
+            <TableHeader className="sticky top-0 z-20 bg-muted/95 backdrop-blur-sm shadow-sm">
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="w-[40px] px-2">
                     <Checkbox
