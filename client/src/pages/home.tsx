@@ -575,11 +575,11 @@ export default function Home({ userRole }: HomeProps) {
             </div>
           </div>
 
-          <TabsContent value="import" className="flex-1 min-h-0 overflow-y-auto">
+          <TabsContent value="import" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
             {renderImportContent()}
           </TabsContent>
 
-          <TabsContent value="analysis" className="flex-1 min-h-0 flex flex-col">
+          <TabsContent value="analysis" className="flex-1 min-h-0 flex flex-col data-[state=inactive]:hidden">
             <DataTable
               records={records}
               operators={operators}
@@ -588,7 +588,7 @@ export default function Home({ userRole }: HomeProps) {
             />
           </TabsContent>
 
-          <TabsContent value="archive" className="flex-1 min-h-0 overflow-y-auto">
+          <TabsContent value="archive" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
             <AnalysisArchive
               analyses={analyses}
               onDeleteAnalysis={handleDeleteAnalysis}
@@ -598,7 +598,7 @@ export default function Home({ userRole }: HomeProps) {
             />
           </TabsContent>
 
-          <TabsContent value="operators" className="flex-1 min-h-0 overflow-y-auto">
+          <TabsContent value="operators" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
             <OperatorsTab
               analyses={analyses}
               operatorColors={operatorColors}
@@ -607,7 +607,7 @@ export default function Home({ userRole }: HomeProps) {
           </TabsContent>
 
           {userRole === "admin" && (
-            <TabsContent value="users" className="flex-1 min-h-0 overflow-y-auto">
+            <TabsContent value="users" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
               <UsersTab />
             </TabsContent>
           )}
