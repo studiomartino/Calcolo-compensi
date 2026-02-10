@@ -317,23 +317,20 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <CardTitle className="text-lg">Dati Importati</CardTitle>
-            <CardDescription className="text-xs mt-0.5">
-              {stats.total} record totali | {stats.anomalies} anomalie | Compenso A: {stats.cardCount} | Compenso B: {stats.cashCount}
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            {stats.anomalies > 0 && (
-              <Dialog open={anomalyDialogOpen} onOpenChange={setAnomalyDialogOpen}>
-                <DialogTrigger asChild>
-                  <Badge 
-                    variant="outline" 
-                    className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800 py-0 h-5 text-[10px] cursor-pointer hover-elevate"
-                    data-testid="badge-anomalies"
-                  >
-                    <AlertTriangle className="mr-1 h-3 w-3" />
-                    {stats.anomalies} Anomalie
-                  </Badge>
-                </DialogTrigger>
+            <CardDescription className="text-xs mt-0.5 flex items-center gap-2 flex-wrap">
+              <span>{stats.total} record totali | Compenso A: {stats.cardCount} | Compenso B: {stats.cashCount}</span>
+              {stats.anomalies > 0 && (
+                <Dialog open={anomalyDialogOpen} onOpenChange={setAnomalyDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Badge 
+                      variant="outline" 
+                      className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800 py-0 h-5 text-[10px] cursor-pointer hover-elevate"
+                      data-testid="badge-anomalies"
+                    >
+                      <AlertTriangle className="mr-1 h-3 w-3" />
+                      {stats.anomalies} Anomalie
+                    </Badge>
+                  </DialogTrigger>
                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
@@ -437,8 +434,9 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
                     </Table>
                   </div>
                 </DialogContent>
-              </Dialog>
-            )}
+                </Dialog>
+              )}
+            </CardDescription>
           </div>
         </div>
       </CardHeader>
