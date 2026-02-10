@@ -390,8 +390,11 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl font-semibold">Operatori</h2>
+        <h2 className="text-xl font-semibold">Operatori</h2>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            {operatorStats.length} operatori {analyses.length > 0 ? `in ${analyses.length} analisi` : ""}
+          </p>
           <Button 
             size="sm" 
             onClick={() => { setNewOperatorName(""); setAddDialogOpen(true); }}
@@ -401,9 +404,6 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
             Aggiungi Operatore
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {operatorStats.length} operatori {analyses.length > 0 ? `in ${analyses.length} analisi` : ""}
-        </p>
       </div>
 
       {operatorStats.length === 0 && (
