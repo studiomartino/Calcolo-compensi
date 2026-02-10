@@ -39,6 +39,12 @@ export const analysesTable = pgTable("analyses", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const operatorsTable = pgTable("operators", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const paymentStatusTable = pgTable("payment_status", {
   operatore: varchar("operatore", { length: 255 }).primaryKey(),
   paidA: boolean("paid_a").notNull().default(false),
@@ -160,3 +166,17 @@ export const operatorPaymentStatusSchema = z.object({
 });
 
 export type OperatorPaymentStatus = z.infer<typeof operatorPaymentStatusSchema>;
+
+export const operatorSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  createdAt: z.string(),
+});
+
+export type Operator = z.infer<typeof operatorSchema>;
+
+export const insertOperatorSchema = z.object({
+  name: z.string().min(1, "Nome operatore richiesto"),
+});
+
+export type InsertOperator = z.infer<typeof insertOperatorSchema>;

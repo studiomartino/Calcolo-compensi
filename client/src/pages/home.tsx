@@ -16,7 +16,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, FolderArchive, UserCheck } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
-import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso } from "@shared/schema";
+import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso, Operator } from "@shared/schema";
 
 const OPERATOR_COLORS_KEY = "operatorColors";
 
@@ -81,6 +81,10 @@ export default function Home({ userRole }: HomeProps) {
 
   const { data: analyses = [], isLoading: isLoadingAnalyses } = useQuery<Analysis[]>({
     queryKey: ["/api/analyses"],
+  });
+
+  const { data: managedOperators = [], refetch: refetchOperators } = useQuery<Operator[]>({
+    queryKey: ["/api/operators"],
   });
 
   const importMutation = useMutation({
@@ -603,6 +607,8 @@ export default function Home({ userRole }: HomeProps) {
               analyses={analyses}
               operatorColors={operatorColors}
               onUpdateOperatorColors={handleUpdateOperatorColors}
+              managedOperators={managedOperators}
+              onRefreshOperators={() => refetchOperators()}
             />
           </TabsContent>
 

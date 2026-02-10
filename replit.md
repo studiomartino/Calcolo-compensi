@@ -23,6 +23,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Rilevamento Duplicati**: Controllo automatico all'importazione con modale di gestione per selezionare quali duplicati importare
 - **Sistema Autenticazione**: Login con username/password, sessioni sicure con express-session
 - **Gestione Utenti**: Tab amministrazione utenti (solo admin) con CRUD completo
+- **Gestione Operatori**: Aggiunta, modifica ed eliminazione operatori dal tab Operatori con persistenza su database
 
 ## Sistema Autenticazione
 
@@ -106,6 +107,12 @@ shared/
 - `POST /api/auth/login` - Login utente
 - `POST /api/auth/logout` - Logout utente
 - `GET /api/auth/me` - Verifica sessione corrente
+
+### Gestione Operatori
+- `GET /api/operators` - Lista tutti gli operatori
+- `POST /api/operators` - Crea nuovo operatore
+- `PATCH /api/operators/:id` - Aggiorna nome operatore
+- `DELETE /api/operators/:id` - Elimina operatore
 
 ### Gestione Utenti (solo admin)
 - `GET /api/users` - Lista tutti gli utenti

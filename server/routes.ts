@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import session from "express-session";
 import { storage } from "./storage";
 import { z } from "zod";
-import { categoriaCompensoEnum, loginSchema, insertUserSchema } from "@shared/schema";
+import { categoriaCompensoEnum, loginSchema, insertUserSchema, insertOperatorSchema } from "@shared/schema";
 
 declare module "express-session" {
   interface SessionData {
@@ -582,6 +582,64 @@ export async function registerRoutes(
       });
     } catch (error) {
       res.status(500).json({ error: "Errore durante l'archiviazione" });
+    }
+  });
+
+  app.get("/api/operators", requireAuth, async (req, res) => {
+    try {
+      const operators = await storage.getOperators();
+      res.json(operators);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero degli operatori" });
+    }
+  });
+
+  app.post("/api/operators", requireAuth, async (req, res) => {
+    try {
+      const data = insertOperatorSchema.parse(req.body);
+      const operator = await storage.createOperator(data);
+      res.status(201).json(operator);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Dati non validi" });
+      }
+      if (error instanceof Error && error.message.includes("unique")) {
+        return res.status(409).json({ error: "Operatore già esistente" });
+      }
+      res.status(500).json({ error: "Errore nella creazione dell'operatore" });
+    }
+  });
+
+  app.patch("/api/operators/:id", requireAuth, async (req, res) => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const { name } = req.body;
+      if (!name || typeof name !== "string" || name.trim().length === 0) {
+        return res.status(400).json({ error: "Nome operatore richiesto" });
+      }
+      const operator = await storage.updateOperator(id, name.trim());
+      if (!operator) {
+        return res.status(404).json({ error: "Operatore non trovato" });
+      }
+      res.json(operator);
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("unique")) {
+        return res.status(409).json({ error: "Operatore già esistente con questo nome" });
+      }
+      res.status(500).json({ error: "Errore nell'aggiornamento dell'operatore" });
+    }
+  });
+
+  app.delete("/api/operators/:id", requireAuth, async (req, res) => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const deleted = await storage.deleteOperator(id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Operatore non trovato" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Errore nell'eliminazione dell'operatore" });
     }
   });
 

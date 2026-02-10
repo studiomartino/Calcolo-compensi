@@ -1,13 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
-import { ChevronDown, ChevronRight, Palette, Search, FileText, Calendar, CreditCard, Banknote } from "lucide-react";
+import { ChevronDown, ChevronRight, Palette, Search, FileText, Calendar, CreditCard, Banknote, Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Analysis, CompensoRecord } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { Analysis, CompensoRecord, Operator } from "@shared/schema";
 
 const OPERATOR_COLORS = [
   { name: "Blu Scuro", hex: "#1E3A5F" },
@@ -34,6 +37,8 @@ interface OperatorsTabProps {
   analyses: Analysis[];
   operatorColors: Record<string, string>;
   onUpdateOperatorColors: (colors: Record<string, string>) => void;
+  managedOperators: Operator[];
+  onRefreshOperators: () => void;
 }
 
 function parseDate(dateStr: string): Date | null {
@@ -74,12 +79,21 @@ interface OperatorStats {
   monthLabels: string[];
 }
 
-export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors }: OperatorsTabProps) {
+export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors, managedOperators, onRefreshOperators }: OperatorsTabProps) {
   const [expandedOperators, setExpandedOperators] = useState<Set<string>>(new Set());
   const [selectedOperator, setSelectedOperator] = useState<OperatorStats | null>(null);
   const [detailsSearch, setDetailsSearch] = useState("");
   const [periodRange, setPeriodRange] = useState<[number, number]>([0, 100]);
   const [colorEditOperator, setColorEditOperator] = useState<string | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [newOperatorName, setNewOperatorName] = useState("");
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editOperator, setEditOperator] = useState<Operator | null>(null);
+  const [editOperatorName, setEditOperatorName] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteOperator, setDeleteOperator] = useState<Operator | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const operatorStats = useMemo(() => {
     const statsMap = new Map<string, OperatorStats>();
@@ -159,8 +173,28 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
       stats.monthLabels = allMonths;
     });
     
+    managedOperators.forEach((op) => {
+      if (!statsMap.has(op.name)) {
+        statsMap.set(op.name, {
+          operatore: op.name,
+          totalAnalyses: 0,
+          totalCompensation: 0,
+          totalCompensationA: 0,
+          totalCompensationB: 0,
+          totalStudioEarnings: 0,
+          totalStudioEarningsA: 0,
+          totalStudioEarningsB: 0,
+          totalPrestazioni: 0,
+          totalGiornate: 0,
+          monthsCount: 1,
+          allRecords: [],
+          monthLabels: [],
+        });
+      }
+    });
+
     return Array.from(statsMap.values()).sort((a, b) => a.operatore.localeCompare(b.operatore));
-  }, [analyses]);
+  }, [analyses, managedOperators]);
 
   const allMonthLabels = useMemo(() => {
     const monthsSet = new Set<string>();
@@ -202,6 +236,63 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
       [operatore]: color,
     });
     setColorEditOperator(null);
+  };
+
+  const handleAddOperator = async () => {
+    if (!newOperatorName.trim()) return;
+    setIsSubmitting(true);
+    try {
+      await apiRequest("POST", "/api/operators", { name: newOperatorName.trim() });
+      queryClient.invalidateQueries({ queryKey: ["/api/operators"] });
+      onRefreshOperators();
+      setNewOperatorName("");
+      setAddDialogOpen(false);
+      toast({ title: "Operatore aggiunto", description: `${newOperatorName.trim()} aggiunto con successo` });
+    } catch (error: any) {
+      const msg = error?.message?.includes("409") ? "Operatore già esistente" : "Errore nella creazione dell'operatore";
+      toast({ title: "Errore", description: msg, variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEditOperator = async () => {
+    if (!editOperator || !editOperatorName.trim()) return;
+    setIsSubmitting(true);
+    try {
+      await apiRequest("PATCH", `/api/operators/${editOperator.id}`, { name: editOperatorName.trim() });
+      queryClient.invalidateQueries({ queryKey: ["/api/operators"] });
+      onRefreshOperators();
+      setEditDialogOpen(false);
+      setEditOperator(null);
+      toast({ title: "Operatore modificato", description: `Nome aggiornato a "${editOperatorName.trim()}"` });
+    } catch (error: any) {
+      const msg = error?.message?.includes("409") ? "Operatore già esistente con questo nome" : "Errore nell'aggiornamento dell'operatore";
+      toast({ title: "Errore", description: msg, variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteOperator = async () => {
+    if (!deleteOperator) return;
+    setIsSubmitting(true);
+    try {
+      await apiRequest("DELETE", `/api/operators/${deleteOperator.id}`);
+      queryClient.invalidateQueries({ queryKey: ["/api/operators"] });
+      onRefreshOperators();
+      setDeleteDialogOpen(false);
+      setDeleteOperator(null);
+      toast({ title: "Operatore eliminato", description: "Operatore rimosso con successo" });
+    } catch {
+      toast({ title: "Errore", description: "Errore nell'eliminazione dell'operatore", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getManagedOperator = (name: string): Operator | undefined => {
+    return managedOperators.find(op => op.name === name);
   };
 
   const roundToTen = (value: number) => Math.round(value / 10) * 10;
@@ -296,30 +387,36 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
     ? getMonthLabel(allMonthLabels[Math.ceil((periodRange[1] / 100) * (allMonthLabels.length - 1))])
     : "";
 
-  if (analyses.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-4">
-        <FileText className="h-16 w-16 text-muted-foreground" />
-        <div className="text-center space-y-2">
-          <h3 className="text-lg font-medium">Nessun operatore disponibile</h3>
-          <p className="text-muted-foreground">
-            Importa e archivia delle analisi per visualizzare le statistiche degli operatori
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
           <h2 className="text-xl font-semibold">Operatori</h2>
-          <p className="text-sm text-muted-foreground">
-            {operatorStats.length} operatori trovati in {analyses.length} analisi
-          </p>
+          <Button 
+            size="sm" 
+            onClick={() => { setNewOperatorName(""); setAddDialogOpen(true); }}
+            data-testid="button-add-operator"
+          >
+            <Plus className="mr-1.5 h-4 w-4" />
+            Aggiungi Operatore
+          </Button>
         </div>
+        <p className="text-sm text-muted-foreground">
+          {operatorStats.length} operatori {analyses.length > 0 ? `in ${analyses.length} analisi` : ""}
+        </p>
       </div>
+
+      {operatorStats.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 gap-4">
+          <FileText className="h-16 w-16 text-muted-foreground" />
+          <div className="text-center space-y-2">
+            <h3 className="text-lg font-medium">Nessun operatore disponibile</h3>
+            <p className="text-muted-foreground">
+              Aggiungi operatori o importa e archivia delle analisi
+            </p>
+          </div>
+        </div>
+      )}
       <div className="space-y-2">
         {operatorStats.map((stats) => {
           const isExpanded = expandedOperators.has(stats.operatore);
@@ -351,6 +448,38 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                 <Badge variant="secondary" className="text-xs">
                   {stats.totalAnalyses} {stats.totalAnalyses === 1 ? "analisi" : "analisi"}
                 </Badge>
+                {(() => {
+                  const managed = getManagedOperator(stats.operatore);
+                  return managed ? (
+                    <>
+                      <Button 
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditOperator(managed);
+                          setEditOperatorName(managed.name);
+                          setEditDialogOpen(true);
+                        }}
+                        data-testid={`edit-button-${stats.operatore}`}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteOperator(managed);
+                          setDeleteDialogOpen(true);
+                        }}
+                        data-testid={`delete-button-${stats.operatore}`}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </>
+                  ) : null;
+                })()}
                 <Button 
                   variant="ghost"
                   size="icon"
@@ -362,7 +491,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
                   }}
                   data-testid={`details-button-${stats.operatore}`}
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-4 w-4 text-blue-500" />
                 </Button>
               </div>
               
@@ -638,6 +767,70 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors 
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Aggiungi Operatore</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="Nome operatore"
+              value={newOperatorName}
+              onChange={(e) => setNewOperatorName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleAddOperator(); }}
+              data-testid="input-new-operator-name"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddDialogOpen(false)}>Annulla</Button>
+            <Button onClick={handleAddOperator} disabled={!newOperatorName.trim() || isSubmitting} data-testid="button-confirm-add-operator">
+              Aggiungi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Modifica Operatore</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="Nome operatore"
+              value={editOperatorName}
+              onChange={(e) => setEditOperatorName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleEditOperator(); }}
+              data-testid="input-edit-operator-name"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Annulla</Button>
+            <Button onClick={handleEditOperator} disabled={!editOperatorName.trim() || isSubmitting} data-testid="button-confirm-edit-operator">
+              Salva
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminare l'operatore?</AlertDialogTitle>
+            <AlertDialogDescription>
+              L'operatore "{deleteOperator?.name}" verrà rimosso dalla lista gestita. 
+              I dati nelle analisi archiviate non verranno modificati.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteOperator} disabled={isSubmitting} data-testid="button-confirm-delete-operator">
+              Elimina
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   recordsTable, 
   mappingsTable, 
   analysesTable, 
+  operatorsTable,
   paymentStatusTable,
   type CompensoRecord, 
   type InsertCompensoRecord, 
@@ -17,7 +18,9 @@ import {
   type User, 
   type InsertUser, 
   type PublicUser, 
-  type OperatorPaymentStatus 
+  type OperatorPaymentStatus,
+  type Operator,
+  type InsertOperator
 } from "@shared/schema";
 
 export interface IStorage {
@@ -47,6 +50,12 @@ export interface IStorage {
   updateUserPassword(id: string, newPassword: string): Promise<boolean>;
   deleteUser(id: string): Promise<boolean>;
   validateUser(username: string, password: string): Promise<User | null>;
+
+  getOperators(): Promise<Operator[]>;
+  getOperator(id: string): Promise<Operator | undefined>;
+  createOperator(operator: InsertOperator): Promise<Operator>;
+  updateOperator(id: string, name: string): Promise<Operator | undefined>;
+  deleteOperator(id: string): Promise<boolean>;
 
   getPaymentStatus(): Promise<OperatorPaymentStatus[]>;
   updatePaymentStatus(operatore: string, field: 'paidA' | 'paidB', value: boolean): Promise<OperatorPaymentStatus>;
@@ -415,6 +424,43 @@ class DatabaseStorage implements IStorage {
 
     const isValid = await bcrypt.compare(password, user.password);
     return isValid ? user : null;
+  }
+
+  async getOperators(): Promise<Operator[]> {
+    const rows = await db.select().from(operatorsTable).orderBy(operatorsTable.name);
+    return rows.map(r => ({
+      id: r.id,
+      name: r.name,
+      createdAt: r.createdAt.toISOString(),
+    }));
+  }
+
+  async getOperator(id: string): Promise<Operator | undefined> {
+    const rows = await db.select().from(operatorsTable).where(eq(operatorsTable.id, id)).limit(1);
+    if (rows.length === 0) return undefined;
+    const r = rows[0];
+    return { id: r.id, name: r.name, createdAt: r.createdAt.toISOString() };
+  }
+
+  async createOperator(operator: InsertOperator): Promise<Operator> {
+    const id = randomUUID();
+    const createdAt = new Date();
+    await db.insert(operatorsTable).values({ id, name: operator.name });
+    return { id, name: operator.name, createdAt: createdAt.toISOString() };
+  }
+
+  async updateOperator(id: string, name: string): Promise<Operator | undefined> {
+    const existing = await this.getOperator(id);
+    if (!existing) return undefined;
+    await db.update(operatorsTable).set({ name }).where(eq(operatorsTable.id, id));
+    return { ...existing, name };
+  }
+
+  async deleteOperator(id: string): Promise<boolean> {
+    const existing = await this.getOperator(id);
+    if (!existing) return false;
+    await db.delete(operatorsTable).where(eq(operatorsTable.id, id));
+    return true;
   }
 
   async getPaymentStatus(): Promise<OperatorPaymentStatus[]> {
