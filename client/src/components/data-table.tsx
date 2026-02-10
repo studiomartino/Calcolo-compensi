@@ -316,11 +316,11 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit, 
     <Card className="flex flex-col min-h-0 h-full">
       <CardHeader className="py-3 shrink-0">
         <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
+          <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-4 flex-wrap">
-              <CardTitle className="text-lg">Dati Importati</CardTitle>
+              <CardTitle className="text-lg shrink-0">Dati Importati</CardTitle>
               {headerActions && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-auto">
                   {headerActions}
                 </div>
               )}
