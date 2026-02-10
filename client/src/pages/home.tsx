@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, FolderArchive, UserCheck } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, Save, FileBarChart, UserCheck } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso, Operator } from "@shared/schema";
@@ -542,7 +542,7 @@ export default function Home({ userRole }: HomeProps) {
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
-                        <FolderArchive className="mr-1.5 h-3.5 w-3.5" />
+                        <Save className="mr-1.5 h-3.5 w-3.5" />
                         Salva
                       </Button>
                     </AlertDialogTrigger>
@@ -565,7 +565,7 @@ export default function Home({ userRole }: HomeProps) {
                   <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
                     <SheetTrigger asChild>
                       <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
-                        <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
+                        <FileBarChart className="mr-1.5 h-3.5 w-3.5" />
                         Report
                       </Button>
                     </SheetTrigger>
