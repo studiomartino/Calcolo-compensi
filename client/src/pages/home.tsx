@@ -566,7 +566,7 @@ export default function Home({ userRole }: HomeProps) {
                     <SheetTrigger asChild>
                       <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
                         <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
-                        Report Operatori
+                        Report
                       </Button>
                     </SheetTrigger>
                     <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
