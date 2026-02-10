@@ -543,7 +543,7 @@ export default function Home({ userRole }: HomeProps) {
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
                         <FolderArchive className="mr-1.5 h-3.5 w-3.5" />
-                        Archivia Analisi
+                        Salva
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
