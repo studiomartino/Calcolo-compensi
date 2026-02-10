@@ -525,58 +525,6 @@ export default function Home({ userRole }: HomeProps) {
               )}
             </TabsList>
 
-            <div className="flex items-center gap-2">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
-                    <FolderArchive className="mr-1.5 h-3.5 w-3.5" />
-                    Archivia Analisi
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      L'analisi corrente con {records.length} record verrà spostata nell'archivio.
-                      I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annulla</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
-                      Archivia
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
-                <SheetTrigger asChild>
-                  <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
-                    <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
-                    Report Operatori
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle className="flex items-center gap-2">
-                      <BarChart3 className="h-5 w-5" />
-                      Report Operatori
-                    </SheetTitle>
-                  </SheetHeader>
-                  <div className="mt-6">
-                    <OperatorDashboard
-                      records={records}
-                      onExportExcel={handleExportExcel}
-                      selectedOperator={selectedOperator}
-                      onSelectOperator={setSelectedOperator}
-                      onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
-                      dateRange={currentDateRange}
-                      operatorColors={operatorColors}
-                    />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
           </div>
 
           <TabsContent value="import" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
@@ -589,6 +537,60 @@ export default function Home({ userRole }: HomeProps) {
               operators={operators}
               onCategoryChange={handleCategoryChange}
               onRecordEdit={handleRecordEdit}
+              headerActions={
+                <>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
+                        <FolderArchive className="mr-1.5 h-3.5 w-3.5" />
+                        Archivia Analisi
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          L'analisi corrente con {records.length} record verrà spostata nell'archivio.
+                          I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annulla</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
+                          Archivia
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
+                    <SheetTrigger asChild>
+                      <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
+                        <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
+                        Report Operatori
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+                      <SheetHeader>
+                        <SheetTitle className="flex items-center gap-2">
+                          <BarChart3 className="h-5 w-5" />
+                          Report Operatori
+                        </SheetTitle>
+                      </SheetHeader>
+                      <div className="mt-6">
+                        <OperatorDashboard
+                          records={records}
+                          onExportExcel={handleExportExcel}
+                          selectedOperator={selectedOperator}
+                          onSelectOperator={setSelectedOperator}
+                          onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
+                          dateRange={currentDateRange}
+                          operatorColors={operatorColors}
+                        />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                </>
+              }
             />
           </TabsContent>
 

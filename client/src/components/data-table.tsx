@@ -36,12 +36,13 @@ interface DataTableProps {
   operators: string[];
   onCategoryChange: (ids: string[], category: CategoriaCompenso) => void;
   onRecordEdit: (id: string, field: keyof CompensoRecord, value: string | number) => void;
+  headerActions?: React.ReactNode;
 }
 
 type SortColumn = "data" | "operatore" | "paziente" | "prestazione" | null;
 type SortDirection = "asc" | "desc";
 
-export function DataTable({ records, operators, onCategoryChange, onRecordEdit }: DataTableProps) {
+export function DataTable({ records, operators, onCategoryChange, onRecordEdit, headerActions }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [operatorFilter, setOperatorFilter] = useState<string>("all");
   const [anomalyFilter, setAnomalyFilter] = useState<string>("all");
@@ -316,7 +317,14 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit }
       <CardHeader className="py-3 shrink-0">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <CardTitle className="text-lg">Dati Importati</CardTitle>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <CardTitle className="text-lg">Dati Importati</CardTitle>
+              {headerActions && (
+                <div className="flex items-center gap-2">
+                  {headerActions}
+                </div>
+              )}
+            </div>
             <CardDescription className="text-xs mt-0.5 flex items-center gap-2 flex-wrap">
               <span>{stats.total} record totali | Compenso A: {stats.cardCount} | Compenso B: {stats.cashCount}</span>
               {stats.anomalies > 0 && (
