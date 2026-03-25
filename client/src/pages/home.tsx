@@ -344,6 +344,7 @@ export default function Home({ userRole }: HomeProps) {
 
     const fieldMappingsToUse = pendingFieldMappings;
     setPendingFieldMappings(null);
+    setOperatorMappingOpen(false);
 
     await proceedToDuplicateCheck(currentRawData, fieldMappingsToUse);
   }, [pendingFieldMappings, pendingRawDataForImport, operatorColors, assignRandomColors, queryClient, toast, proceedToDuplicateCheck]);

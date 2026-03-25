@@ -109,7 +109,6 @@ export function OperatorMappingModal({
     });
 
     onConfirm(resolutions);
-    onOpenChange(false);
   };
 
   const handleCancel = () => {
