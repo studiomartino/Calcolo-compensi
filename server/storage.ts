@@ -477,6 +477,12 @@ class DatabaseStorage implements IStorage {
   }
 
   async createOperator(operator: InsertOperator): Promise<Operator> {
+    const existing = await db.select().from(operatorsTable)
+      .where(ilike(operatorsTable.name, operator.name))
+      .limit(1);
+    if (existing.length > 0) {
+      return this.mapOperatorRow(existing[0]);
+    }
     const id = randomUUID();
     await db.insert(operatorsTable).values({ id, name: operator.name });
     const rows = await db.select().from(operatorsTable).where(eq(operatorsTable.id, id)).limit(1);

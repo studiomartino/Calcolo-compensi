@@ -629,6 +629,17 @@ export async function registerRoutes(
   app.post("/api/operators", requireAuth, async (req, res) => {
     try {
       const data = insertOperatorSchema.parse(req.body);
+      const normalizedName = data.name.trim().toUpperCase();
+
+      const aliases = await storage.getOperatorAliases();
+      const aliasMatch = aliases.find(a => a.alias.toUpperCase() === normalizedName);
+      if (aliasMatch) {
+        const existing = await storage.getOperator(aliasMatch.operatorId);
+        if (existing) {
+          return res.status(200).json(existing);
+        }
+      }
+
       const operator = await storage.createOperator(data);
       res.status(201).json(operator);
     } catch (error) {

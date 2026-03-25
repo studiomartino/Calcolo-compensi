@@ -1,0 +1,54 @@
+## Context
+During file import, the app runs an operator mapping dialog that compares
+imported names against DB operators. Despite finding a match (exact or via
+alias), the import process still creates a new operator record, resulting
+in duplicates in the operators table.
+
+## Goal
+Fix the operator creation logic so that an operator is NEVER inserted into
+the DB if a matching operator already exists (by exact name or by alias),
+regardless of the import flow path.
+
+## Requirements
+
+### 1. Identify all operator creation points
+Audit every place in `server/routes.ts` and `server/storage.ts` where an
+operator record is created during import. There may be multiple code paths
+(e.g. auto-creation when processing records, creation inside the mapping
+dialog resolution logic). Identify all of them.
+
+### 2. Add existence check before every insert
+Before any `INSERT` into the `operators` table during import, perform a
+lookup:
+- Normalize the name to uppercase
+- Check if an operator with that name (case-insensitive) already exists
+- Check if an alias matching that name already exists in `operator_aliases`
+- Only if NEITHER check returns a result: proceed with the insert
+- If a match is found: use the existing operator's id — do not insert
+
+### 3. Fix the mapping dialog resolution on the frontend
+In the operator mapping dialog (`home.tsx` or related component):
+- When the user selects "Associa a esistente": make sure the resolved
+  operatorId is passed through correctly and no creation call is made
+- When the user selects "Crea nuovo": make sure the creation call is made
+  exactly once and the result id is reused for all records with that name
+
+### 4. Add a backend-level deduplication guard
+In the API endpoint that handles operator creation (`POST /api/operators`
+or the import endpoint in `server/routes.ts`), add a server-side check:
+before inserting, query for an existing operator with the same name
+(case-insensitive). If found, return the existing operator instead of
+creating a new one. This acts as a safety net even if the frontend logic
+has gaps.
+
+## Expected behavior
+- Importing a file with operator names that match existing DB operators
+  (by name or alias) must NEVER create new operator records
+- The operators table must remain free of duplicates after any number
+  of imports
+- Existing operator CRUD functionality must remain unaffected
+
+## Constraints
+- Do not modify the alias saving logic introduced previously
+- Do not alter record import logic beyond operator id resolution
+- Do not delete existing duplicate operators — only prevent future ones
