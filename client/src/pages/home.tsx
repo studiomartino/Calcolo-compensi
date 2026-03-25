@@ -298,9 +298,22 @@ export default function Home({ userRole }: HomeProps) {
     const createResolutions = resolutions.filter((r) => r.action === "create");
     for (const r of createResolutions) {
       try {
-        await apiRequest("POST", "/api/operators", { name: r.excelName });
+        const response = await apiRequest("POST", "/api/operators", { name: r.excelName });
+        if (!response.ok && response.status !== 409) {
+          toast({
+            title: "Errore nella creazione dell'operatore",
+            description: `Impossibile creare l'operatore "${r.excelName}". Riprovare.`,
+            variant: "destructive",
+          });
+          return;
+        }
       } catch {
-        // Silently ignore if already exists
+        toast({
+          title: "Errore di rete",
+          description: `Impossibile creare l'operatore "${r.excelName}". Verificare la connessione.`,
+          variant: "destructive",
+        });
+        return;
       }
     }
     queryClient.invalidateQueries({ queryKey: ["/api/operators"] });
@@ -333,7 +346,14 @@ export default function Home({ userRole }: HomeProps) {
     setPendingFieldMappings(null);
 
     await proceedToDuplicateCheck(currentRawData, fieldMappingsToUse);
-  }, [pendingFieldMappings, pendingRawDataForImport, operatorColors, assignRandomColors, queryClient, proceedToDuplicateCheck]);
+  }, [pendingFieldMappings, pendingRawDataForImport, operatorColors, assignRandomColors, queryClient, toast, proceedToDuplicateCheck]);
+
+  const handleOperatorMappingCancel = useCallback(() => {
+    setOperatorMappingOpen(false);
+    setPendingFieldMappings(null);
+    setPendingRawDataForImport([]);
+    setExcelOperatorsForModal([]);
+  }, []);
 
   const handleImportWithExclusions = useCallback((excludeIndices: number[]) => {
     if (!pendingMappings) return;
@@ -704,7 +724,7 @@ export default function Home({ userRole }: HomeProps) {
 
       <OperatorMappingModal
         open={operatorMappingOpen}
-        onOpenChange={setOperatorMappingOpen}
+        onOpenChange={(open) => { if (!open) handleOperatorMappingCancel(); else setOperatorMappingOpen(true); }}
         excelOperators={excelOperatorsForModal}
         officialOperators={managedOperators}
         onConfirm={handleOperatorMappingConfirm}
