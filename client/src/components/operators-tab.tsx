@@ -1,10 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
-import { ChevronDown, ChevronRight, Palette, Search, FileText, Calendar, CreditCard, Banknote, Plus, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Palette, Search, FileText, Calendar, CreditCard, Banknote, Plus, Pencil, Trash2, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -92,6 +94,13 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
   const [editOperatorName, setEditOperatorName] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteOperator, setDeleteOperator] = useState<Operator | null>(null);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+  const [settingsOperator, setSettingsOperator] = useState<Operator | null>(null);
+  const [settingsAttivo, setSettingsAttivo] = useState(false);
+  const [settingsMinimoA, setSettingsMinimoA] = useState<number | "">("");
+  const [settingsMinimoB, setSettingsMinimoB] = useState<number | "">("");
+  const [settingsFissoA, setSettingsFissoA] = useState<number | "">("");
+  const [settingsFissoB, setSettingsFissoB] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -291,6 +300,38 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
     }
   };
 
+  const openSettingsDialog = (operator: Operator) => {
+    setSettingsOperator(operator);
+    setSettingsAttivo(operator.pagamentoGiornataAttivo ?? false);
+    setSettingsMinimoA(operator.pagamentoGiornataMinimoA ?? "");
+    setSettingsMinimoB(operator.pagamentoGiornataMinimoB ?? "");
+    setSettingsFissoA(operator.pagamentoGiornataFissoA ?? "");
+    setSettingsFissoB(operator.pagamentoGiornataFissoB ?? "");
+    setSettingsDialogOpen(true);
+  };
+
+  const handleSaveSettings = async () => {
+    if (!settingsOperator) return;
+    setIsSubmitting(true);
+    try {
+      await apiRequest("PATCH", `/api/operators/${settingsOperator.id}`, {
+        pagamentoGiornataAttivo: settingsAttivo,
+        pagamentoGiornataMinimoA: settingsMinimoA === "" ? null : Number(settingsMinimoA),
+        pagamentoGiornataMinimoB: settingsMinimoB === "" ? null : Number(settingsMinimoB),
+        pagamentoGiornataFissoA: settingsFissoA === "" ? null : Number(settingsFissoA),
+        pagamentoGiornataFissoB: settingsFissoB === "" ? null : Number(settingsFissoB),
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/operators"] });
+      onRefreshOperators();
+      setSettingsDialogOpen(false);
+      toast({ title: "Impostazioni salvate", description: `Configurazione aggiornata per "${settingsOperator.name}"` });
+    } catch {
+      toast({ title: "Errore", description: "Errore nel salvataggio delle impostazioni", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const getManagedOperator = (name: string): Operator | undefined => {
     return managedOperators.find(op => op.name === name);
   };
@@ -452,6 +493,23 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                   const managed = getManagedOperator(stats.operatore);
                   return managed ? (
                     <>
+                      {managed.pagamentoGiornataAttivo && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/40 text-primary">
+                          <Calendar className="h-3 w-3 mr-0.5" />
+                          Giornata
+                        </Badge>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openSettingsDialog(managed);
+                        }}
+                        data-testid={`settings-button-${stats.operatore}`}
+                      >
+                        <Settings className="h-4 w-4 text-muted-foreground" />
+                      </Button>
                       <Button 
                         variant="ghost"
                         size="icon"
@@ -831,6 +889,103 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Pagamento a Giornata — {settingsOperator?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="flex items-center gap-3">
+              <Switch
+                id="settings-attivo"
+                checked={settingsAttivo}
+                onCheckedChange={setSettingsAttivo}
+                data-testid="switch-giornata-attivo"
+              />
+              <Label htmlFor="settings-attivo">Attiva</Label>
+            </div>
+
+            {settingsAttivo && (
+              <div className="space-y-3 border-t pt-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="settings-minimo-a" className="text-xs flex items-center gap-1">
+                      <CreditCard className="h-3 w-3" /> Min A
+                    </Label>
+                    <Input
+                      id="settings-minimo-a"
+                      type="number"
+                      min="0"
+                      step="10"
+                      value={settingsMinimoA}
+                      onChange={(e) => setSettingsMinimoA(e.target.value === "" ? "" : Number(e.target.value))}
+                      placeholder="0"
+                      data-testid="input-minimo-a"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="settings-minimo-b" className="text-xs flex items-center gap-1">
+                      <Banknote className="h-3 w-3" /> Min B
+                    </Label>
+                    <Input
+                      id="settings-minimo-b"
+                      type="number"
+                      min="0"
+                      step="10"
+                      value={settingsMinimoB}
+                      onChange={(e) => setSettingsMinimoB(e.target.value === "" ? "" : Number(e.target.value))}
+                      placeholder="0"
+                      data-testid="input-minimo-b"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="settings-fisso-a" className="text-xs flex items-center gap-1">
+                      <CreditCard className="h-3 w-3" /> Fisso A
+                    </Label>
+                    <Input
+                      id="settings-fisso-a"
+                      type="number"
+                      min="0"
+                      step="10"
+                      value={settingsFissoA}
+                      onChange={(e) => setSettingsFissoA(e.target.value === "" ? "" : Number(e.target.value))}
+                      placeholder="0"
+                      data-testid="input-fisso-a"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="settings-fisso-b" className="text-xs flex items-center gap-1">
+                      <Banknote className="h-3 w-3" /> Fisso B
+                    </Label>
+                    <Input
+                      id="settings-fisso-b"
+                      type="number"
+                      min="0"
+                      step="10"
+                      value={settingsFissoB}
+                      onChange={(e) => setSettingsFissoB(e.target.value === "" ? "" : Number(e.target.value))}
+                      placeholder="0"
+                      data-testid="input-fisso-b"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSettingsDialogOpen(false)}>Annulla</Button>
+            <Button onClick={handleSaveSettings} disabled={isSubmitting} data-testid="button-save-settings">
+              Salva
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

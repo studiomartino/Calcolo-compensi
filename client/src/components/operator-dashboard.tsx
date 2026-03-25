@@ -17,15 +17,12 @@ import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import type { CompensoRecord, OperatorReport, OperatorPaymentStatus } from "@shared/schema";
+import type { CompensoRecord, OperatorReport, OperatorPaymentStatus, Operator } from "@shared/schema";
 
 interface DailyPaymentSettings {
   enabled: boolean;
-  type: "minimo" | "fisso";
-  dailyAmount: number;
-  dailyAmountA: number; // Compenso minimo A (card)
-  dailyAmountB: number; // Compenso minimo B (cash)
-  workedDays: string[]; // Array of date strings YYYY-MM-DD
+  workedDays: string[];
+  dayModes: Record<string, "minimo" | "fisso" | "none">;
 }
 
 interface DailyPaymentResult {
@@ -42,6 +39,8 @@ interface OperatorDashboardProps {
   onUpdateRecord?: (id: string, compensoOperatore: number) => void;
   dateRange?: string;
   operatorColors?: Record<string, string>;
+  managedOperators?: Operator[];
+  analysisId?: string;
 }
 
 export function OperatorDashboard({
@@ -52,6 +51,8 @@ export function OperatorDashboard({
   onUpdateRecord,
   dateRange,
   operatorColors = {},
+  managedOperators = [],
+  analysisId,
 }: OperatorDashboardProps) {
   const [showAnomaliesModal, setShowAnomaliesModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -152,79 +153,101 @@ export function OperatorDashboard({
     return Array.from(days).sort();
   };
 
-  // Calcola il compenso giornaliero per un operatore
+  const getOperatorConfig = (operatore: string): Operator | undefined => {
+    return managedOperators.find(op => op.name === operatore);
+  };
+
+  const getDefaultDayMode = (operatore: string): "minimo" | "fisso" | "none" => {
+    const config = getOperatorConfig(operatore);
+    if (!config?.pagamentoGiornataAttivo) return "none";
+    if ((config.pagamentoGiornataMinimoA ?? 0) > 0 || (config.pagamentoGiornataMinimoB ?? 0) > 0) return "minimo";
+    if ((config.pagamentoGiornataFissoA ?? 0) > 0 || (config.pagamentoGiornataFissoB ?? 0) > 0) return "fisso";
+    return "minimo";
+  };
+
   const calculateDailyPayment = (operatore: string): DailyPaymentResult | null => {
     const settings = dailyPaymentSettings[operatore];
     if (!settings?.enabled) return null;
+    const config = getOperatorConfig(operatore);
+    if (!config) return null;
 
     const workedDays = settings.workedDays;
     if (workedDays.length === 0) return { total: 0, cardTotal: 0, cashTotal: 0 };
 
-    if (settings.type === "fisso") {
-      // Fisso: importo fisso per ogni giorno (tutto come Compenso A)
-      const total = workedDays.length * settings.dailyAmount;
-      return { total, cardTotal: total, cashTotal: 0 };
-    } else {
-      // Minimo: per ogni giorno, confronta somma reale (A+B) con somma minimi (A+B)
-      let totalCard = 0;
-      let totalCash = 0;
-      const minA = settings.dailyAmountA || 0;
-      const minB = settings.dailyAmountB || 0;
-      const minSum = minA + minB;
+    let totalCard = 0;
+    let totalCash = 0;
 
-      workedDays.forEach((day) => {
-        const dayRecords = records.filter(
-          (r) => r.operatore === operatore && r.data && parseItalianDate(r.data) === day
-        );
-        const dayCard = dayRecords
-          .filter((r) => r.categoriaCompenso === "card")
-          .reduce((sum, r) => sum + r.compensoOperatore, 0);
-        const dayCash = dayRecords
-          .filter((r) => r.categoriaCompenso === "cash")
-          .reduce((sum, r) => sum + r.compensoOperatore, 0);
-        const dayRealSum = dayCard + dayCash;
+    workedDays.forEach((day) => {
+      const dayMode = settings.dayModes[day] || "none";
+      const dayRecords = records.filter(
+        (r) => r.operatore === operatore && r.data && parseItalianDate(r.data) === day
+      );
+      const dayCard = dayRecords
+        .filter((r) => r.categoriaCompenso === "card")
+        .reduce((sum, r) => sum + r.compensoOperatore, 0);
+      const dayCash = dayRecords
+        .filter((r) => r.categoriaCompenso === "cash")
+        .reduce((sum, r) => sum + r.compensoOperatore, 0);
 
-        // Se la somma reale >= somma minimi, usa valori reali
-        // Altrimenti usa i minimi
-        if (dayRealSum >= minSum) {
-          totalCard += dayCard;
-          totalCash += dayCash;
-        } else {
-          totalCard += minA;
-          totalCash += minB;
-        }
-      });
+      if (dayMode === "minimo") {
+        const minA = config.pagamentoGiornataMinimoA ?? 0;
+        const minB = config.pagamentoGiornataMinimoB ?? 0;
+        totalCard += Math.max(dayCard, minA);
+        totalCash += Math.max(dayCash, minB);
+      } else if (dayMode === "fisso") {
+        totalCard += config.pagamentoGiornataFissoA ?? 0;
+        totalCash += config.pagamentoGiornataFissoB ?? 0;
+      } else {
+        totalCard += dayCard;
+        totalCash += dayCash;
+      }
+    });
 
-      return { 
-        total: totalCard + totalCash, 
-        cardTotal: totalCard, 
-        cashTotal: totalCash 
-      };
-    }
+    return {
+      total: totalCard + totalCash,
+      cardTotal: totalCard,
+      cashTotal: totalCash,
+    };
   };
 
-  // Apre il modal per configurare il pagamento a giornata
-  const openDailyPaymentModal = (operatore: string) => {
+  const openDailyPaymentModal = async (operatore: string) => {
     setSelectedDailyOperator(operatore);
-    // Initialize settings if not present
-    if (!dailyPaymentSettings[operatore]) {
-      const workedDays = getOperatorWorkedDays(operatore);
-      setDailyPaymentSettings((prev) => ({
-        ...prev,
-        [operatore]: {
-          enabled: false,
-          type: "minimo",
-          dailyAmount: 0,
-          dailyAmountA: 0,
-          dailyAmountB: 0,
-          workedDays,
-        },
-      }));
+    const workedDays = getOperatorWorkedDays(operatore);
+    const defaultMode = getDefaultDayMode(operatore);
+
+    let existingDayModes: Record<string, "minimo" | "fisso" | "none"> = {};
+    if (dailyPaymentSettings[operatore]) {
+      existingDayModes = { ...dailyPaymentSettings[operatore].dayModes };
     }
+
+    if (analysisId) {
+      try {
+        const res = await fetch(`/api/pagamento-giornata-modes?analysisId=${encodeURIComponent(analysisId)}&operatorName=${encodeURIComponent(operatore)}`);
+        if (res.ok) {
+          const modes = await res.json();
+          modes.forEach((m: { workDate: string; mode: string }) => {
+            existingDayModes[m.workDate] = m.mode as "minimo" | "fisso" | "none";
+          });
+        }
+      } catch {}
+    }
+
+    const dayModes: Record<string, "minimo" | "fisso" | "none"> = {};
+    workedDays.forEach(day => {
+      dayModes[day] = existingDayModes[day] || defaultMode;
+    });
+
+    setDailyPaymentSettings((prev) => ({
+      ...prev,
+      [operatore]: {
+        enabled: prev[operatore]?.enabled ?? false,
+        workedDays,
+        dayModes,
+      },
+    }));
     setShowDailyPaymentModal(true);
   };
 
-  // Aggiorna impostazioni pagamento giornaliero
   const updateDailyPaymentSetting = <K extends keyof DailyPaymentSettings>(
     operatore: string,
     key: K,
@@ -239,7 +262,26 @@ export function OperatorDashboard({
     }));
   };
 
-  // Aggiungi giornata manuale
+  const updateDayMode = async (operatore: string, day: string, mode: "minimo" | "fisso" | "none") => {
+    setDailyPaymentSettings((prev) => ({
+      ...prev,
+      [operatore]: {
+        ...prev[operatore],
+        dayModes: { ...prev[operatore].dayModes, [day]: mode },
+      },
+    }));
+    if (analysisId) {
+      try {
+        await apiRequest("POST", "/api/pagamento-giornata-modes", {
+          analysisId,
+          operatorName: operatore,
+          workDate: day,
+          mode,
+        });
+      } catch {}
+    }
+  };
+
   const addWorkedDay = (operatore: string, date: Date) => {
     const settings = dailyPaymentSettings[operatore];
     if (!settings) return;
@@ -250,7 +292,15 @@ export function OperatorDashboard({
       return;
     }
     
-    updateDailyPaymentSetting(operatore, "workedDays", [...settings.workedDays, normalized].sort());
+    const defaultMode = getDefaultDayMode(operatore);
+    setDailyPaymentSettings((prev) => ({
+      ...prev,
+      [operatore]: {
+        ...prev[operatore],
+        workedDays: [...prev[operatore].workedDays, normalized].sort(),
+        dayModes: { ...prev[operatore].dayModes, [normalized]: defaultMode },
+      },
+    }));
     setCalendarOpen(false);
   };
 
@@ -554,9 +604,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                           data-testid={`button-daily-payment-${report.operatore}`}
                         >
                           {dailyPaymentSettings[report.operatore]?.enabled && (
-                            <span className="text-xs font-bold">
-                              {dailyPaymentSettings[report.operatore].type === "fisso" ? "F" : "M"}
-                            </span>
+                            <span className="text-xs font-bold">G</span>
                           )}
                           <CalendarIcon className="h-4 w-4" />
                         </Button>
@@ -811,122 +859,53 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
             </DialogTitle>
           </DialogHeader>
           
-          {selectedDailyOperator && dailyPaymentSettings[selectedDailyOperator] && (
+          {selectedDailyOperator && dailyPaymentSettings[selectedDailyOperator] && (() => {
+            const config = getOperatorConfig(selectedDailyOperator);
+            const hasConfig = config?.pagamentoGiornataAttivo;
+            return (
             <div className="space-y-6 flex-1 flex flex-col min-h-0">
 
-              <div className="flex gap-4">
-                <div className="flex-1 flex flex-col justify-between gap-1">
-                  <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
-                    <Switch
-                      id="daily-enabled"
-                      checked={dailyPaymentSettings[selectedDailyOperator].enabled}
-                      onCheckedChange={(checked) => updateDailyPaymentSetting(
-                        selectedDailyOperator,
-                        "enabled",
-                        checked
-                      )}
-                      data-testid="switch-toggle-daily"
-                    />
-                    <Label htmlFor="daily-enabled" className="text-sm">
-                      Attiva
-                    </Label>
-                  </div>
-
-                  {dailyPaymentSettings[selectedDailyOperator].enabled && dailyPaymentSettings[selectedDailyOperator].type === "fisso" && (
-                    <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
-                      <Label htmlFor="daily-amount" className="text-sm whitespace-nowrap">
-                        €/giorno
-                      </Label>
-                      <Input
-                        id="daily-amount"
-                        type="number"
-                        step="10"
-                        min="0"
-                        value={dailyPaymentSettings[selectedDailyOperator].dailyAmount || ""}
-                        onChange={(e) => updateDailyPaymentSetting(
-                          selectedDailyOperator,
-                          "dailyAmount",
-                          parseFloat(e.target.value) || 0
-                        )}
-                        placeholder="150"
-                        className="h-7 w-24"
-                        data-testid="input-daily-amount"
-                      />
-                    </div>
+              <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
+                <Switch
+                  id="daily-enabled"
+                  checked={dailyPaymentSettings[selectedDailyOperator].enabled}
+                  onCheckedChange={(checked) => updateDailyPaymentSetting(
+                    selectedDailyOperator,
+                    "enabled",
+                    checked
                   )}
-                  {dailyPaymentSettings[selectedDailyOperator].enabled && dailyPaymentSettings[selectedDailyOperator].type === "minimo" && (
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
-                        <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        <Label htmlFor="daily-amount-a" className="text-sm whitespace-nowrap">
-                          Min A
-                        </Label>
-                        <Input
-                          id="daily-amount-a"
-                          type="number"
-                          step="10"
-                          min="0"
-                          value={dailyPaymentSettings[selectedDailyOperator].dailyAmountA || ""}
-                          onChange={(e) => updateDailyPaymentSetting(
-                            selectedDailyOperator,
-                            "dailyAmountA",
-                            parseFloat(e.target.value) || 0
-                          )}
-                          placeholder="100"
-                          className="h-7 w-20"
-                          data-testid="input-daily-amount-a"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 border rounded-md px-2 py-1.5">
-                        <Banknote className="h-4 w-4 text-muted-foreground" />
-                        <Label htmlFor="daily-amount-b" className="text-sm whitespace-nowrap">
-                          Min B
-                        </Label>
-                        <Input
-                          id="daily-amount-b"
-                          type="number"
-                          step="10"
-                          min="0"
-                          value={dailyPaymentSettings[selectedDailyOperator].dailyAmountB || ""}
-                          onChange={(e) => updateDailyPaymentSetting(
-                            selectedDailyOperator,
-                            "dailyAmountB",
-                            parseFloat(e.target.value) || 0
-                          )}
-                          placeholder="50"
-                          className="h-7 w-20"
-                          data-testid="input-daily-amount-b"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {dailyPaymentSettings[selectedDailyOperator].enabled && (
-                  <div className="flex-1 mt-[24px] mb-[24px] pt-[0px] pb-[0px]">
-                    <RadioGroup
-                      value={dailyPaymentSettings[selectedDailyOperator].type}
-                      onValueChange={(value: "minimo" | "fisso") => 
-                        updateDailyPaymentSetting(selectedDailyOperator, "type", value)
-                      }
-                      className="grid gap-1 mt-[5px] mb-[5px] pt-[0px] pb-[0px]"
-                    >
-                      <div className="flex items-center space-x-2 border rounded-md px-2 py-1.5 cursor-pointer hover-elevate">
-                        <RadioGroupItem value="minimo" id="type-minimo" />
-                        <Label htmlFor="type-minimo" className="cursor-pointer text-sm">Minimo</Label>
-                      </div>
-                      <div className="flex items-center space-x-2 border rounded-md px-2 py-1.5 cursor-pointer hover-elevate">
-                        <RadioGroupItem value="fisso" id="type-fisso" />
-                        <Label htmlFor="type-fisso" className="cursor-pointer text-sm">Fisso</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                )}
+                  data-testid="switch-toggle-daily"
+                />
+                <Label htmlFor="daily-enabled" className="text-sm">
+                  Attiva
+                </Label>
               </div>
+
+              {!hasConfig && (
+                <p className="text-sm text-muted-foreground">
+                  Configurare i valori Minimo/Fisso nelle impostazioni operatore (tab Operatori → icona ingranaggio)
+                </p>
+              )}
+
+              {hasConfig && config && (
+                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                  <div className="border rounded px-2 py-1">
+                    <span className="font-medium">Min A:</span> € {config.pagamentoGiornataMinimoA ?? 0}
+                  </div>
+                  <div className="border rounded px-2 py-1">
+                    <span className="font-medium">Min B:</span> € {config.pagamentoGiornataMinimoB ?? 0}
+                  </div>
+                  <div className="border rounded px-2 py-1">
+                    <span className="font-medium">Fisso A:</span> € {config.pagamentoGiornataFissoA ?? 0}
+                  </div>
+                  <div className="border rounded px-2 py-1">
+                    <span className="font-medium">Fisso B:</span> € {config.pagamentoGiornataFissoB ?? 0}
+                  </div>
+                </div>
+              )}
 
               {dailyPaymentSettings[selectedDailyOperator].enabled && (
                 <>
-
                   <div className="space-y-3 flex-1 flex flex-col min-h-0">
                     <div className="flex items-center justify-between shrink-0">
                       <Label className="text-sm font-medium">
@@ -941,24 +920,49 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                             (r) => r.operatore === selectedDailyOperator && r.data && parseItalianDate(r.data) === day
                           );
                           const daySum = dayRecords.reduce((sum, r) => sum + r.compensoOperatore, 0);
+                          const currentMode = dailyPaymentSettings[selectedDailyOperator].dayModes[day] || "none";
                           
                           return (
-                            <div key={day} className="flex items-center justify-between p-2 hover:bg-muted/50">
-                              <div>
-                                <p className="text-sm font-medium">{formatDateFull(day)}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {dayRecords.length} prestazioni - {formatCurrency(daySum)}
-                                </p>
+                            <div key={day} className="p-2 hover:bg-muted/50">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-sm font-medium">{formatDateFull(day)}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {dayRecords.length} prestazioni - {formatCurrency(daySum)}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                  onClick={() => removeWorkedDay(selectedDailyOperator, day)}
+                                  data-testid={`button-remove-day-${day}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </div>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                onClick={() => removeWorkedDay(selectedDailyOperator, day)}
-                                data-testid={`button-remove-day-${day}`}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              {hasConfig && (
+                                <div className="flex items-center gap-2 mt-1">
+                                  <RadioGroup
+                                    value={currentMode}
+                                    onValueChange={(value) => updateDayMode(selectedDailyOperator, day, value as "minimo" | "fisso" | "none")}
+                                    className="flex gap-2"
+                                  >
+                                    <div className="flex items-center space-x-1">
+                                      <RadioGroupItem value="minimo" id={`mode-minimo-${day}`} className="h-3 w-3" />
+                                      <Label htmlFor={`mode-minimo-${day}`} className="text-xs cursor-pointer">Minimo</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <RadioGroupItem value="fisso" id={`mode-fisso-${day}`} className="h-3 w-3" />
+                                      <Label htmlFor={`mode-fisso-${day}`} className="text-xs cursor-pointer">Fisso</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <RadioGroupItem value="none" id={`mode-none-${day}`} className="h-3 w-3" />
+                                      <Label htmlFor={`mode-none-${day}`} className="text-xs cursor-pointer">Standard</Label>
+                                    </div>
+                                  </RadioGroup>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -994,8 +998,6 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
 
                   {(() => {
                     const result = calculateDailyPayment(selectedDailyOperator);
-                    const settings = dailyPaymentSettings[selectedDailyOperator];
-                    const isMinimo = settings?.type === "minimo";
                     
                     return (
                       <div className="p-3 bg-primary/10 rounded-lg space-y-2 shrink-0">
@@ -1005,7 +1007,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                             {formatCurrency(roundToTen(result?.total || 0))}
                           </span>
                         </div>
-                        {isMinimo && result && (
+                        {result && (
                           <div className="grid grid-cols-2 text-sm text-muted-foreground border-t pt-2">
                             <div className="flex items-center gap-1">
                               <CreditCard className="h-3 w-3" />
@@ -1024,7 +1026,8 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
               )}
 
             </div>
-          )}
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>

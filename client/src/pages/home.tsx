@@ -701,6 +701,8 @@ export default function Home({ userRole }: HomeProps) {
                         onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
                         dateRange={currentDateRange}
                         operatorColors={operatorColors}
+                        managedOperators={managedOperators}
+                        analysisId="current"
                       />
                     </div>
                   </SheetContent>

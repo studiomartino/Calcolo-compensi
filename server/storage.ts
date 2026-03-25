@@ -9,6 +9,7 @@ import {
   analysesTable, 
   operatorsTable,
   paymentStatusTable,
+  pagamentoGiornataModesTable,
   type CompensoRecord, 
   type InsertCompensoRecord, 
   type ColumnMapping, 
@@ -20,7 +21,8 @@ import {
   type PublicUser, 
   type OperatorPaymentStatus,
   type Operator,
-  type InsertOperator
+  type InsertOperator,
+  type PagamentoGiornataMode
 } from "@shared/schema";
 
 export interface IStorage {
@@ -54,12 +56,15 @@ export interface IStorage {
   getOperators(): Promise<Operator[]>;
   getOperator(id: string): Promise<Operator | undefined>;
   createOperator(operator: InsertOperator): Promise<Operator>;
-  updateOperator(id: string, name: string): Promise<Operator | undefined>;
+  updateOperator(id: string, updates: Partial<Operator>): Promise<Operator | undefined>;
   deleteOperator(id: string): Promise<boolean>;
 
   getPaymentStatus(): Promise<OperatorPaymentStatus[]>;
   updatePaymentStatus(operatore: string, field: 'paidA' | 'paidB', value: boolean): Promise<OperatorPaymentStatus>;
   clearPaymentStatus(): Promise<void>;
+
+  getGiornataModes(analysisId: string, operatorName: string): Promise<PagamentoGiornataMode[]>;
+  upsertGiornataMode(data: { analysisId: string; operatorName: string; workDate: string; mode: string }): Promise<PagamentoGiornataMode>;
   
   initializeDatabase(): Promise<void>;
 }
@@ -426,34 +431,52 @@ class DatabaseStorage implements IStorage {
     return isValid ? user : null;
   }
 
-  async getOperators(): Promise<Operator[]> {
-    const rows = await db.select().from(operatorsTable).orderBy(operatorsTable.name);
-    return rows.map(r => ({
+  private mapOperatorRow(r: typeof operatorsTable.$inferSelect): Operator {
+    return {
       id: r.id,
       name: r.name,
+      pagamentoGiornataAttivo: r.pagamentoGiornataAttivo ?? false,
+      pagamentoGiornataMinimoA: r.pagamentoGiornataMinimoA ?? null,
+      pagamentoGiornataMinimoB: r.pagamentoGiornataMinimoB ?? null,
+      pagamentoGiornataFissoA: r.pagamentoGiornataFissoA ?? null,
+      pagamentoGiornataFissoB: r.pagamentoGiornataFissoB ?? null,
       createdAt: r.createdAt.toISOString(),
-    }));
+    };
+  }
+
+  async getOperators(): Promise<Operator[]> {
+    const rows = await db.select().from(operatorsTable).orderBy(operatorsTable.name);
+    return rows.map(r => this.mapOperatorRow(r));
   }
 
   async getOperator(id: string): Promise<Operator | undefined> {
     const rows = await db.select().from(operatorsTable).where(eq(operatorsTable.id, id)).limit(1);
     if (rows.length === 0) return undefined;
-    const r = rows[0];
-    return { id: r.id, name: r.name, createdAt: r.createdAt.toISOString() };
+    return this.mapOperatorRow(rows[0]);
   }
 
   async createOperator(operator: InsertOperator): Promise<Operator> {
     const id = randomUUID();
-    const createdAt = new Date();
     await db.insert(operatorsTable).values({ id, name: operator.name });
-    return { id, name: operator.name, createdAt: createdAt.toISOString() };
+    const rows = await db.select().from(operatorsTable).where(eq(operatorsTable.id, id)).limit(1);
+    return this.mapOperatorRow(rows[0]);
   }
 
-  async updateOperator(id: string, name: string): Promise<Operator | undefined> {
+  async updateOperator(id: string, updates: Partial<Operator>): Promise<Operator | undefined> {
     const existing = await this.getOperator(id);
     if (!existing) return undefined;
-    await db.update(operatorsTable).set({ name }).where(eq(operatorsTable.id, id));
-    return { ...existing, name };
+    const setValues: Record<string, any> = {};
+    if (updates.name !== undefined) setValues.name = updates.name;
+    if (updates.pagamentoGiornataAttivo !== undefined) setValues.pagamentoGiornataAttivo = updates.pagamentoGiornataAttivo;
+    if (updates.pagamentoGiornataMinimoA !== undefined) setValues.pagamentoGiornataMinimoA = updates.pagamentoGiornataMinimoA;
+    if (updates.pagamentoGiornataMinimoB !== undefined) setValues.pagamentoGiornataMinimoB = updates.pagamentoGiornataMinimoB;
+    if (updates.pagamentoGiornataFissoA !== undefined) setValues.pagamentoGiornataFissoA = updates.pagamentoGiornataFissoA;
+    if (updates.pagamentoGiornataFissoB !== undefined) setValues.pagamentoGiornataFissoB = updates.pagamentoGiornataFissoB;
+    if (Object.keys(setValues).length > 0) {
+      await db.update(operatorsTable).set(setValues).where(eq(operatorsTable.id, id));
+    }
+    const rows = await db.select().from(operatorsTable).where(eq(operatorsTable.id, id)).limit(1);
+    return this.mapOperatorRow(rows[0]);
   }
 
   async deleteOperator(id: string): Promise<boolean> {
@@ -461,6 +484,63 @@ class DatabaseStorage implements IStorage {
     if (!existing) return false;
     await db.delete(operatorsTable).where(eq(operatorsTable.id, id));
     return true;
+  }
+
+  async getGiornataModes(analysisId: string, operatorName: string): Promise<PagamentoGiornataMode[]> {
+    const { and } = await import("drizzle-orm");
+    const rows = await db.select().from(pagamentoGiornataModesTable).where(
+      and(
+        eq(pagamentoGiornataModesTable.analysisId, analysisId),
+        eq(pagamentoGiornataModesTable.operatorName, operatorName)
+      )
+    );
+    return rows.map(r => ({
+      id: r.id,
+      analysisId: r.analysisId,
+      operatorName: r.operatorName,
+      workDate: r.workDate,
+      mode: r.mode as "minimo" | "fisso" | "none",
+    }));
+  }
+
+  async upsertGiornataMode(data: { analysisId: string; operatorName: string; workDate: string; mode: string }): Promise<PagamentoGiornataMode> {
+    const { and } = await import("drizzle-orm");
+    const existing = await db.select().from(pagamentoGiornataModesTable).where(
+      and(
+        eq(pagamentoGiornataModesTable.analysisId, data.analysisId),
+        eq(pagamentoGiornataModesTable.operatorName, data.operatorName),
+        eq(pagamentoGiornataModesTable.workDate, data.workDate)
+      )
+    ).limit(1);
+
+    if (existing.length > 0) {
+      await db.update(pagamentoGiornataModesTable)
+        .set({ mode: data.mode })
+        .where(eq(pagamentoGiornataModesTable.id, existing[0].id));
+      return {
+        id: existing[0].id,
+        analysisId: data.analysisId,
+        operatorName: data.operatorName,
+        workDate: data.workDate,
+        mode: data.mode as "minimo" | "fisso" | "none",
+      };
+    }
+
+    const id = randomUUID();
+    await db.insert(pagamentoGiornataModesTable).values({
+      id,
+      analysisId: data.analysisId,
+      operatorName: data.operatorName,
+      workDate: data.workDate,
+      mode: data.mode,
+    });
+    return {
+      id,
+      analysisId: data.analysisId,
+      operatorName: data.operatorName,
+      workDate: data.workDate,
+      mode: data.mode as "minimo" | "fisso" | "none",
+    };
   }
 
   async getPaymentStatus(): Promise<OperatorPaymentStatus[]> {

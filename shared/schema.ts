@@ -42,7 +42,20 @@ export const analysesTable = pgTable("analyses", {
 export const operatorsTable = pgTable("operators", {
   id: varchar("id", { length: 36 }).primaryKey(),
   name: varchar("name", { length: 255 }).notNull().unique(),
+  pagamentoGiornataAttivo: boolean("pagamento_giornata_attivo").default(false),
+  pagamentoGiornataMinimoA: integer("pagamento_giornata_minimo_a"),
+  pagamentoGiornataMinimoB: integer("pagamento_giornata_minimo_b"),
+  pagamentoGiornataFissoA: integer("pagamento_giornata_fisso_a"),
+  pagamentoGiornataFissoB: integer("pagamento_giornata_fisso_b"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const pagamentoGiornataModesTable = pgTable("pagamento_giornata_modes", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  analysisId: varchar("analysis_id", { length: 36 }).notNull(),
+  operatorName: varchar("operator_name", { length: 255 }).notNull(),
+  workDate: varchar("work_date", { length: 20 }).notNull(),
+  mode: varchar("mode", { length: 10 }).notNull().default("none"),
 });
 
 export const paymentStatusTable = pgTable("payment_status", {
@@ -170,6 +183,11 @@ export type OperatorPaymentStatus = z.infer<typeof operatorPaymentStatusSchema>;
 export const operatorSchema = z.object({
   id: z.string(),
   name: z.string(),
+  pagamentoGiornataAttivo: z.boolean().default(false),
+  pagamentoGiornataMinimoA: z.number().nullable().optional(),
+  pagamentoGiornataMinimoB: z.number().nullable().optional(),
+  pagamentoGiornataFissoA: z.number().nullable().optional(),
+  pagamentoGiornataFissoB: z.number().nullable().optional(),
   createdAt: z.string(),
 });
 
@@ -180,3 +198,13 @@ export const insertOperatorSchema = z.object({
 });
 
 export type InsertOperator = z.infer<typeof insertOperatorSchema>;
+
+export const pagamentoGiornataModeSchema = z.object({
+  id: z.string(),
+  analysisId: z.string(),
+  operatorName: z.string(),
+  workDate: z.string(),
+  mode: z.enum(["minimo", "fisso", "none"]).default("none"),
+});
+
+export type PagamentoGiornataMode = z.infer<typeof pagamentoGiornataModeSchema>;

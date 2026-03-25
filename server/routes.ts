@@ -625,11 +625,23 @@ export async function registerRoutes(
   app.patch("/api/operators/:id", requireAuth, async (req, res) => {
     try {
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const { name } = req.body;
-      if (!name || typeof name !== "string" || name.trim().length === 0) {
-        return res.status(400).json({ error: "Nome operatore richiesto" });
+      const updates: Record<string, any> = {};
+      if (req.body.name !== undefined) {
+        if (typeof req.body.name !== "string" || req.body.name.trim().length === 0) {
+          return res.status(400).json({ error: "Nome operatore richiesto" });
+        }
+        updates.name = req.body.name.trim();
       }
-      const operator = await storage.updateOperator(id, name.trim());
+      if (req.body.pagamentoGiornataAttivo !== undefined) updates.pagamentoGiornataAttivo = req.body.pagamentoGiornataAttivo;
+      if (req.body.pagamentoGiornataMinimoA !== undefined) updates.pagamentoGiornataMinimoA = req.body.pagamentoGiornataMinimoA;
+      if (req.body.pagamentoGiornataMinimoB !== undefined) updates.pagamentoGiornataMinimoB = req.body.pagamentoGiornataMinimoB;
+      if (req.body.pagamentoGiornataFissoA !== undefined) updates.pagamentoGiornataFissoA = req.body.pagamentoGiornataFissoA;
+      if (req.body.pagamentoGiornataFissoB !== undefined) updates.pagamentoGiornataFissoB = req.body.pagamentoGiornataFissoB;
+      
+      if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ error: "Nessun campo da aggiornare" });
+      }
+      const operator = await storage.updateOperator(id, updates);
       if (!operator) {
         return res.status(404).json({ error: "Operatore non trovato" });
       }
@@ -687,6 +699,36 @@ export async function registerRoutes(
       res.json({ message: "Stato pagamenti resettato" });
     } catch (error) {
       res.status(500).json({ error: "Errore nel reset stato pagamenti" });
+    }
+  });
+
+  app.get("/api/pagamento-giornata-modes", requireAuth, async (req, res) => {
+    try {
+      const analysisId = req.query.analysisId as string;
+      const operatorName = req.query.operatorName as string;
+      if (!analysisId || !operatorName) {
+        return res.status(400).json({ error: "analysisId e operatorName richiesti" });
+      }
+      const modes = await storage.getGiornataModes(analysisId, operatorName);
+      res.json(modes);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero delle modalità giornata" });
+    }
+  });
+
+  app.post("/api/pagamento-giornata-modes", requireAuth, async (req, res) => {
+    try {
+      const { analysisId, operatorName, workDate, mode } = req.body;
+      if (!analysisId || !operatorName || !workDate || !mode) {
+        return res.status(400).json({ error: "Tutti i campi sono richiesti" });
+      }
+      if (!["minimo", "fisso", "none"].includes(mode)) {
+        return res.status(400).json({ error: "Mode deve essere 'minimo', 'fisso' o 'none'" });
+      }
+      const result = await storage.upsertGiornataMode({ analysisId, operatorName, workDate, mode });
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel salvataggio della modalità giornata" });
     }
   });
 

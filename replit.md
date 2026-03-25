@@ -27,6 +27,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Sistema Autenticazione**: Login con username/password, sessioni sicure con express-session
 - **Gestione Utenti**: Tab amministrazione utenti (solo admin) con CRUD completo
 - **Gestione Operatori**: Aggiunta, modifica ed eliminazione operatori dal tab Operatori con persistenza su database
+- **Pagamento a Giornata**: Configurazione per-operatore (Min A/B, Fisso A/B) nel DB + selezione modalità per-giornata (Minimo/Fisso/Standard) nel modal analisi
 - **Mapping Operatori all'Importazione**: Dialog automatico durante l'importazione che confronta gli operatori del file Excel con quelli ufficiali. Per ogni operatore senza corrispondenza esatta, l'utente può scegliere "Crea nuovo" (aggiunge alla lista ufficiale) o "Associa a esistente" (sostituisce il nome nel file con quello ufficiale). Gli operatori con match esatto vengono mostrati come già risolti. Il flusso procede solo dopo aver risolto tutti i casi non corrispondenti.
 
 ## Sistema Autenticazione
@@ -115,8 +116,12 @@ shared/
 ### Gestione Operatori
 - `GET /api/operators` - Lista tutti gli operatori
 - `POST /api/operators` - Crea nuovo operatore
-- `PATCH /api/operators/:id` - Aggiorna nome operatore
+- `PATCH /api/operators/:id` - Aggiorna operatore (nome + config pagamento giornata)
 - `DELETE /api/operators/:id` - Elimina operatore
+
+### Pagamento a Giornata
+- `GET /api/pagamento-giornata-modes?analysisId=X&operatorName=Y` - Modalità per-giornata
+- `POST /api/pagamento-giornata-modes` - Crea/aggiorna modalità per-giornata
 
 ### Gestione Utenti (solo admin)
 - `GET /api/users` - Lista tutti gli utenti

@@ -1,0 +1,158 @@
+# Refactoring sistema Pagamento a Giornata
+
+## Context
+The app manages operator compensation. Currently the "Pagamento a Giornata"
+modal (opened from `operator-dashboard.tsx`) contains both the configuration
+fields (Min A, Min B, Minimo/Fisso toggle) and the list of working days.
+All settings are local to the current analysis session.
+
+We need to restructure this system completely: move configuration to the
+operator profile (persisted in DB), and let the reviewer choose the
+Minimo/Fisso mode independently for each working day inside the analysis modal.
+
+---
+
+## Goal
+Separate operator-level configuration (stored in DB, applies to future analyses)
+from per-day mode selection (stored at analysis level, does not affect past
+analyses).
+
+---
+
+## Requirements
+
+### 1. Database schema — operators table migration
+Add the following nullable columns to the `operators` table in `shared/schema.ts`
+and run a database migration:
+- `pagamentoGiornataAttivo` boolean, default false
+- `pagamentoGiornataMinimoA` integer, nullable (minimum amount for type A)
+- `pagamentoGiornataMinimoB` integer, nullable (minimum amount for type B)
+- `pagamentoGiornataFissoA` integer, nullable (fixed amount for type A)
+- `pagamentoGiornataFissoB` integer, nullable (fixed amount for type B)
+
+### 2. Database schema — per-day mode storage
+Add a new table `pagamento_giornata_modes` to store the mode chosen per day
+per operator per analysis:
+- `id` serial primary key
+- `analysisId` integer, references analyses
+- `operatorName` text
+- `workDate` date
+- `mode` text — values: "minimo" | "fisso" | "none" (default "none")
+
+If a dedicated analyses table already exists, reference it; otherwise store
+the analysisId as the current active analysis identifier.
+
+### 3. Backend — update operator CRUD in `server/storage.ts` and `server/routes.ts`
+- Update `PATCH /api/operators/:id` to accept and persist the five new fields
+- Add `GET /api/operators/:id/giornata-config` to return the operator's
+  pagamentoGiornata configuration
+- Add `POST /api/pagamento-giornata-modes` to create or update the mode for
+  a specific (analysisId, operatorName, workDate) combination
+- Add `GET /api/pagamento-giornata-modes?analysisId=X&operatorName=Y` to
+  retrieve saved modes for a given analysis and operator
+
+### 4. Operators tab — settings button per operator
+In the operators list (in `home.tsx` or the operators tab component), add a
+settings button (gear icon) next to each operator row.
+
+The button is only visible if `pagamentoGiornataAttivo` is true OR if the user
+wants to configure it for the first time (always show the button).
+
+Clicking the button opens a dialog titled **"Pagamento a Giornata — [Operator Name]"**
+containing:
+- Toggle **"Attiva"** (maps to `pagamentoGiornataAttivo`)
+- When active, show four numeric input fields:
+  - **Min A** (maps to `pagamentoGiornataMinimoA`)
+  - **Min B** (maps to `pagamentoGiornataMinimoB`)
+  - **Fisso A** (maps to `pagamentoGiornataFissoA`)
+  - **Fisso B** (maps to `pagamentoGiornataFissoB`)
+- **Save** button: calls `PATCH /api/operators/:id` with the new values
+- **Cancel** button: closes without saving
+- When the toggle is set to inactive, Min/Fisso fields are hidden
+
+Changes saved here persist in DB and apply to all **future** analyses.
+They do not retroactively change past analyses.
+
+### 5. Pagamento a Giornata modal in `operator-dashboard.tsx` — restructure
+Remove from the modal the following existing elements:
+- Min A input field
+- Min B input field
+- Minimo / Fisso radio group (global)
+
+Keep in the modal:
+- Title "Pagamento a Giornata — [Operator Name]"
+- **"Attiva"** toggle (this still controls whether the giornata payment is
+  active for this operator in the current analysis view)
+- List of working days with date, prestazioni count, and calculated base amount
+
+### 6. Per-day mode selection in the modal
+For each day in the "Giornate lavorate" list, add a radio group with two options:
+**"Minimo"** and **"Fisso"**
+
+The radio group is only shown if `pagamentoGiornataAttivo` is true for that
+operator.
+
+Default value on first open: **"Minimo"** (if the operator has minimo values
+configured), or **"Fisso"** if only fisso values are configured.
+
+When the user selects a mode for a day:
+- Call `POST /api/pagamento-giornata-modes` to persist the choice
+- Immediately recalculate the displayed compensation for that day and update
+  the total "Compenso calcolato" at the bottom of the modal
+
+The mode selection is saved at the analysis level and does not affect other
+analyses.
+
+### 7. Calculation logic
+**"Minimo" mode for a given day:**
+- Compenso A for that day = max(sum of compensoOperatore for card records
+  on that day, pagamentoGiornataMinimoA)
+- Compenso B for that day = max(sum of compensoOperatore for cash records
+  on that day, pagamentoGiornataMinimoB)
+
+**"Fisso" mode for a given day:**
+- Compenso A for that day = pagamentoGiornataFissoA (regardless of actual records)
+- Compenso B for that day = pagamentoGiornataFissoB (regardless of actual records)
+
+**"None" / giornata not active:**
+- Use the standard calculated compensation (no override)
+
+The total "Compenso calcolato" in the modal footer sums the per-day results
+for A and B separately.
+
+### 8. Operators tab — visual indicator
+In the operators list, show a small badge or icon next to operators that have
+`pagamentoGiornataAttivo = true`, so the user can quickly see which operators
+have this feature enabled.
+
+---
+
+## Constraints
+- Do not modify the anomaly detection logic in `storage.ts`
+- Do not modify the existing Excel export logic in `routes.ts`
+- Past analyses must not be affected: the new per-day mode table is scoped
+  by analysisId and only applies to the analysis where choices are made
+- The existing delete/restore icon per working day in the modal must be preserved
+- Preserve the existing "Aggiungi giornata lavorata" button behavior
+
+---
+
+## Files involved
+- `shared/schema.ts`
+- `server/storage.ts`
+- `server/routes.ts`
+- `client/src/components/operator-dashboard.tsx`
+- `client/src/pages/home.tsx` (or wherever the operators tab is rendered)
+
+---
+
+## Expected behavior
+1. In the Operators tab, each operator has a gear/settings button
+2. Clicking it opens a dialog where Min A, Min B, Fisso A, Fisso B and the
+   active toggle are configured and saved to DB
+3. In the analysis view, the "Pagamento a Giornata" modal no longer shows
+   Min/Fisso config inputs — those come from the operator's DB profile
+4. Each working day row in the modal shows a "Minimo / Fisso" radio group
+5. Selecting a mode recalculates the compensation for that day in real time
+6. The total at the bottom reflects the sum of all per-day results
+7. Mode choices are persisted per analysis and do not affect other analyses
