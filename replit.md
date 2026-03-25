@@ -14,7 +14,10 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
   - Compenso A (icona CreditCard, default per nuove importazioni)
   - Compenso B (icona Banknote)
 - **Modifica Categorie**: Toggle singolo o selezione multipla con azioni bulk
-- **Navigazione a Tab**: Menu con tre sezioni principali (Importazione, Analisi, Archivio)
+- **Navigazione Sidebar**: Menu laterale con Analisi salvate (default), Operatori, Utenti (admin)
+- **Nuova Analisi**: Pulsante nell'header della vista Analisi salvate, apre il flusso di importazione
+- **Dialog Nome Analisi**: Dopo l'importazione, dialog per confermare/modificare il nome prima di aprire l'analisi
+- **Navigazione Analisi**: Breadcrumb "← Analisi salvate" e sidebar per tornare alla lista
 - **Rilevamento Anomalie**: Evidenziazione automatica quando compenso operatore = prezzo paziente
 - **Dashboard Operatori**: Report con compensi arrotondati alla decina, statistiche Compenso A/B
 - **Badge Pagato**: Badge cliccabile in ogni riquadro Compenso A e B per tracciare lo stato di pagamento (verde = pagato, rosso = non pagato)
@@ -102,7 +105,7 @@ shared/
 - `GET /api/analyses/:id` - Dettaglio singola analisi
 - `DELETE /api/analyses/:id` - Elimina un'analisi
 - `POST /api/records/check-duplicates` - Controlla duplicati pre-importazione
-- `POST /api/records/archive` - Archivia l'analisi corrente
+- `POST /api/records/archive` - Archivia l'analisi corrente (accetta opzionale `name` nel body)
 
 ### Autenticazione (pubblici)
 - `POST /api/auth/login` - Login utente

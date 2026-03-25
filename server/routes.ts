@@ -566,7 +566,10 @@ export async function registerRoutes(
 
       const existingDates = existingRecords
         .map((r) => r.data ? parseDate(r.data) : null);
-      const { name: analysisName, dateRange } = generateAnalysisName(existingDates);
+      const { name: autoName, dateRange } = generateAnalysisName(existingDates);
+      
+      const customName = req.body?.name?.trim();
+      const analysisName = customName || autoName;
       
       const analysis = await storage.createAnalysis({
         name: analysisName,
@@ -582,6 +585,15 @@ export async function registerRoutes(
       });
     } catch (error) {
       res.status(500).json({ error: "Errore durante l'archiviazione" });
+    }
+  });
+
+  app.delete("/api/records/clear", requireAuth, async (req, res) => {
+    try {
+      await storage.clearRecords();
+      res.json({ message: "Record correnti eliminati" });
+    } catch (error) {
+      res.status(500).json({ error: "Errore nella cancellazione dei record" });
     }
   });
 

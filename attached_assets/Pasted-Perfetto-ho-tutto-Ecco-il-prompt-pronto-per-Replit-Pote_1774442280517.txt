@@ -1,0 +1,102 @@
+Perfetto, ho tutto. Ecco il prompt pronto per Replit.
+
+---
+
+**💡 Potenza agente consigliata: Ragionamento approfondito**
+*(Intervento architetturale: ristruttura la navigazione principale, modifica il flusso di importazione, aggiunge dialog, cambia la vista di default e il routing.)*
+
+---
+
+```md
+# Ristrutturazione UX — Navigazione e flusso di importazione
+
+## Obiettivo
+Riorganizzare completamente la UX dell'app modificando la vista principale,
+il menu laterale, il flusso di importazione e la navigazione tra le pagine.
+
+---
+
+## 1. Vista di default all'apertura dell'app
+
+La pagina che si apre all'avvio (e dopo il login) deve essere **Elenco analisi
+salvate**, che corrisponde all'attuale tab "Archivio".
+
+Questa vista diventa la home dell'applicazione.
+
+---
+
+## 2. Menu laterale — nuova struttura
+
+Rimuovere dal menu laterale la voce che dà accesso all'importazione/analisi
+in corso. Il nuovo menu laterale deve contenere **solo**:
+
+- **Analisi salvate** (voce attiva per default, corrisponde alla nuova home)
+- **Operatori**
+- **Utenti** (solo per utenti con ruolo admin)
+
+L'importazione non deve avere una voce nel menu. È raggiungibile
+esclusivamente tramite il pulsante "Nuova analisi" (vedi punto 3).
+
+---
+
+## 3. Pulsante "Nuova analisi"
+
+Aggiungere un pulsante **"Nuova analisi"** posizionato in alto a destra
+nell'header della pagina Elenco analisi salvate.
+
+Al click, il pulsante apre l'interfaccia di importazione file (file-upload +
+column-mapper), che viene presentata come una view separata o modale fullscreen,
+senza che esista una voce dedicata nel menu.
+
+---
+
+## 4. Flusso di importazione — conferma del nome
+
+Al termine dell'elaborazione completa (dopo il mapping colonne, la risoluzione
+dei duplicati e il mapping operatori), **prima** di aprire la pagina di analisi,
+mostrare un **dialog di conferma del nome**.
+
+Il dialog deve:
+- Mostrare il nome generato automaticamente (es. "Analisi Giugno 2025") in un
+  campo di testo modificabile
+- Avere i pulsanti **"Conferma"** e **"Annulla"**
+- Se l'utente preme "Conferma" (anche senza modificare il nome): salvare il
+  nome e aprire la pagina di analisi
+- Se l'utente preme "Annulla": tornare all'elenco analisi salvate senza salvare
+
+---
+
+## 5. Pagina di analisi — apertura
+
+La pagina di analisi si apre in **due scenari**:
+
+1. **Dopo una nuova importazione**: automaticamente, al termine del flusso
+   (dopo la conferma del nome, vedi punto 4)
+2. **Dall'elenco analisi salvate**: quando l'utente preme il pulsante **"Apri"**
+   su una delle analisi in elenco
+
+---
+
+## 6. Pagina di analisi — ritorno all'elenco
+
+Dalla pagina di analisi, l'utente deve poter tornare all'elenco analisi salvate
+in **due modi**:
+
+1. **Breadcrumb / freccia ←** in alto a sinistra nella pagina di analisi,
+   con testo tipo "← Analisi salvate"
+2. **Voce "Analisi salvate"** nel menu laterale, sempre visibile e cliccabile
+   anche quando si è in una pagina di analisi
+
+Entrambi riportano all'elenco analisi salvate senza perdere o alterare l'analisi
+corrente.
+
+---
+
+## 7. Verifica compatibilità
+
+- Assicurarsi che il flusso di archiviazione manuale (pulsante dedicato
+  all'interno della pagina di analisi) continui a funzionare correttamente
+- Verificare che le analisi già presenti in archivio siano correttamente
+  visualizzate nell'elenco analisi salvate dopo il refactoring
+- Mantenere invariato il comportamento del tab Operatori e del tab Utenti
+```

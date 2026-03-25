@@ -10,11 +10,12 @@ import { UsersTab } from "@/components/users-tab";
 import { DuplicateModal, DuplicateRecord } from "@/components/duplicate-modal";
 import { OperatorMappingModal, OperatorResolution } from "@/components/operator-mapping-modal";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, Save, FileBarChart, UserCheck } from "lucide-react";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, Save, FileBarChart, UserCheck, Plus } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso, Operator } from "@shared/schema";
@@ -22,17 +23,19 @@ import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso, Operat
 const OPERATOR_COLORS_KEY = "operatorColors";
 
 type ImportStep = "upload" | "mapping";
+type AppView = "analyses" | "operators" | "users" | "import" | "analysis";
 
 interface HomeProps {
   userRole: "admin" | "user";
 }
 
 export default function Home({ userRole }: HomeProps) {
-  const [mainTab, setMainTab] = useState<string>("import");
+  const [currentView, setCurrentView] = useState<AppView>("analyses");
   const [importStep, setImportStep] = useState<ImportStep>("upload");
   const [rawData, setRawData] = useState<Record<string, string>[]>([]);
   const [sourceColumns, setSourceColumns] = useState<string[]>([]);
   const [currentDateRange, setCurrentDateRange] = useState<string>("");
+  const [currentAnalysisName, setCurrentAnalysisName] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [operatorColors, setOperatorColors] = useState<Record<string, string>>(() => {
@@ -46,6 +49,8 @@ export default function Home({ userRole }: HomeProps) {
   const [pendingFieldMappings, setPendingFieldMappings] = useState<Record<string, string> | null>(null);
   const [pendingRawDataForImport, setPendingRawDataForImport] = useState<Record<string, string>[]>([]);
   const [excelOperatorsForModal, setExcelOperatorsForModal] = useState<string[]>([]);
+  const [nameDialogOpen, setNameDialogOpen] = useState(false);
+  const [pendingAnalysisName, setPendingAnalysisName] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -101,14 +106,11 @@ export default function Home({ userRole }: HomeProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
       setCurrentDateRange(data.dateRange || "");
-      setMainTab("analysis");
       setImportStep("upload");
       setRawData([]);
       setSourceColumns([]);
-      toast({
-        title: "Importazione completata",
-        description: `${data.count} record importati - ${data.analysisName || "Analisi"}`,
-      });
+      setPendingAnalysisName(data.analysisName || "Analisi");
+      setNameDialogOpen(true);
     },
     onError: () => {
       toast({
@@ -199,13 +201,15 @@ export default function Home({ userRole }: HomeProps) {
   });
 
   const archiveCurrentMutation = useMutation({
-    mutationFn: async () => {
-      return apiRequest("POST", "/api/records/archive");
+    mutationFn: async (name?: string) => {
+      return apiRequest("POST", "/api/records/archive", name ? { name } : {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
       setCurrentDateRange("");
+      setCurrentAnalysisName("");
+      setCurrentView("analyses");
       toast({
         title: "Analisi archiviata",
         description: "L'analisi corrente è stata archiviata con successo",
@@ -424,7 +428,8 @@ export default function Home({ userRole }: HomeProps) {
       
       await queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       setCurrentDateRange(analysis.dateRange);
-      setMainTab("analysis");
+      setCurrentAnalysisName(analysis.name);
+      setCurrentView("analysis");
       
       toast({
         title: "Analisi caricata",
@@ -440,8 +445,41 @@ export default function Home({ userRole }: HomeProps) {
   }, [queryClient, toast]);
 
   const handleArchiveCurrent = useCallback(() => {
-    archiveCurrentMutation.mutate();
-  }, [archiveCurrentMutation]);
+    archiveCurrentMutation.mutate(currentAnalysisName || undefined);
+  }, [archiveCurrentMutation, currentAnalysisName]);
+
+  const handleNameDialogConfirm = useCallback(() => {
+    setCurrentAnalysisName(pendingAnalysisName);
+    setNameDialogOpen(false);
+    setCurrentView("analysis");
+    toast({
+      title: "Importazione completata",
+      description: `${pendingAnalysisName} pronta per l'analisi`,
+    });
+  }, [pendingAnalysisName, toast]);
+
+  const handleNameDialogCancel = useCallback(async () => {
+    setNameDialogOpen(false);
+    setPendingAnalysisName("");
+    setCurrentDateRange("");
+    setCurrentAnalysisName("");
+    try {
+      await apiRequest("DELETE", "/api/records/clear");
+      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
+    } catch {}
+    setCurrentView("analyses");
+  }, [queryClient]);
+
+  const handleStartNewAnalysis = useCallback(() => {
+    setImportStep("upload");
+    setRawData([]);
+    setSourceColumns([]);
+    setCurrentView("import");
+  }, []);
+
+  const handleBackToAnalyses = useCallback(() => {
+    setCurrentView("analyses");
+  }, []);
 
   const roundToTen = (value: number): number => {
     return Math.round(value / 10) * 10;
@@ -503,6 +541,19 @@ export default function Home({ userRole }: HomeProps) {
     });
   }, [records, toast]);
 
+  const sidebarItems = useMemo(() => {
+    const items: { key: AppView; label: string; icon: typeof Archive }[] = [
+      { key: "analyses", label: "Analisi salvate", icon: Archive },
+      { key: "operators", label: "Operatori", icon: UserCheck },
+    ];
+    if (userRole === "admin") {
+      items.push({ key: "users", label: "Utenti", icon: UsersIcon });
+    }
+    return items;
+  }, [userRole]);
+
+  const activeSidebarKey = currentView === "import" || currentView === "analysis" ? null : currentView;
+
   const renderImportContent = () => {
     if (importStep === "mapping") {
       return (
@@ -543,151 +594,23 @@ export default function Home({ userRole }: HomeProps) {
     );
   };
 
-  const renderAnalysisContent = () => {
-    if (records.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-16 gap-4">
-          <FileSpreadsheet className="h-16 w-16 text-muted-foreground" />
-          <div className="text-center space-y-2">
-            <h3 className="text-lg font-medium">Nessun dato disponibile</h3>
-            <p className="text-muted-foreground">
-              Importa un file per visualizzare l'analisi dei compensi
-            </p>
-          </div>
-          <Button onClick={() => setMainTab("import")} data-testid="button-go-to-import">
-            <Upload className="mr-2 h-4 w-4" />
-            Vai all'importazione
-          </Button>
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex-1 flex flex-col min-h-0 w-full">
-        <div className="flex items-center justify-between gap-4 flex-wrap pb-4">
-          <div className="flex items-center gap-2">
-            <p className="text-muted-foreground text-sm">
-              {currentDateRange && `Periodo: ${currentDateRange}`}
-            </p>
-          </div>
-        </div>
-        {isLoadingRecords ? (
-          <div className="flex flex-col items-center justify-center py-12 gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <p className="text-sm text-muted-foreground">Caricamento dati...</p>
-          </div>
-        ) : (
-          <DataTable
-            records={records}
-            operators={operators}
-            onCategoryChange={handleCategoryChange}
-            onRecordEdit={handleRecordEdit}
-          />
-        )}
-      </div>
-    );
-  };
-
-  return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <div className="flex-1 container py-4 px-4 min-h-0 flex flex-col">
-        <Tabs value={mainTab} onValueChange={setMainTab} className="flex-1 flex flex-col min-h-0">
-          <div className="flex items-center justify-between gap-4 mb-4 shrink-0">
-            <TabsList className={`grid px-2 ${userRole === "admin" ? "max-w-2xl grid-cols-5" : "max-w-xl grid-cols-4"} flex-1`}>
-              <TabsTrigger value="import" data-testid="main-tab-import" className="h-8 text-xs">
-                <Upload className="mr-1.5 h-3.5 w-3.5" />
-                Importazione
-              </TabsTrigger>
-              <TabsTrigger value="analysis" data-testid="main-tab-analysis" className="h-8 text-xs">
-                <Table className="mr-1.5 h-3.5 w-3.5" />
-                Analisi
-              </TabsTrigger>
-              <TabsTrigger value="archive" data-testid="main-tab-archive" className="h-8 text-xs">
-                <Archive className="mr-1.5 h-4 w-4" />
-                Storico Analisi ({analyses.length})
-              </TabsTrigger>
-              <TabsTrigger value="operators" data-testid="main-tab-operators" className="h-8 text-xs">
-                <UserCheck className="mr-1.5 h-3.5 w-3.5" />
-                Operatori
-              </TabsTrigger>
-              {userRole === "admin" && (
-                <TabsTrigger value="users" data-testid="main-tab-users" className="h-8 text-xs">
-                  <UsersIcon className="mr-1.5 h-3.5 w-3.5" />
-                  Utenti
-                </TabsTrigger>
-              )}
-            </TabsList>
-
-          </div>
-
-          <TabsContent value="import" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
-            {renderImportContent()}
-          </TabsContent>
-
-          <TabsContent value="analysis" className="flex-1 min-h-0 flex flex-col data-[state=inactive]:hidden">
-            <DataTable
-              records={records}
-              operators={operators}
-              onCategoryChange={handleCategoryChange}
-              onRecordEdit={handleRecordEdit}
-              headerActions={
-                <>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
-                        <Save className="mr-1.5 h-3.5 w-3.5" />
-                        Salva
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          L'analisi corrente con {records.length} record verrà spostata nell'archivio.
-                          I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Annulla</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
-                          Archivia
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                  <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
-                    <SheetTrigger asChild>
-                      <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
-                        <FileBarChart className="mr-1.5 h-3.5 w-3.5" />
-                        Report
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
-                      <SheetHeader>
-                        <SheetTitle className="flex items-center gap-2">
-                          <BarChart3 className="h-5 w-5" />
-                          Report Operatori
-                        </SheetTitle>
-                      </SheetHeader>
-                      <div className="mt-6">
-                        <OperatorDashboard
-                          records={records}
-                          onExportExcel={handleExportExcel}
-                          selectedOperator={selectedOperator}
-                          onSelectOperator={setSelectedOperator}
-                          onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
-                          dateRange={currentDateRange}
-                          operatorColors={operatorColors}
-                        />
-                      </div>
-                    </SheetContent>
-                  </Sheet>
-                </>
-              }
-            />
-          </TabsContent>
-
-          <TabsContent value="archive" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
+  const renderContent = () => {
+    switch (currentView) {
+      case "analyses":
+        return (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-xl font-semibold" data-testid="text-analyses-title">Analisi salvate</h2>
+                <p className="text-sm text-muted-foreground">
+                  {analyses.length} {analyses.length === 1 ? "analisi archiviata" : "analisi archiviate"}
+                </p>
+              </div>
+              <Button onClick={handleStartNewAnalysis} data-testid="button-new-analysis">
+                <Plus className="mr-2 h-4 w-4" />
+                Nuova analisi
+              </Button>
+            </div>
             <AnalysisArchive
               analyses={analyses}
               onDeleteAnalysis={handleDeleteAnalysis}
@@ -695,9 +618,128 @@ export default function Home({ userRole }: HomeProps) {
               onOpenAnalysis={handleOpenAnalysis}
               isLoading={isLoadingAnalyses}
             />
-          </TabsContent>
+          </div>
+        );
 
-          <TabsContent value="operators" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
+      case "import":
+        return (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="flex items-center gap-4 mb-6">
+              <Button variant="ghost" size="sm" onClick={handleBackToAnalyses} data-testid="button-back-to-analyses-from-import">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Analisi salvate
+              </Button>
+              <div>
+                <h2 className="text-xl font-semibold">Nuova analisi</h2>
+                <p className="text-sm text-muted-foreground">Importa un file per creare una nuova analisi</p>
+              </div>
+            </div>
+            {renderImportContent()}
+          </div>
+        );
+
+      case "analysis":
+        return (
+          <div className="flex-1 flex flex-col min-h-0 w-full">
+            <div className="flex items-center justify-between gap-4 flex-wrap pb-4 shrink-0">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="sm" onClick={handleBackToAnalyses} data-testid="button-back-to-analyses">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Analisi salvate
+                </Button>
+                <div>
+                  <h2 className="text-lg font-semibold" data-testid="text-analysis-name">{currentAnalysisName || "Analisi"}</h2>
+                  <p className="text-muted-foreground text-sm">
+                    {currentDateRange && `Periodo: ${currentDateRange}`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
+                      <Save className="mr-1.5 h-3.5 w-3.5" />
+                      Salva
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        L'analisi corrente con {records.length} record verrà spostata nell'archivio.
+                        I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annulla</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
+                        Archivia
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
+                  <SheetTrigger asChild>
+                    <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">
+                      <FileBarChart className="mr-1.5 h-3.5 w-3.5" />
+                      Report
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+                    <SheetHeader>
+                      <SheetTitle className="flex items-center gap-2">
+                        <BarChart3 className="h-5 w-5" />
+                        Report Operatori
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <OperatorDashboard
+                        records={records}
+                        onExportExcel={handleExportExcel}
+                        selectedOperator={selectedOperator}
+                        onSelectOperator={setSelectedOperator}
+                        onUpdateRecord={(id, compensoOperatore) => handleRecordEdit(id, "compensoOperatore", compensoOperatore)}
+                        dateRange={currentDateRange}
+                        operatorColors={operatorColors}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            </div>
+            {isLoadingRecords ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <p className="text-sm text-muted-foreground">Caricamento dati...</p>
+              </div>
+            ) : records.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-4">
+                <FileSpreadsheet className="h-16 w-16 text-muted-foreground" />
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-medium">Nessun dato disponibile</h3>
+                  <p className="text-muted-foreground">
+                    Importa un file per visualizzare l'analisi dei compensi
+                  </p>
+                </div>
+                <Button onClick={handleStartNewAnalysis} data-testid="button-go-to-import">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Nuova analisi
+                </Button>
+              </div>
+            ) : (
+              <DataTable
+                records={records}
+                operators={operators}
+                onCategoryChange={handleCategoryChange}
+                onRecordEdit={handleRecordEdit}
+              />
+            )}
+          </div>
+        );
+
+      case "operators":
+        return (
+          <div className="flex-1 min-h-0 overflow-y-auto">
             <OperatorsTab
               analyses={analyses}
               operatorColors={operatorColors}
@@ -705,14 +747,56 @@ export default function Home({ userRole }: HomeProps) {
               managedOperators={managedOperators}
               onRefreshOperators={() => refetchOperators()}
             />
-          </TabsContent>
+          </div>
+        );
 
-          {userRole === "admin" && (
-            <TabsContent value="users" className="flex-1 min-h-0 overflow-y-auto data-[state=inactive]:hidden">
-              <UsersTab />
-            </TabsContent>
-          )}
-        </Tabs>
+      case "users":
+        return (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <UsersTab />
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="h-[calc(100vh-4rem)] flex bg-background overflow-hidden">
+      <aside className="w-56 shrink-0 border-r bg-sidebar flex flex-col">
+        <nav className="flex-1 p-3 space-y-1">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSidebarKey === item.key;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setCurrentView(item.key)}
+                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                }`}
+                data-testid={`sidebar-${item.key}`}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {item.label}
+                {item.key === "analyses" && (
+                  <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+                    {analyses.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      <div className="flex-1 flex flex-col min-h-0 min-w-0">
+        <div className="flex-1 p-6 min-h-0 flex flex-col">
+          {renderContent()}
+        </div>
       </div>
 
       <DuplicateModal
@@ -730,6 +814,31 @@ export default function Home({ userRole }: HomeProps) {
         officialOperators={managedOperators}
         onConfirm={handleOperatorMappingConfirm}
       />
+
+      <Dialog open={nameDialogOpen} onOpenChange={(open) => { if (!open) handleNameDialogCancel(); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Conferma nome analisi</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground mb-2">
+            Puoi modificare il nome dell'analisi prima di proseguire.
+          </p>
+          <Input
+            value={pendingAnalysisName}
+            onChange={(e) => setPendingAnalysisName(e.target.value)}
+            placeholder="Nome analisi"
+            data-testid="input-analysis-name"
+          />
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={handleNameDialogCancel} data-testid="button-name-dialog-cancel">
+              Annulla
+            </Button>
+            <Button onClick={handleNameDialogConfirm} disabled={!pendingAnalysisName.trim()} data-testid="button-name-dialog-confirm">
+              Conferma
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
