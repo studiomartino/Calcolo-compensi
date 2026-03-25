@@ -1,0 +1,98 @@
+## Context
+The app has an operator mapping dialog during file import. When an imported
+name does not exactly match a DB operator name, the user manually associates
+them. Currently these associations are not persisted: every new import
+triggers the same manual mapping dialog again for the same names.
+
+## Goal
+1. Persist operator name aliases so that known mappings are applied
+   automatically on future imports without requiring manual re-association
+2. Add an "Aliases" section in the Operatori tab for each operator, listing
+   all saved aliases with the ability to delete them one by one
+
+---
+
+## Requirement 1 — New DB table: operator_aliases
+
+Add a new table `operator_aliases` to the schema in `shared/schema.ts`:
+```
+operator_aliases
+  id          serial primary key
+  operatorId  integer  references operators(id) on delete cascade
+  alias       text     not null   -- the imported name as it appeared in the file
+```
+
+- `alias` stores the raw imported name (case-insensitive matching must still
+  apply, so normalize to uppercase before storing and before lookup)
+- One operator can have multiple aliases
+- If an operator is deleted, its aliases are deleted via cascade
+
+Apply the migration with Drizzle (add the table to `server/storage.ts` and
+run `db push` or equivalent).
+
+---
+
+## Requirement 2 — Auto-resolve known aliases at import time
+
+In the operator mapping logic (in `home.tsx` or the component handling the
+mapping dialog), before showing the manual dialog:
+
+1. Load all `operator_aliases` from the DB (add a `GET /api/operator-aliases`
+   endpoint or include them in the existing `GET /api/operators` response)
+2. For each imported operator name, check case-insensitively whether it exists
+   in the aliases table
+3. If a match is found: auto-resolve it to the corresponding DB operator —
+   do NOT show it in the manual mapping dialog
+4. Only show in the dialog the names that have no alias and no exact match
+
+---
+
+## Requirement 3 — Save new manual associations as aliases
+
+When the user manually resolves a mapping in the dialog (chooses "Associa a
+esistente"), after confirming:
+
+- Save the association as a new alias via `POST /api/operator-aliases`
+  with `{ operatorId, alias: importedName.toUpperCase() }`
+- When the user chooses "Crea nuovo", do NOT save an alias (the new operator
+  will match exactly on future imports)
+
+---
+
+## Requirement 4 — New API endpoints for aliases
+
+Add to `server/routes.ts`:
+
+- `GET /api/operator-aliases` — list all aliases (or include in operators response)
+- `POST /api/operator-aliases` — create a new alias `{ operatorId, alias }`
+  - Normalize `alias` to uppercase before saving
+  - Return 409 if the alias already exists for any operator
+- `DELETE /api/operator-aliases/:id` — delete a single alias by id
+
+All endpoints must be protected by `requireAuth`.
+
+---
+
+## Requirement 5 — Aliases UI in the Operatori tab
+
+In `client/src/components/` (in the operators management component or tab):
+
+For each operator in the list, add an expandable section or inline sub-list
+labelled **"Alias importazione"** that shows all saved aliases for that operator.
+
+Each alias row must have:
+- The alias name (displayed uppercase)
+- A delete button (trash icon) that calls `DELETE /api/operator-aliases/:id`
+  and removes the alias from the list on success
+
+If the operator has no aliases, show a subtle empty state: "Nessun alias salvato".
+
+---
+
+## Constraints
+- Do not modify existing operator CRUD logic
+- Do not alter the duplicate detection logic
+- Do not modify records already imported: aliases affect only future imports
+- Preserve all existing operator mapping dialog behavior for unresolved names
+- Apply case-insensitive comparison (uppercase normalization) consistently
+  in both alias lookup and alias storage
