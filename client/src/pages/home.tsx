@@ -8,6 +8,7 @@ import { AnalysisArchive } from "@/components/analysis-archive";
 import { OperatorsTab } from "@/components/operators-tab";
 import { UsersTab } from "@/components/users-tab";
 import { DuplicateModal, DuplicateRecord } from "@/components/duplicate-modal";
+import { OperatorMappingModal, OperatorResolution } from "@/components/operator-mapping-modal";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -41,6 +42,10 @@ export default function Home({ userRole }: HomeProps) {
   const [duplicateModalOpen, setDuplicateModalOpen] = useState(false);
   const [duplicates, setDuplicates] = useState<DuplicateRecord[]>([]);
   const [pendingMappings, setPendingMappings] = useState<Record<string, string> | null>(null);
+  const [operatorMappingOpen, setOperatorMappingOpen] = useState(false);
+  const [pendingFieldMappings, setPendingFieldMappings] = useState<Record<string, string> | null>(null);
+  const [pendingRawDataForImport, setPendingRawDataForImport] = useState<Record<string, string>[]>([]);
+  const [excelOperatorsForModal, setExcelOperatorsForModal] = useState<string[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -226,23 +231,10 @@ export default function Home({ userRole }: HomeProps) {
     setImportStep("mapping");
   }, []);
 
-  const handleMappingComplete = useCallback(async (fieldMappings: Record<string, string>) => {
-    const operatorField = fieldMappings.operatore;
-    if (operatorField) {
-      const operators = new Set<string>();
-      rawData.forEach((row) => {
-        const op = row[operatorField];
-        if (op && op.trim()) operators.add(op.trim());
-      });
-      const operatorsWithoutColors = Array.from(operators).filter((op) => !operatorColors[op]);
-      if (operatorsWithoutColors.length > 0) {
-        assignRandomColors(operatorsWithoutColors);
-      }
-    }
-    
+  const proceedToDuplicateCheck = useCallback(async (currentRawData: Record<string, string>[], fieldMappings: Record<string, string>) => {
     try {
       const response = await apiRequest("POST", "/api/records/check-duplicates", {
-        records: rawData,
+        records: currentRawData,
         mappings: fieldMappings,
       });
       const result = await response.json();
@@ -250,26 +242,105 @@ export default function Home({ userRole }: HomeProps) {
       if (result.hasDuplicates && result.duplicates.length > 0) {
         setDuplicates(result.duplicates);
         setPendingMappings(fieldMappings);
+        setPendingRawDataForImport(currentRawData);
         setDuplicateModalOpen(true);
       } else {
         importMutation.mutate({
-          records: rawData,
+          records: currentRawData,
           mappings: fieldMappings,
         });
       }
     } catch (error) {
       importMutation.mutate({
-        records: rawData,
+        records: currentRawData,
         mappings: fieldMappings,
       });
     }
-  }, [rawData, importMutation, operatorColors, assignRandomColors]);
+  }, [importMutation]);
+
+  const handleMappingComplete = useCallback(async (fieldMappings: Record<string, string>) => {
+    const operatorField = fieldMappings.operatore;
+    const excelOperators: string[] = [];
+
+    if (operatorField) {
+      const operatorSet = new Set<string>();
+      rawData.forEach((row) => {
+        const op = row[operatorField];
+        if (op && op.trim()) operatorSet.add(op.trim());
+      });
+      excelOperators.push(...Array.from(operatorSet));
+
+      const operatorsWithoutColors = excelOperators.filter((op) => !operatorColors[op]);
+      if (operatorsWithoutColors.length > 0) {
+        assignRandomColors(operatorsWithoutColors);
+      }
+    }
+
+    const officialNames = new Set(managedOperators.map((o) => o.name));
+    const unmatchedOperators = excelOperators.filter((op) => !officialNames.has(op));
+
+    if (managedOperators.length > 0 && unmatchedOperators.length > 0) {
+      setPendingFieldMappings(fieldMappings);
+      setPendingRawDataForImport(rawData);
+      setExcelOperatorsForModal(excelOperators);
+      setOperatorMappingOpen(true);
+      return;
+    }
+
+    await proceedToDuplicateCheck(rawData, fieldMappings);
+  }, [rawData, managedOperators, operatorColors, assignRandomColors, proceedToDuplicateCheck]);
+
+  const handleOperatorMappingConfirm = useCallback(async (resolutions: OperatorResolution[]) => {
+    if (!pendingFieldMappings) return;
+
+    const operatorField = pendingFieldMappings.operatore;
+
+    const createResolutions = resolutions.filter((r) => r.action === "create");
+    for (const r of createResolutions) {
+      try {
+        await apiRequest("POST", "/api/operators", { name: r.excelName });
+      } catch {
+        // Silently ignore if already exists
+      }
+    }
+    queryClient.invalidateQueries({ queryKey: ["/api/operators"] });
+
+    const substitutionMap = new Map<string, string>();
+    resolutions
+      .filter((r) => r.action === "associate")
+      .forEach((r) => substitutionMap.set(r.excelName, r.officialName));
+
+    let currentRawData = pendingRawDataForImport;
+    if (substitutionMap.size > 0 && operatorField) {
+      currentRawData = pendingRawDataForImport.map((row) => {
+        const originalOp = row[operatorField]?.trim();
+        if (originalOp && substitutionMap.has(originalOp)) {
+          return { ...row, [operatorField]: substitutionMap.get(originalOp)! };
+        }
+        return row;
+      });
+
+      const substitutedOps = resolutions
+        .filter((r) => r.action === "associate")
+        .map((r) => r.officialName);
+      const newOpsForColors = substitutedOps.filter((op) => !operatorColors[op]);
+      if (newOpsForColors.length > 0) {
+        assignRandomColors(newOpsForColors);
+      }
+    }
+
+    const fieldMappingsToUse = pendingFieldMappings;
+    setPendingFieldMappings(null);
+
+    await proceedToDuplicateCheck(currentRawData, fieldMappingsToUse);
+  }, [pendingFieldMappings, pendingRawDataForImport, operatorColors, assignRandomColors, queryClient, proceedToDuplicateCheck]);
 
   const handleImportWithExclusions = useCallback((excludeIndices: number[]) => {
     if (!pendingMappings) return;
     
     const excludeSet = new Set(excludeIndices);
-    const filteredRecords = rawData.filter((_, index) => !excludeSet.has(index));
+    const sourceData = pendingRawDataForImport.length > 0 ? pendingRawDataForImport : rawData;
+    const filteredRecords = sourceData.filter((_, index) => !excludeSet.has(index));
     
     importMutation.mutate({
       records: filteredRecords,
@@ -277,8 +348,9 @@ export default function Home({ userRole }: HomeProps) {
     });
     
     setPendingMappings(null);
+    setPendingRawDataForImport([]);
     setDuplicates([]);
-  }, [rawData, pendingMappings, importMutation]);
+  }, [rawData, pendingRawDataForImport, pendingMappings, importMutation]);
 
   const handleCategoryChange = useCallback((ids: string[], category: CategoriaCompenso) => {
     updateCategoryMutation.mutate({ ids, category });
@@ -627,7 +699,15 @@ export default function Home({ userRole }: HomeProps) {
         onOpenChange={setDuplicateModalOpen}
         duplicates={duplicates}
         onImportSelected={handleImportWithExclusions}
-        totalRecords={rawData.length}
+        totalRecords={pendingRawDataForImport.length > 0 ? pendingRawDataForImport.length : rawData.length}
+      />
+
+      <OperatorMappingModal
+        open={operatorMappingOpen}
+        onOpenChange={setOperatorMappingOpen}
+        excelOperators={excelOperatorsForModal}
+        officialOperators={managedOperators}
+        onConfirm={handleOperatorMappingConfirm}
       />
     </div>
   );

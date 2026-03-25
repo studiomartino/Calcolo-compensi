@@ -24,6 +24,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Sistema Autenticazione**: Login con username/password, sessioni sicure con express-session
 - **Gestione Utenti**: Tab amministrazione utenti (solo admin) con CRUD completo
 - **Gestione Operatori**: Aggiunta, modifica ed eliminazione operatori dal tab Operatori con persistenza su database
+- **Mapping Operatori all'Importazione**: Dialog automatico durante l'importazione che confronta gli operatori del file Excel con quelli ufficiali. Per ogni operatore senza corrispondenza esatta, l'utente può scegliere "Crea nuovo" (aggiunge alla lista ufficiale) o "Associa a esistente" (sostituisce il nome nel file con quello ufficiale). Gli operatori con match esatto vengono mostrati come già risolti. Il flusso procede solo dopo aver risolto tutti i casi non corrispondenti.
 
 ## Sistema Autenticazione
 
