@@ -279,7 +279,7 @@ export default function Home({ userRole }: HomeProps) {
     const officialNames = new Set(managedOperators.map((o) => o.name));
     const unmatchedOperators = excelOperators.filter((op) => !officialNames.has(op));
 
-    if (managedOperators.length > 0 && unmatchedOperators.length > 0) {
+    if (unmatchedOperators.length > 0) {
       setPendingFieldMappings(fieldMappings);
       setPendingRawDataForImport(rawData);
       setExcelOperatorsForModal(excelOperators);
