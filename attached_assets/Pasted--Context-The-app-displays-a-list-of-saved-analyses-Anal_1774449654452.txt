@@ -1,0 +1,53 @@
+## Context
+The app displays a list of saved analyses ("Analisi salvate") as the main view.
+Each analysis has a name assigned during the import flow. Currently there is no
+way to rename an analysis after it has been saved.
+
+## Goal
+Add a rename feature for saved analyses, accessible directly from the analyses
+list via a pencil icon next to each analysis name.
+
+## Requirements
+
+### UI — Analyses list
+- Display a pencil icon (edit icon) immediately to the right of each analysis
+  name in the saved analyses list
+- The icon must be always visible (not only on hover)
+- Clicking the pencil icon opens a rename dialog
+
+### Rename dialog
+- Show a modal/dialog with a text input field pre-filled with the current
+  analysis name
+- Include two buttons: "Conferma" (confirm) and "Annulla" (cancel)
+- "Conferma": saves the new name and closes the dialog
+- "Annulla": closes the dialog without saving any change
+- Do not allow saving an empty name (show inline validation if the field is
+  empty on confirm)
+
+### Name update — all occurrences
+After a successful rename, the new name must be reflected everywhere the
+analysis name appears, including:
+- The saved analyses list
+- The analysis page header (title)
+- The breadcrumb ("← Analisi salvate / [name]") when the analysis is open
+
+### Backend
+- Add a PATCH endpoint to update the analysis name by ID
+  (e.g. PATCH /api/analyses/:id with body `{ name: string }`)
+- Validate that the new name is not empty on the server side
+- Update the name in the database
+
+## Constraints
+- Do not modify the delete logic for analyses
+- Do not modify the import flow or the name-confirmation dialog shown at the
+  end of import
+- Preserve the existing "Apri" button behavior in the analyses list
+
+## Expected behavior
+1. User sees the analyses list
+2. User clicks the pencil icon next to an analysis name
+3. A dialog opens with the current name pre-filled in a text input
+4. User edits the name and clicks "Conferma"
+5. The dialog closes and the new name appears immediately in the list
+6. If the user navigates to that analysis, the new name is shown in the header
+   and breadcrumb

@@ -36,6 +36,7 @@ export default function Home({ userRole }: HomeProps) {
   const [sourceColumns, setSourceColumns] = useState<string[]>([]);
   const [currentDateRange, setCurrentDateRange] = useState<string>("");
   const [currentAnalysisName, setCurrentAnalysisName] = useState<string>("");
+  const [openedAnalysisId, setOpenedAnalysisId] = useState<string | null>(null);
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [operatorColors, setOperatorColors] = useState<Record<string, string>>(() => {
@@ -196,6 +197,29 @@ export default function Home({ userRole }: HomeProps) {
       toast({
         title: "Analisi eliminate",
         description: "Le analisi selezionate sono state rimosse dall'archivio",
+      });
+    },
+  });
+
+  const renameAnalysisMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      return apiRequest("PATCH", `/api/analyses/${id}`, { name });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      if (openedAnalysisId === variables.id) {
+        setCurrentAnalysisName(variables.name);
+      }
+      toast({
+        title: "Analisi rinominata",
+        description: `L'analisi è stata rinominata con successo`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante il rinomino",
+        variant: "destructive",
       });
     },
   });
@@ -401,6 +425,10 @@ export default function Home({ userRole }: HomeProps) {
     bulkDeleteAnalysesMutation.mutate(ids);
   }, [bulkDeleteAnalysesMutation]);
 
+  const handleRenameAnalysis = useCallback((id: string, newName: string) => {
+    renameAnalysisMutation.mutate({ id, name: newName });
+  }, [renameAnalysisMutation]);
+
   const handleOpenAnalysis = useCallback(async (analysis: Analysis) => {
     try {
       await apiRequest("POST", "/api/records/import", { 
@@ -429,6 +457,7 @@ export default function Home({ userRole }: HomeProps) {
       await queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       setCurrentDateRange(analysis.dateRange);
       setCurrentAnalysisName(analysis.name);
+      setOpenedAnalysisId(analysis.id);
       setCurrentView("analysis");
       
       toast({
@@ -616,6 +645,7 @@ export default function Home({ userRole }: HomeProps) {
               onDeleteAnalysis={handleDeleteAnalysis}
               onBulkDeleteAnalyses={handleBulkDeleteAnalyses}
               onOpenAnalysis={handleOpenAnalysis}
+              onRenameAnalysis={handleRenameAnalysis}
               isLoading={isLoadingAnalyses}
             />
           </div>

@@ -21,6 +21,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Rilevamento Anomalie**: Evidenziazione automatica quando compenso operatore = prezzo paziente
 - **Dashboard Operatori**: Report con compensi arrotondati alla decina, statistiche Compenso A/B
 - **Badge Pagato**: Badge cliccabile in ogni riquadro Compenso A e B per tracciare lo stato di pagamento (verde = pagato, rosso = non pagato)
+- **Rinomina Analisi**: Icona matita sempre visibile accanto al nome di ogni analisi archiviata; cliccando si apre un dialog per modificare il nome con validazione (nome non vuoto)
 - **Archivio Analisi**: Storico delle analisi precedenti con dettagli espandibili
 - **Esportazione Excel**: Export completo con report e dettaglio prestazioni
 - **Rilevamento Duplicati**: Controllo automatico all'importazione con modale di gestione per selezionare quali duplicati importare
@@ -104,6 +105,7 @@ shared/
 - `DELETE /api/mappings/:id` - Elimina una mappatura
 - `GET /api/analyses` - Lista analisi archiviate
 - `GET /api/analyses/:id` - Dettaglio singola analisi
+- `PATCH /api/analyses/:id` - Rinomina un'analisi (body: `{ name: string }`)
 - `DELETE /api/analyses/:id` - Elimina un'analisi
 - `POST /api/records/check-duplicates` - Controlla duplicati pre-importazione
 - `POST /api/records/archive` - Archivia l'analisi corrente (accetta opzionale `name` nel body)

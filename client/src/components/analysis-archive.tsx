@@ -1,13 +1,14 @@
 import { useState, useMemo, useCallback } from "react";
-import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote, CheckSquare, Square, FolderOpen, Download, FileSpreadsheet, Copy } from "lucide-react";
+import { Archive, Calendar, Trash2, FileText, Users, ChevronDown, ChevronUp, CreditCard, Banknote, CheckSquare, Square, FolderOpen, Download, FileSpreadsheet, Copy, Pencil } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import * as XLSX from "xlsx";
@@ -18,16 +19,21 @@ interface AnalysisArchiveProps {
   onDeleteAnalysis: (id: string) => void;
   onBulkDeleteAnalyses: (ids: string[]) => void;
   onOpenAnalysis?: (analysis: Analysis) => void;
+  onRenameAnalysis?: (id: string, newName: string) => void;
   isLoading?: boolean;
 }
 
-export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalyses, onOpenAnalysis, isLoading }: AnalysisArchiveProps) {
+export function AnalysisArchive({ analyses, onDeleteAnalysis, onBulkDeleteAnalyses, onOpenAnalysis, onRenameAnalysis, isLoading }: AnalysisArchiveProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showTextReportModal, setShowTextReportModal] = useState(false);
   const [exportAnalysis, setExportAnalysis] = useState<Analysis | null>(null);
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
+  const [renameTarget, setRenameTarget] = useState<Analysis | null>(null);
+  const [renameName, setRenameName] = useState("");
+  const [renameError, setRenameError] = useState("");
   const { toast } = useToast();
 
   const formatCurrency = (amount: number) => {
@@ -191,6 +197,26 @@ Compenso B: ${roundToTen(data.cash)} €`;
     }
   };
 
+  const handleRenameOpen = (analysis: Analysis, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRenameTarget(analysis);
+    setRenameName(analysis.name);
+    setRenameError("");
+    setShowRenameDialog(true);
+  };
+
+  const handleRenameConfirm = () => {
+    if (!renameName.trim()) {
+      setRenameError("Il nome non può essere vuoto");
+      return;
+    }
+    if (renameTarget && onRenameAnalysis) {
+      onRenameAnalysis(renameTarget.id, renameName.trim());
+    }
+    setShowRenameDialog(false);
+    setRenameTarget(null);
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -315,7 +341,18 @@ Compenso B: ${roundToTen(data.cash)} €`;
                           <FileText className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h4 className="font-medium">{analysis.name}</h4>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-medium">{analysis.name}</h4>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 shrink-0"
+                              onClick={(e) => handleRenameOpen(analysis, e)}
+                              data-testid={`button-rename-analysis-${analysis.id}`}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                          </div>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Users className="h-3 w-3" />
                             <span>{stats.uniqueOperators} operatori</span>
@@ -506,6 +543,42 @@ Compenso B: ${roundToTen(data.cash)} €`;
             className="min-h-[400px] font-mono text-sm"
             data-testid="textarea-archive-text-report"
           />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRenameDialog} onOpenChange={(open) => { if (!open) { setShowRenameDialog(false); setRenameError(""); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-5 w-5" />
+              Rinomina analisi
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 space-y-2">
+            <Input
+              value={renameName}
+              onChange={(e) => { setRenameName(e.target.value); setRenameError(""); }}
+              onKeyDown={(e) => { if (e.key === "Enter") handleRenameConfirm(); }}
+              placeholder="Nome analisi"
+              data-testid="input-rename-analysis"
+              autoFocus
+            />
+            {renameError && (
+              <p className="text-sm text-destructive" data-testid="text-rename-error">{renameError}</p>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => { setShowRenameDialog(false); setRenameError(""); }}
+              data-testid="button-rename-cancel"
+            >
+              Annulla
+            </Button>
+            <Button onClick={handleRenameConfirm} data-testid="button-rename-confirm">
+              Conferma
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </Card>

@@ -43,6 +43,7 @@ export interface IStorage {
   getAnalyses(): Promise<Analysis[]>;
   getAnalysis(id: string): Promise<Analysis | undefined>;
   createAnalysis(analysis: InsertAnalysis): Promise<Analysis>;
+  updateAnalysisName(id: string, name: string): Promise<Analysis | undefined>;
   deleteAnalysis(id: string): Promise<boolean>;
 
   getUsers(): Promise<PublicUser[]>;
@@ -329,6 +330,20 @@ class DatabaseStorage implements IStorage {
       dateRange: analysis.dateRange,
       records: analysis.records,
       createdAt: createdAt.toISOString(),
+    };
+  }
+
+  async updateAnalysisName(id: string, name: string): Promise<Analysis | undefined> {
+    const rows = await db.select().from(analysesTable).where(eq(analysesTable.id, id)).limit(1);
+    if (rows.length === 0) return undefined;
+    await db.update(analysesTable).set({ name }).where(eq(analysesTable.id, id));
+    const r = rows[0];
+    return {
+      id: r.id,
+      name,
+      dateRange: r.dateRange,
+      records: r.records as CompensoRecord[],
+      createdAt: r.createdAt.toISOString(),
     };
   }
 
