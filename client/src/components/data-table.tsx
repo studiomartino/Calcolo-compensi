@@ -367,7 +367,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit, 
                             <TableCell className="text-sm tabular-nums">
                               {formatDate(record.data || "")}
                             </TableCell>
-                            <TableCell className="font-medium text-sm">
+                            <TableCell className="font-medium text-sm uppercase">
                               {record.operatore}
                             </TableCell>
                             <TableCell className="text-sm">
@@ -679,7 +679,7 @@ export function DataTable({ records, operators, onCategoryChange, onRecordEdit, 
                     <TableCell className="px-2 text-center text-sm tabular-nums">
                       {formatDate(record.data || "")}
                     </TableCell>
-                    <TableCell className="px-2 font-medium">
+                    <TableCell className="px-2 font-medium uppercase">
                       <TruncatedCell text={record.operatore} maxWidth="110px" />
                     </TableCell>
                     <TableCell className="px-2">

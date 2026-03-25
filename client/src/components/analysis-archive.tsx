@@ -478,7 +478,7 @@ Compenso B: ${roundToTen(data.cash)} €`;
                               }, new Map<string, { card: number; cash: number; count: number }>())
                             ).map(([operatore, data]) => (
                               <TableRow key={operatore}>
-                                <TableCell className="font-medium">{operatore}</TableCell>
+                                <TableCell className="font-medium uppercase">{operatore}</TableCell>
                                 <TableCell className="text-right">{data.count}</TableCell>
                                 <TableCell className="text-right">{formatCurrency(roundToTen(data.card))}</TableCell>
                                 <TableCell className="text-right">{formatCurrency(roundToTen(data.cash))}</TableCell>

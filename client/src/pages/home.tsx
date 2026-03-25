@@ -304,8 +304,8 @@ export default function Home({ userRole }: HomeProps) {
       }
     }
 
-    const officialNames = new Set(managedOperators.map((o) => o.name));
-    const unmatchedOperators = excelOperators.filter((op) => !officialNames.has(op));
+    const officialNamesUpper = new Set(managedOperators.map((o) => o.name.toUpperCase()));
+    const unmatchedOperators = excelOperators.filter((op) => !officialNamesUpper.has(op.toUpperCase()));
 
     if (unmatchedOperators.length > 0) {
       setPendingFieldMappings(fieldMappings);

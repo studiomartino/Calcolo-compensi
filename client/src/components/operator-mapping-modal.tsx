@@ -35,19 +35,19 @@ export function OperatorMappingModal({
   officialOperators,
   onConfirm,
 }: OperatorMappingModalProps) {
-  const officialNames = useMemo(
-    () => new Set(officialOperators.map((o) => o.name)),
+  const officialNameMap = useMemo(
+    () => new Map(officialOperators.map((o) => [o.name.toUpperCase(), o.name])),
     [officialOperators]
   );
 
   const exactMatches = useMemo(
-    () => excelOperators.filter((op) => officialNames.has(op)),
-    [excelOperators, officialNames]
+    () => excelOperators.filter((op) => officialNameMap.has(op.toUpperCase())),
+    [excelOperators, officialNameMap]
   );
 
   const unmatched = useMemo(
-    () => excelOperators.filter((op) => !officialNames.has(op)),
-    [excelOperators, officialNames]
+    () => excelOperators.filter((op) => !officialNameMap.has(op.toUpperCase())),
+    [excelOperators, officialNameMap]
   );
 
   const [unmatchedStates, setUnmatchedStates] = useState<Record<string, UnmatchedState>>(() => {
@@ -96,7 +96,8 @@ export function OperatorMappingModal({
     const resolutions: OperatorResolution[] = [];
 
     exactMatches.forEach((op) => {
-      resolutions.push({ excelName: op, action: "exact", officialName: op });
+      const dbName = officialNameMap.get(op.toUpperCase()) || op;
+      resolutions.push({ excelName: op, action: "exact", officialName: dbName });
     });
 
     unmatched.forEach((op) => {
@@ -162,7 +163,7 @@ export function OperatorMappingModal({
                             ) : (
                               <AlertCircle className="h-4 w-4 text-amber-500 shrink-0" />
                             )}
-                            <span className="font-medium text-sm truncate">{op}</span>
+                            <span className="font-medium text-sm truncate uppercase">{op}</span>
                           </div>
                           <Badge variant="outline" className="text-amber-600 border-amber-400 shrink-0 text-xs">
                             Non trovato
@@ -230,7 +231,7 @@ export function OperatorMappingModal({
                       data-testid={`operator-matched-${op}`}
                     >
                       <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
-                      <span className="text-sm text-muted-foreground">{op}</span>
+                      <span className="text-sm text-muted-foreground uppercase">{op}</span>
                       <Badge variant="outline" className="text-green-600 border-green-400 text-xs ml-auto">
                         Trovato
                       </Badge>

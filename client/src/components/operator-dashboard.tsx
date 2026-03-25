@@ -154,7 +154,7 @@ export function OperatorDashboard({
   };
 
   const getOperatorConfig = (operatore: string): Operator | undefined => {
-    return managedOperators.find(op => op.name === operatore);
+    return managedOperators.find(op => op.name.toUpperCase() === operatore.toUpperCase());
   };
 
   const getDefaultDayMode = (operatore: string): "minimo" | "fisso" | "none" => {
@@ -570,7 +570,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                         className="w-3 h-3 rounded-full shrink-0"
                         style={{ backgroundColor: hexColor }}
                       />
-                      <h4 className="font-semibold text-lg truncate">{report.operatore}</h4>
+                      <h4 className="font-semibold text-lg truncate uppercase">{report.operatore}</h4>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {report.numeroRecord} prestazioni
@@ -775,7 +775,7 @@ Compenso B: ${roundToTen(report.compensoCash)} €`;
                     <TableCell className="font-mono text-sm">
                       {record.data ? formatDate(record.data) : "-"}
                     </TableCell>
-                    <TableCell>{record.operatore}</TableCell>
+                    <TableCell className="uppercase">{record.operatore}</TableCell>
                     <TableCell>{record.paziente}</TableCell>
                     <TableCell className="max-w-[200px] truncate">
                       {record.prestazione}

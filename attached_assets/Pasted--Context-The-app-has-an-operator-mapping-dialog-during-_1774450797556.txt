@@ -1,0 +1,55 @@
+## Context
+The app has an operator mapping dialog during file import that compares operator
+names from the imported file against the official operators stored in the DB.
+Currently the match is case-sensitive, causing false "no match" results when
+names differ only in letter case (e.g. "Mario Rossi" vs "MARIO ROSSI").
+
+## Goal
+1. Make operator name matching case-insensitive during import
+2. Display operator names in uppercase everywhere in the app
+
+---
+
+## Requirement 1 — Case-insensitive operator matching
+
+In the operator mapping dialog (triggered during import in `home.tsx` or the
+related component), the comparison between imported operator names and DB
+operator names must be case-insensitive.
+
+Apply `.toUpperCase()` (or `.toLowerCase()`) normalization to **both** sides
+of every string comparison used to detect exact matches.
+
+Example:
+- Current: `importedName === dbName` → fails for "Mario Rossi" vs "MARIO ROSSI"
+- Fixed: `importedName.toUpperCase() === dbName.toUpperCase()` → matches correctly
+
+Also apply the same normalization in any backend operator matching logic
+in `server/routes.ts` or `server/storage.ts` if operator names are compared
+there as well.
+
+---
+
+## Requirement 2 — Always display operator names in uppercase
+
+Operator names must be rendered in uppercase in every part of the UI where
+they appear, including but not limited to:
+- `data-table.tsx` (Operatore column)
+- `operator-dashboard.tsx` (operator headers and report cards)
+- `analysis-archive.tsx` (operator references in archived analyses)
+- The operator mapping dialog
+- The Operatori management tab
+
+Apply `text-transform: uppercase` via Tailwind class (`uppercase`) on all
+elements that render an operator name, OR apply `.toUpperCase()` at the
+display layer.
+
+Do not modify the values stored in the database — apply uppercase only
+at the display level.
+
+---
+
+## Constraints
+- Do not modify the operator names stored in the DB
+- Do not alter the duplicate detection logic
+- Preserve all existing operator mapping dialog behavior
+- Only change the comparison logic and the display rendering

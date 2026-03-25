@@ -333,7 +333,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
   };
 
   const getManagedOperator = (name: string): Operator | undefined => {
-    return managedOperators.find(op => op.name === name);
+    return managedOperators.find(op => op.name.toUpperCase() === name.toUpperCase());
   };
 
   const roundToTen = (value: number) => Math.round(value / 10) * 10;
@@ -485,7 +485,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                     data-testid={`color-picker-${stats.operatore}`}
                   />
                 </div>
-                <span className="font-medium flex-1" onClick={() => toggleExpanded(stats.operatore)}>{stats.operatore}</span>
+                <span className="font-medium flex-1 uppercase" onClick={() => toggleExpanded(stats.operatore)}>{stats.operatore}</span>
                 <Badge variant="secondary" className="text-xs">
                   {stats.totalAnalyses} {stats.totalAnalyses === 1 ? "analisi" : "analisi"}
                 </Badge>
@@ -649,7 +649,7 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: operatorColors[selectedOperator?.operatore || ""] || "#6B7280" }}
               />
-              Dettagli {selectedOperator?.operatore}
+              Dettagli {selectedOperator?.operatore?.toUpperCase()}
             </DialogTitle>
           </DialogHeader>
           
