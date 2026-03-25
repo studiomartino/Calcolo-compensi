@@ -354,6 +354,7 @@ class DatabaseStorage implements IStorage {
   }
 
   async deleteAnalysis(id: string): Promise<boolean> {
+    await db.delete(pagamentoGiornataModesTable).where(eq(pagamentoGiornataModesTable.analysisId, id));
     await db.delete(analysesTable).where(eq(analysesTable.id, id));
     return true;
   }
