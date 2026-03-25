@@ -1,0 +1,39 @@
+## Context
+After completing the import flow (file upload → column mapping → operator mapping → duplicate resolution), the user sees a dialog to confirm the analysis name. When the user confirms, the app navigates to the analysis view — but the analysis is NEVER saved to the "Analisi salvate" list. The records remain stuck in the working table indefinitely, causing "all duplicates" errors on subsequent imports of the same file.
+
+The bug is in `handleNameDialogConfirm` in `client/src/pages/home.tsx`: it only sets local state and navigates to the analysis view, but never calls `POST /api/records/archive` to persist the analysis.
+
+## Goal
+Automatically save the analysis to the archive immediately when the user confirms the name in the name dialog, so that it appears in "Analisi salvate" and the working table is properly managed.
+
+## Requirements
+
+### 1. Modify `server/routes.ts` — `POST /api/records/archive`
+Add an optional boolean field `keepRecords` to the request body schema.
+- If `keepRecords` is `true`: create the analysis entry but do NOT call `storage.clearRecords()` afterward. Return the created analysis as usual.
+- If `keepRecords` is `false` or omitted: keep the existing behavior (create analysis + clear records).
+
+### 2. Modify `client/src/pages/home.tsx` — `handleNameDialogConfirm`
+Replace the current implementation with an async function that:
+1. Calls `POST /api/records/archive` with `{ name: pendingAnalysisName, keepRecords: true }`
+2. On success, reads `analysis.id` from the response
+3. Sets `openedAnalysisId` to `analysis.id`
+4. Sets `currentAnalysisName` to `pendingAnalysisName`
+5. Calls `queryClient.invalidateQueries({ queryKey: ["/api/analyses"] })` so the archive list refreshes
+6. Closes the dialog (`setNameDialogOpen(false)`)
+7. Navigates to the analysis view (`setCurrentView("analysis")`)
+8. Shows the existing success toast
+9. On error, shows an error toast and does not navigate
+
+## Constraints
+- Do not modify the duplicate-check logic or any other import step
+- Do not modify `handleNameDialogCancel`
+- Do not modify `handleArchiveCurrent` (the manual archive button in the analysis view)
+- Do not modify `handleOpenAnalysis`
+- The `keepRecords: true` flag must only affect whether `clearRecords()` is called — do not change any other behavior of the archive endpoint
+
+## Expected behavior
+1. User imports a file and confirms the name in the dialog
+2. The analysis is immediately saved and appears in "Analisi salvate"
+3. The app navigates to the analysis view showing the imported records
+4. Re-importing the same file no longer reports all records as duplicates (because the working table is correctly managed after a manual archive or cancel)

@@ -575,6 +575,7 @@ export async function registerRoutes(
 
   app.post("/api/records/archive", requireAuth, async (req, res) => {
     try {
+      const keepRecords = req.body?.keepRecords === true;
       const existingRecords = await storage.getRecords();
       
       if (existingRecords.length === 0) {
@@ -594,7 +595,9 @@ export async function registerRoutes(
         records: existingRecords,
       });
 
-      await storage.clearRecords();
+      if (!keepRecords) {
+        await storage.clearRecords();
+      }
 
       res.status(201).json({ 
         message: "Analisi archiviata con successo",

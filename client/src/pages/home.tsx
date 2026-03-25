@@ -477,15 +477,31 @@ export default function Home({ userRole }: HomeProps) {
     archiveCurrentMutation.mutate(currentAnalysisName || undefined);
   }, [archiveCurrentMutation, currentAnalysisName]);
 
-  const handleNameDialogConfirm = useCallback(() => {
-    setCurrentAnalysisName(pendingAnalysisName);
-    setNameDialogOpen(false);
-    setCurrentView("analysis");
-    toast({
-      title: "Importazione completata",
-      description: `${pendingAnalysisName} pronta per l'analisi`,
-    });
-  }, [pendingAnalysisName, toast]);
+  const handleNameDialogConfirm = useCallback(async () => {
+    try {
+      const response = await apiRequest("POST", "/api/records/archive", {
+        name: pendingAnalysisName,
+        keepRecords: true,
+      });
+      const data = await response.json();
+      const analysis = data.analysis;
+      setOpenedAnalysisId(analysis.id);
+      setCurrentAnalysisName(pendingAnalysisName);
+      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      setNameDialogOpen(false);
+      setCurrentView("analysis");
+      toast({
+        title: "Importazione completata",
+        description: `${pendingAnalysisName} pronta per l'analisi`,
+      });
+    } catch {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante il salvataggio dell'analisi",
+        variant: "destructive",
+      });
+    }
+  }, [pendingAnalysisName, queryClient, toast]);
 
   const handleNameDialogCancel = useCallback(async () => {
     setNameDialogOpen(false);
