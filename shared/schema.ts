@@ -22,6 +22,7 @@ export const recordsTable = pgTable("records", {
   prezzoAlPaziente: doublePrecision("prezzo_al_paziente").notNull(),
   compensoOperatore: doublePrecision("compenso_operatore").notNull(),
   hasAnomaly: boolean("has_anomaly").notNull().default(false),
+  sourceAnalysisId: varchar("source_analysis_id", { length: 36 }),
 });
 
 export const mappingsTable = pgTable("mappings", {

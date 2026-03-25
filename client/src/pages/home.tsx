@@ -183,13 +183,11 @@ export default function Home({ userRole }: HomeProps) {
     mutationFn: async (id: string) => {
       return apiRequest("DELETE", `/api/analyses/${id}`);
     },
-    onSuccess: async (_, id) => {
+    onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/payment-status"] });
       if (id === openedAnalysisId) {
-        await apiRequest("DELETE", "/api/records/clear");
-        await apiRequest("DELETE", "/api/payment-status");
-        queryClient.invalidateQueries({ queryKey: ["/api/records"] });
         setOpenedAnalysisId(null);
         setCurrentAnalysisName("");
         setCurrentDateRange("");
@@ -206,13 +204,11 @@ export default function Home({ userRole }: HomeProps) {
     mutationFn: async (ids: string[]) => {
       return apiRequest("POST", "/api/analyses/bulk-delete", { ids });
     },
-    onSuccess: async (_, ids) => {
+    onSuccess: (_, ids) => {
       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/payment-status"] });
       if (openedAnalysisId && ids.includes(openedAnalysisId)) {
-        await apiRequest("DELETE", "/api/records/clear");
-        await apiRequest("DELETE", "/api/payment-status");
-        queryClient.invalidateQueries({ queryKey: ["/api/records"] });
         setOpenedAnalysisId(null);
         setCurrentAnalysisName("");
         setCurrentDateRange("");
@@ -523,6 +519,7 @@ export default function Home({ userRole }: HomeProps) {
           compensoOperatore: "compensoOperatore",
         },
         preserveCategories: true,
+        sourceAnalysisId: analysis.id,
       });
       
       await queryClient.invalidateQueries({ queryKey: ["/api/records"] });

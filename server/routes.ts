@@ -407,7 +407,8 @@ export async function registerRoutes(
         };
       });
 
-      const createdRecords = await storage.createRecords(recordsToCreate);
+      const sourceAnalysisId = typeof req.body.sourceAnalysisId === "string" ? req.body.sourceAnalysisId : undefined;
+      const createdRecords = await storage.createRecords(recordsToCreate, sourceAnalysisId);
       
       res.status(201).json({ 
         message: "Import completato", 
@@ -595,7 +596,9 @@ export async function registerRoutes(
         records: existingRecords,
       });
 
-      if (!keepRecords) {
+      if (keepRecords) {
+        await storage.setRecordsSourceAnalysisId(analysis.id);
+      } else {
         await storage.clearRecords();
       }
 

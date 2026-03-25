@@ -30,8 +30,9 @@ import {
 export interface IStorage {
   getRecords(): Promise<CompensoRecord[]>;
   getRecord(id: string): Promise<CompensoRecord | undefined>;
-  createRecord(record: InsertCompensoRecord): Promise<CompensoRecord>;
-  createRecords(records: InsertCompensoRecord[]): Promise<CompensoRecord[]>;
+  createRecord(record: InsertCompensoRecord, sourceAnalysisId?: string): Promise<CompensoRecord>;
+  createRecords(records: InsertCompensoRecord[], sourceAnalysisId?: string): Promise<CompensoRecord[]>;
+  setRecordsSourceAnalysisId(analysisId: string): Promise<void>;
   updateRecord(id: string, updates: Partial<CompensoRecord>): Promise<CompensoRecord | undefined>;
   updateRecords(ids: string[], updates: Partial<CompensoRecord>): Promise<CompensoRecord[]>;
   deleteRecord(id: string): Promise<boolean>;
@@ -136,7 +137,7 @@ class DatabaseStorage implements IStorage {
     };
   }
 
-  async createRecord(record: InsertCompensoRecord): Promise<CompensoRecord> {
+  async createRecord(record: InsertCompensoRecord, sourceAnalysisId?: string): Promise<CompensoRecord> {
     const id = randomUUID();
     const hasAnomaly = this.checkAnomaly(record.prezzoAlPaziente, record.compensoOperatore);
     
@@ -151,6 +152,7 @@ class DatabaseStorage implements IStorage {
       prezzoAlPaziente: record.prezzoAlPaziente,
       compensoOperatore: record.compensoOperatore,
       hasAnomaly,
+      sourceAnalysisId: sourceAnalysisId || null,
     });
 
     return {
@@ -167,7 +169,7 @@ class DatabaseStorage implements IStorage {
     };
   }
 
-  async createRecords(records: InsertCompensoRecord[]): Promise<CompensoRecord[]> {
+  async createRecords(records: InsertCompensoRecord[], sourceAnalysisId?: string): Promise<CompensoRecord[]> {
     const createdRecords: CompensoRecord[] = [];
     
     for (const record of records) {
@@ -185,6 +187,7 @@ class DatabaseStorage implements IStorage {
         prezzoAlPaziente: record.prezzoAlPaziente,
         compensoOperatore: record.compensoOperatore,
         hasAnomaly,
+        sourceAnalysisId: sourceAnalysisId || null,
       });
 
       createdRecords.push({
@@ -202,6 +205,10 @@ class DatabaseStorage implements IStorage {
     }
     
     return createdRecords;
+  }
+
+  async setRecordsSourceAnalysisId(analysisId: string): Promise<void> {
+    await db.update(recordsTable).set({ sourceAnalysisId: analysisId });
   }
 
   async updateRecord(id: string, updates: Partial<CompensoRecord>): Promise<CompensoRecord | undefined> {
@@ -354,6 +361,12 @@ class DatabaseStorage implements IStorage {
   }
 
   async deleteAnalysis(id: string): Promise<boolean> {
+    const deletedRecords = await db.delete(recordsTable)
+      .where(eq(recordsTable.sourceAnalysisId, id))
+      .returning({ id: recordsTable.id });
+    if (deletedRecords.length > 0) {
+      await this.clearPaymentStatus();
+    }
     await db.delete(pagamentoGiornataModesTable).where(eq(pagamentoGiornataModesTable.analysisId, id));
     await db.delete(analysesTable).where(eq(analysesTable.id, id));
     return true;

@@ -1,0 +1,93 @@
+# Fix: Cascade delete records and payment status when an analysis is deleted (backend-side)
+
+**Recommended agent mode: Autonomous Power**
+
+## Context
+
+The app manages dental compensation records. Records are stored in the `records` table and analyses are stored in the `analyses` table (which includes a JSON copy of the records). Currently, when a user deletes an analysis, only the `analyses` and `pagamento_giornata_modes` rows are removed. The records in the `records` table and the `payment_status` entries are left behind.
+
+A previous frontend-only fix attempted to clear records from `onSuccess` in the delete mutation by checking `openedAnalysisId`, but this fails because `openedAnalysisId` is React state that resets to `null` on every page refresh — making the cascade unreliable.
+
+The root cause is architectural: the `records` table has no foreign key or reference to the `analyses` table, so the backend cannot know which records belong to which analysis.
+
+## Goal
+
+Add a `source_analysis_id` column to the `records` table so the backend can track which analysis the active records came from. Then modify `deleteAnalysis` to cascade-delete related records and payment status entirely on the backend side, without relying on frontend state.
+
+## Requirements
+
+### 1. Schema change — `shared/schema.ts`
+
+Add a nullable `sourceAnalysisId` column to `recordsTable`:
+
+```ts
+sourceAnalysisId: varchar("source_analysis_id", { length: 36 }),
+```
+
+This column is for internal backend tracking only. Do NOT add `sourceAnalysisId` to `compensoRecordSchema`, `CompensoRecord` type, or `insertCompensoRecordSchema`. The frontend does not need to know about this field.
+
+After modifying the schema, run `npx drizzle-kit push` to apply the change to the database.
+
+### 2. Storage layer — `server/storage.ts`
+
+**Modify `createRecords(records, sourceAnalysisId?)`:**
+- Add an optional second parameter `sourceAnalysisId?: string`
+- When inserting each record, include `sourceAnalysisId: sourceAnalysisId || null` in the values
+
+**Modify `createRecord(record, sourceAnalysisId?)`:**
+- Same: add optional `sourceAnalysisId` parameter and pass it to the insert
+
+**Add new method `setRecordsSourceAnalysisId(analysisId: string)`:**
+- Update all records in `recordsTable` to set `sourceAnalysisId = analysisId`
+- This is used after the archive flow when records are saved as a new analysis
+
+**Modify `deleteAnalysis(id: string)`:**
+- Before deleting the analysis, delete all records from `recordsTable` where `sourceAnalysisId = id`
+- If any records were deleted (check result count), also call `this.clearPaymentStatus()`
+- Then proceed with existing logic: delete from `pagamentoGiornataModesTable`, delete from `analysesTable`
+
+**Update the `IStorage` interface** to reflect the new method signatures:
+- `createRecord(record: InsertCompensoRecord, sourceAnalysisId?: string)`
+- `createRecords(records: InsertCompensoRecord[], sourceAnalysisId?: string)`
+- `setRecordsSourceAnalysisId(analysisId: string): Promise<void>`
+
+### 3. Routes — `server/routes.ts`
+
+**Modify `POST /api/records/import`:**
+- Read `sourceAnalysisId` from `req.body.sourceAnalysisId` (optional string)
+- Pass it to `storage.createRecords(recordsToCreate, sourceAnalysisId)`
+
+**Modify `POST /api/records/archive`:**
+- After creating the analysis with `storage.createAnalysis(...)`, if `keepRecords` is true, call `storage.setRecordsSourceAnalysisId(analysis.id)` to tag the existing records with the new analysis ID
+
+**No changes needed** to `DELETE /api/analyses/:id` or `POST /api/analyses/bulk-delete` routes — the cascade is handled inside `storage.deleteAnalysis`.
+
+### 4. Frontend — `client/src/pages/home.tsx`
+
+**Modify `handleOpenAnalysis`:**
+- Add `sourceAnalysisId: analysis.id` to the body of the `POST /api/records/import` request, alongside the existing `records`, `mappings`, and `preserveCategories` fields
+
+**Simplify `deleteAnalysisMutation` `onSuccess`:**
+- Remove the `async` keyword and the `if (id === openedAnalysisId)` block that calls `DELETE /api/records/clear` and `DELETE /api/payment-status` — the backend now handles cascade deletion automatically
+- Keep: `queryClient.invalidateQueries` for `/api/analyses`, `/api/records`, and `/api/payment-status`
+- Keep: the state resets (`setOpenedAnalysisId(null)`, `setCurrentAnalysisName("")`, `setCurrentDateRange("")`) and `setCurrentView("analyses")` — but apply them unconditionally only when `id === openedAnalysisId` (for UI navigation purposes, not API calls)
+- Keep: the toast notification
+
+**Simplify `bulkDeleteAnalysesMutation` `onSuccess`:**
+- Same approach: remove the API cleanup calls, keep query invalidations for `/api/analyses`, `/api/records`, `/api/payment-status`, and apply UI state reset if `openedAnalysisId` is in the deleted `ids` array
+
+## Constraints
+
+- Do NOT add `sourceAnalysisId` to `CompensoRecord` type, `compensoRecordSchema`, or any frontend-facing type
+- Do NOT modify the `getRecords()` or `getRecord()` return mapping — they should continue returning `CompensoRecord` objects without `sourceAnalysisId`
+- Preserve all existing functionality: import, archive, record editing, export, operator dashboard
+- Run `npx drizzle-kit push` after the schema change to sync the database
+
+## Expected behavior
+
+1. User imports a file → records created in `records` table with `source_analysis_id = NULL`
+2. User saves as analysis "March 2026" (keepRecords: true) → records updated to `source_analysis_id = [analysis_id]`
+3. User refreshes page, goes to analyses list, deletes "March 2026"
+4. Backend: records with `source_analysis_id = [analysis_id]` are deleted, payment status is cleared, pagamento giornata modes are deleted, analysis row is deleted
+5. User deletes a different analysis whose records are NOT currently active → only that analysis's data is removed, active records remain untouched
+6. User opens analysis A, then opens analysis B → records from A are cleared (existing `clearRecords` in import route), records from B have `source_analysis_id = B`. Deleting A does not affect B's active records
