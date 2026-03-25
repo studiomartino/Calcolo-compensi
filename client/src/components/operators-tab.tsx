@@ -491,9 +491,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                 </Badge>
                 {(() => {
                   const managed = getManagedOperator(stats.operatore);
-                  return managed ? (
+                  return (
                     <>
-                      {managed.pagamentoGiornataAttivo && (
+                      {managed?.pagamentoGiornataAttivo && (
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/40 text-primary">
                           <Calendar className="h-3 w-3 mr-0.5" />
                           Giornata
@@ -504,8 +504,9 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                         size="icon"
                         onClick={(e) => {
                           e.stopPropagation();
-                          openSettingsDialog(managed);
+                          if (managed) openSettingsDialog(managed);
                         }}
+                        disabled={!managed}
                         data-testid={`settings-button-${stats.operatore}`}
                       >
                         <Settings className="h-4 w-4 text-muted-foreground" />
@@ -515,10 +516,13 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                         size="icon"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setEditOperator(managed);
-                          setEditOperatorName(managed.name);
-                          setEditDialogOpen(true);
+                          if (managed) {
+                            setEditOperator(managed);
+                            setEditOperatorName(managed.name);
+                            setEditDialogOpen(true);
+                          }
                         }}
+                        disabled={!managed}
                         data-testid={`edit-button-${stats.operatore}`}
                       >
                         <Pencil className="h-4 w-4" />
@@ -528,15 +532,18 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                         size="icon"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setDeleteOperator(managed);
-                          setDeleteDialogOpen(true);
+                          if (managed) {
+                            setDeleteOperator(managed);
+                            setDeleteDialogOpen(true);
+                          }
                         }}
+                        disabled={!managed}
                         data-testid={`delete-button-${stats.operatore}`}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </>
-                  ) : null;
+                  );
                 })()}
                 <Button 
                   variant="ghost"
