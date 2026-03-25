@@ -1,0 +1,51 @@
+# Fix: Cascade delete all related data when an analysis is deleted
+
+**Recommended agent mode: Autonomous Economy**
+
+## Context
+
+The app manages dental compensation records. Users import records, save them as named analyses, and can later reopen or delete saved analyses. When an analysis is opened, its records are re-imported into the `records` table (with new IDs) via `POST /api/records/import`, which first calls `clearRecords()`. Payment status (paid A / paid B badges) is stored in a separate `payment_status` table keyed by operator name. The frontend tracks which analysis is currently open via the `openedAnalysisId` state in `client/src/pages/home.tsx`.
+
+## Bug
+
+When a user deletes a saved analysis from the analyses list, only the `analyses` and `pagamento_giornata_modes` table rows are removed. The active records in the `records` table and the `payment_status` entries remain untouched. This causes orphaned records to stay visible in the UI after deletion.
+
+## Goal
+
+When an analysis is deleted (single or bulk), cascade the deletion to also remove the associated active records and payment status data. Since the `records` table has no `analysisId` foreign key (records get new IDs on each import), the cascade logic must be handled by the frontend based on the `openedAnalysisId` state.
+
+## Requirements
+
+### File: `client/src/pages/home.tsx`
+
+**`deleteAnalysisMutation` (line ~182):**
+- In `onSuccess`, receive the deleted `id` from the mutation variables
+- If `id === openedAnalysisId`:
+  - Call `DELETE /api/records/clear` to remove active records
+  - Call `DELETE /api/payment-status` to reset payment status
+  - Invalidate query keys: `/api/records`, `/api/payment-status`
+  - Reset frontend state: set `openedAnalysisId` to `null`, `currentAnalysisName` to `""`, `currentDateRange` to `""`, and set `currentView` to `"analyses"`
+
+**`bulkDeleteAnalysesMutation` (line ~195):**
+- In `onSuccess`, receive the deleted `ids` array from the mutation variables
+- If `openedAnalysisId` is included in the `ids` array, apply the same cleanup described above (clear records, clear payment status, reset frontend state)
+
+- Invalidate `/api/payment-status` query in both mutations' `onSuccess` regardless of whether the opened analysis was deleted (to keep the cache consistent)
+
+### Edge case
+- If no analysis is currently open (`openedAnalysisId` is `null`), the delete mutations only remove the analysis row and pagamento giornata modes (existing behavior) — no records or payment status cleanup is needed.
+
+## Constraints
+
+- Preserve the existing `deleteAnalysis` method in `server/storage.ts` as-is (it already correctly handles `pagamento_giornata_modes` and `analyses` table deletion)
+- Preserve the existing `DELETE /api/analyses/:id` and `POST /api/analyses/bulk-delete` routes in `server/routes.ts` as-is
+- Use the existing `DELETE /api/records/clear` and `DELETE /api/payment-status` endpoints for cleanup — do not create new backend routes
+- Preserve all other mutation logic (toast messages, query invalidations)
+
+## Expected behavior
+
+1. User opens analysis "March 2026" → records load, payment badges appear
+2. User navigates to the analyses list and deletes "March 2026"
+3. The analysis disappears from the list, active records are cleared, payment status badges are reset, and the view returns to the analyses list
+4. User deletes a different analysis (not the currently open one) → only that analysis is removed from the list, active records and payment status remain untouched
+5. Bulk delete: if the currently open analysis is among the selected ones, apply full cleanup; otherwise only remove the selected analyses
