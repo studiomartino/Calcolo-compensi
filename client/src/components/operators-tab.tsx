@@ -11,8 +11,9 @@ import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Analysis, CompensoRecord, Operator } from "@shared/schema";
+import type { Analysis, CompensoRecord, Operator, OperatorAlias } from "@shared/schema";
 
 const OPERATOR_COLORS = [
   { name: "Blu Scuro", hex: "#1E3A5F" },
@@ -103,6 +104,20 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
   const [settingsFissoB, setSettingsFissoB] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const { data: operatorAliases = [] } = useQuery<OperatorAlias[]>({
+    queryKey: ["/api/operator-aliases"],
+  });
+
+  const handleDeleteAlias = async (aliasId: string) => {
+    try {
+      await apiRequest("DELETE", `/api/operator-aliases/${aliasId}`);
+      queryClient.invalidateQueries({ queryKey: ["/api/operator-aliases"] });
+      toast({ title: "Alias eliminato" });
+    } catch {
+      toast({ title: "Errore", description: "Impossibile eliminare l'alias", variant: "destructive" });
+    }
+  };
 
   const operatorStats = useMemo(() => {
     const statsMap = new Map<string, OperatorStats>();
@@ -600,6 +615,39 @@ export function OperatorsTab({ analyses, operatorColors, onUpdateOperatorColors,
                       <span className="font-medium">{(stats.totalGiornate / stats.monthsCount).toFixed(1)}</span>
                     </li>
                   </ul>
+                  {(() => {
+                    const managed = getManagedOperator(stats.operatore);
+                    const aliases = managed
+                      ? operatorAliases.filter(a => a.operatorId === managed.id)
+                      : [];
+                    return (
+                      <div className="mt-3 pt-3 border-t">
+                        <p className="text-xs font-medium text-muted-foreground mb-1.5">Alias importazione</p>
+                        {aliases.length === 0 ? (
+                          <p className="text-xs text-muted-foreground/60 italic">Nessun alias salvato</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-1.5">
+                            {aliases.map((a) => (
+                              <span
+                                key={a.id}
+                                className="inline-flex items-center gap-1 text-xs bg-muted px-2 py-0.5 rounded"
+                                data-testid={`alias-${a.id}`}
+                              >
+                                <span className="uppercase">{a.alias}</span>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleDeleteAlias(a.id); }}
+                                  className="text-muted-foreground hover:text-destructive ml-0.5"
+                                  data-testid={`delete-alias-${a.id}`}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>

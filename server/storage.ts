@@ -8,6 +8,7 @@ import {
   mappingsTable, 
   analysesTable, 
   operatorsTable,
+  operatorAliasesTable,
   paymentStatusTable,
   pagamentoGiornataModesTable,
   type CompensoRecord, 
@@ -22,7 +23,8 @@ import {
   type OperatorPaymentStatus,
   type Operator,
   type InsertOperator,
-  type PagamentoGiornataMode
+  type PagamentoGiornataMode,
+  type OperatorAlias
 } from "@shared/schema";
 
 export interface IStorage {
@@ -66,6 +68,10 @@ export interface IStorage {
 
   getGiornataModes(analysisId: string, operatorName: string): Promise<PagamentoGiornataMode[]>;
   upsertGiornataMode(data: { analysisId: string; operatorName: string; workDate: string; mode: string }): Promise<PagamentoGiornataMode>;
+
+  getOperatorAliases(): Promise<OperatorAlias[]>;
+  createOperatorAlias(operatorId: string, alias: string): Promise<OperatorAlias>;
+  deleteOperatorAlias(id: string): Promise<boolean>;
   
   initializeDatabase(): Promise<void>;
 }
@@ -556,6 +562,27 @@ class DatabaseStorage implements IStorage {
       workDate: data.workDate,
       mode: data.mode as "minimo" | "fisso" | "none",
     };
+  }
+
+  async getOperatorAliases(): Promise<OperatorAlias[]> {
+    const rows = await db.select().from(operatorAliasesTable);
+    return rows.map(r => ({
+      id: r.id,
+      operatorId: r.operatorId,
+      alias: r.alias,
+    }));
+  }
+
+  async createOperatorAlias(operatorId: string, alias: string): Promise<OperatorAlias> {
+    const id = randomUUID();
+    const normalizedAlias = alias.toUpperCase();
+    await db.insert(operatorAliasesTable).values({ id, operatorId, alias: normalizedAlias });
+    return { id, operatorId, alias: normalizedAlias };
+  }
+
+  async deleteOperatorAlias(id: string): Promise<boolean> {
+    await db.delete(operatorAliasesTable).where(eq(operatorAliasesTable.id, id));
+    return true;
   }
 
   async getPaymentStatus(): Promise<OperatorPaymentStatus[]> {

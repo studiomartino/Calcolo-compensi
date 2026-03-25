@@ -18,7 +18,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, Save, FileBarChart, UserCheck, Plus } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
-import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso, Operator } from "@shared/schema";
+import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso, Operator, OperatorAlias } from "@shared/schema";
 
 const OPERATOR_COLORS_KEY = "operatorColors";
 
@@ -96,6 +96,10 @@ export default function Home({ userRole }: HomeProps) {
 
   const { data: managedOperators = [], refetch: refetchOperators } = useQuery<Operator[]>({
     queryKey: ["/api/operators"],
+  });
+
+  const { data: operatorAliases = [] } = useQuery<OperatorAlias[]>({
+    queryKey: ["/api/operator-aliases"],
   });
 
   const importMutation = useMutation({
@@ -305,18 +309,53 @@ export default function Home({ userRole }: HomeProps) {
     }
 
     const officialNamesUpper = new Set(managedOperators.map((o) => o.name.toUpperCase()));
-    const unmatchedOperators = excelOperators.filter((op) => !officialNamesUpper.has(op.toUpperCase()));
+
+    const aliasMap = new Map<string, string>();
+    operatorAliases.forEach((a) => {
+      const op = managedOperators.find((o) => o.id === a.operatorId);
+      if (op) aliasMap.set(a.alias.toUpperCase(), op.name);
+    });
+
+    const aliasSubstitutionMap = new Map<string, string>();
+    excelOperators.forEach((op) => {
+      const upper = op.toUpperCase();
+      if (!officialNamesUpper.has(upper) && aliasMap.has(upper)) {
+        aliasSubstitutionMap.set(op, aliasMap.get(upper)!);
+      }
+    });
+
+    let dataForCheck = rawData;
+    if (aliasSubstitutionMap.size > 0 && operatorField) {
+      dataForCheck = rawData.map((row) => {
+        const originalOp = row[operatorField]?.trim();
+        if (originalOp && aliasSubstitutionMap.has(originalOp)) {
+          return { ...row, [operatorField]: aliasSubstitutionMap.get(originalOp)! };
+        }
+        return row;
+      });
+
+      const resolvedOps = Array.from(new Set(aliasSubstitutionMap.values()));
+      const newOpsForColors = resolvedOps.filter((op) => !operatorColors[op]);
+      if (newOpsForColors.length > 0) {
+        assignRandomColors(newOpsForColors);
+      }
+    }
+
+    const unmatchedOperators = excelOperators.filter(
+      (op) => !officialNamesUpper.has(op.toUpperCase()) && !aliasSubstitutionMap.has(op)
+    );
 
     if (unmatchedOperators.length > 0) {
       setPendingFieldMappings(fieldMappings);
-      setPendingRawDataForImport(rawData);
-      setExcelOperatorsForModal(excelOperators);
+      setPendingRawDataForImport(dataForCheck);
+      const remainingExcel = excelOperators.filter((op) => !aliasSubstitutionMap.has(op));
+      setExcelOperatorsForModal(remainingExcel);
       setOperatorMappingOpen(true);
       return;
     }
 
-    await proceedToDuplicateCheck(rawData, fieldMappings);
-  }, [rawData, managedOperators, operatorColors, assignRandomColors, proceedToDuplicateCheck]);
+    await proceedToDuplicateCheck(dataForCheck, fieldMappings);
+  }, [rawData, managedOperators, operatorAliases, operatorColors, assignRandomColors, proceedToDuplicateCheck]);
 
   const handleOperatorMappingConfirm = useCallback(async (resolutions: OperatorResolution[]) => {
     if (!pendingFieldMappings) return;
@@ -346,10 +385,24 @@ export default function Home({ userRole }: HomeProps) {
     }
     queryClient.invalidateQueries({ queryKey: ["/api/operators"] });
 
+    const associateResolutions = resolutions.filter((r) => r.action === "associate");
     const substitutionMap = new Map<string, string>();
-    resolutions
-      .filter((r) => r.action === "associate")
-      .forEach((r) => substitutionMap.set(r.excelName, r.officialName));
+    associateResolutions.forEach((r) => substitutionMap.set(r.excelName, r.officialName));
+
+    for (const r of associateResolutions) {
+      const operator = managedOperators.find((o) => o.name.toUpperCase() === r.officialName.toUpperCase());
+      if (operator) {
+        try {
+          await apiRequest("POST", "/api/operator-aliases", {
+            operatorId: operator.id,
+            alias: r.excelName,
+          });
+        } catch {}
+      }
+    }
+    if (associateResolutions.length > 0) {
+      queryClient.invalidateQueries({ queryKey: ["/api/operator-aliases"] });
+    }
 
     let currentRawData = pendingRawDataForImport;
     if (substitutionMap.size > 0 && operatorField) {
@@ -361,9 +414,7 @@ export default function Home({ userRole }: HomeProps) {
         return row;
       });
 
-      const substitutedOps = resolutions
-        .filter((r) => r.action === "associate")
-        .map((r) => r.officialName);
+      const substitutedOps = associateResolutions.map((r) => r.officialName);
       const newOpsForColors = substitutedOps.filter((op) => !operatorColors[op]);
       if (newOpsForColors.length > 0) {
         assignRandomColors(newOpsForColors);
@@ -375,7 +426,7 @@ export default function Home({ userRole }: HomeProps) {
     setOperatorMappingOpen(false);
 
     await proceedToDuplicateCheck(currentRawData, fieldMappingsToUse);
-  }, [pendingFieldMappings, pendingRawDataForImport, operatorColors, assignRandomColors, queryClient, toast, proceedToDuplicateCheck]);
+  }, [pendingFieldMappings, pendingRawDataForImport, managedOperators, operatorColors, assignRandomColors, queryClient, toast, proceedToDuplicateCheck]);
 
   const handleOperatorMappingCancel = useCallback(() => {
     setOperatorMappingOpen(false);

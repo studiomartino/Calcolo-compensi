@@ -687,6 +687,44 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/operator-aliases", requireAuth, async (req, res) => {
+    try {
+      const aliases = await storage.getOperatorAliases();
+      res.json(aliases);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nel recupero degli alias" });
+    }
+  });
+
+  app.post("/api/operator-aliases", requireAuth, async (req, res) => {
+    try {
+      const { operatorId, alias } = req.body;
+      if (!operatorId || !alias || typeof alias !== "string" || alias.trim().length === 0) {
+        return res.status(400).json({ error: "operatorId e alias sono richiesti" });
+      }
+      const normalizedAlias = alias.trim().toUpperCase();
+      const existing = await storage.getOperatorAliases();
+      const duplicate = existing.find(a => a.alias === normalizedAlias);
+      if (duplicate) {
+        return res.status(409).json({ error: "Alias già esistente" });
+      }
+      const created = await storage.createOperatorAlias(operatorId, alias.trim());
+      res.status(201).json(created);
+    } catch (error) {
+      res.status(500).json({ error: "Errore nella creazione dell'alias" });
+    }
+  });
+
+  app.delete("/api/operator-aliases/:id", requireAuth, async (req, res) => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      await storage.deleteOperatorAlias(id);
+      res.json({ message: "Alias eliminato" });
+    } catch (error) {
+      res.status(500).json({ error: "Errore nell'eliminazione dell'alias" });
+    }
+  });
+
   app.get("/api/payment-status", requireAuth, async (req, res) => {
     try {
       const status = await storage.getPaymentStatus();

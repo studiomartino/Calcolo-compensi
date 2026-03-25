@@ -30,6 +30,7 @@ Applicazione web fullstack per la gestione e il calcolo dei compensi dei collabo
 - **Gestione Operatori**: Aggiunta, modifica ed eliminazione operatori dal tab Operatori con persistenza su database
 - **Pagamento a Giornata**: Configurazione per-operatore (Min A/B, Fisso A/B) nel DB + selezione modalità per-giornata (Minimo/Fisso/Standard) nel modal analisi
 - **Mapping Operatori all'Importazione**: Dialog automatico durante l'importazione che confronta gli operatori del file Excel con quelli ufficiali. Per ogni operatore senza corrispondenza esatta, l'utente può scegliere "Crea nuovo" (aggiunge alla lista ufficiale) o "Associa a esistente" (sostituisce il nome nel file con quello ufficiale). Gli operatori con match esatto vengono mostrati come già risolti. Il flusso procede solo dopo aver risolto tutti i casi non corrispondenti.
+- **Alias Operatori**: Le associazioni manuali ("Associa a esistente") vengono salvate come alias nel DB (tabella `operator_aliases`). Alle importazioni successive, gli alias noti vengono applicati automaticamente senza richiedere intervento manuale. Nel tab Operatori, espandendo un operatore si visualizzano i suoi alias con possibilità di eliminarli singolarmente.
 
 ## Sistema Autenticazione
 
@@ -120,6 +121,11 @@ shared/
 - `POST /api/operators` - Crea nuovo operatore
 - `PATCH /api/operators/:id` - Aggiorna operatore (nome + config pagamento giornata)
 - `DELETE /api/operators/:id` - Elimina operatore
+
+### Alias Operatori
+- `GET /api/operator-aliases` - Lista tutti gli alias
+- `POST /api/operator-aliases` - Crea alias (body: `{ operatorId, alias }`, normalizzato uppercase, 409 se duplicato)
+- `DELETE /api/operator-aliases/:id` - Elimina un alias
 
 ### Pagamento a Giornata
 - `GET /api/pagamento-giornata-modes?analysisId=X&operatorName=Y` - Modalità per-giornata

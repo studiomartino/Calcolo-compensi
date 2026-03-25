@@ -50,6 +50,12 @@ export const operatorsTable = pgTable("operators", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const operatorAliasesTable = pgTable("operator_aliases", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  operatorId: varchar("operator_id", { length: 36 }).notNull(),
+  alias: varchar("alias", { length: 255 }).notNull(),
+});
+
 export const pagamentoGiornataModesTable = pgTable("pagamento_giornata_modes", {
   id: varchar("id", { length: 36 }).primaryKey(),
   analysisId: varchar("analysis_id", { length: 36 }).notNull(),
@@ -208,3 +214,11 @@ export const pagamentoGiornataModeSchema = z.object({
 });
 
 export type PagamentoGiornataMode = z.infer<typeof pagamentoGiornataModeSchema>;
+
+export const operatorAliasSchema = z.object({
+  id: z.string(),
+  operatorId: z.string(),
+  alias: z.string(),
+});
+
+export type OperatorAlias = z.infer<typeof operatorAliasSchema>;
