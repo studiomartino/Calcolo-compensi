@@ -33,6 +33,7 @@ export interface IStorage {
   createRecord(record: InsertCompensoRecord, sourceAnalysisId?: string): Promise<CompensoRecord>;
   createRecords(records: InsertCompensoRecord[], sourceAnalysisId?: string): Promise<CompensoRecord[]>;
   setRecordsSourceAnalysisId(analysisId: string): Promise<void>;
+  getRecordsBySourceAnalysisId(analysisId: string): Promise<CompensoRecord[]>;
   updateRecord(id: string, updates: Partial<CompensoRecord>): Promise<CompensoRecord | undefined>;
   updateRecords(ids: string[], updates: Partial<CompensoRecord>): Promise<CompensoRecord[]>;
   deleteRecord(id: string): Promise<boolean>;
@@ -47,6 +48,7 @@ export interface IStorage {
   getAnalysis(id: string): Promise<Analysis | undefined>;
   createAnalysis(analysis: InsertAnalysis): Promise<Analysis>;
   updateAnalysisName(id: string, name: string): Promise<Analysis | undefined>;
+  updateAnalysisRecords(id: string, records: CompensoRecord[]): Promise<Analysis | undefined>;
   deleteAnalysis(id: string): Promise<boolean>;
 
   getUsers(): Promise<PublicUser[]>;
@@ -211,6 +213,22 @@ class DatabaseStorage implements IStorage {
     await db.update(recordsTable).set({ sourceAnalysisId: analysisId });
   }
 
+  async getRecordsBySourceAnalysisId(analysisId: string): Promise<CompensoRecord[]> {
+    const rows = await db.select().from(recordsTable).where(eq(recordsTable.sourceAnalysisId, analysisId));
+    return rows.map(r => ({
+      id: r.id,
+      categoriaCompenso: r.categoriaCompenso as "card" | "cash",
+      data: r.data || undefined,
+      operatore: r.operatore,
+      paziente: r.paziente,
+      prestazione: r.prestazione,
+      elementiDentali: r.elementiDentali,
+      prezzoAlPaziente: r.prezzoAlPaziente,
+      compensoOperatore: r.compensoOperatore,
+      hasAnomaly: r.hasAnomaly,
+    }));
+  }
+
   async updateRecord(id: string, updates: Partial<CompensoRecord>): Promise<CompensoRecord | undefined> {
     const existing = await this.getRecord(id);
     if (!existing) return undefined;
@@ -356,6 +374,20 @@ class DatabaseStorage implements IStorage {
       name,
       dateRange: r.dateRange,
       records: r.records as CompensoRecord[],
+      createdAt: r.createdAt.toISOString(),
+    };
+  }
+
+  async updateAnalysisRecords(id: string, records: CompensoRecord[]): Promise<Analysis | undefined> {
+    const rows = await db.select().from(analysesTable).where(eq(analysesTable.id, id)).limit(1);
+    if (rows.length === 0) return undefined;
+    await db.update(analysesTable).set({ records }).where(eq(analysesTable.id, id));
+    const r = rows[0];
+    return {
+      id: r.id,
+      name: r.name,
+      dateRange: r.dateRange,
+      records,
       createdAt: r.createdAt.toISOString(),
     };
   }

@@ -1,0 +1,92 @@
+# Autosave analysis records on every edit
+
+**Mode: Autonomous Power**
+
+## Context
+
+The app manages dental compensation analyses. When a user opens a saved analysis, its records are loaded into the `records` table (with `sourceAnalysisId` linking them to the analysis). However, when the user edits records (changing category A/B or editing `compensoOperatore`), the changes are saved only in the `records` table — the snapshot stored in the `analyses` table (`records` JSONB column) is never updated. The current "Salva" button calls `POST /api/records/archive` which always creates a NEW analysis via `storage.createAnalysis()`, producing duplicates instead of updating the existing one.
+
+## Goal
+
+Implement autosave: every time a record is modified within an open analysis, automatically sync the updated records back into the existing analysis entry. Remove the manual "Salva" button since it is no longer needed.
+
+## Requirements
+
+### Backend — `server/storage.ts`
+
+1. Add a new method to the `IStorage` interface and `DatabaseStorage` class:
+   ```
+   updateAnalysisRecords(id: string, records: CompensoRecord[]): Promise<Analysis | undefined>
+   ```
+   - Fetch the analysis by `id`. If not found, return `undefined`.
+   - Update the `records` JSONB column in the `analyses` table with the new records array.
+   - Return the updated analysis object.
+
+### Backend — `server/routes.ts`
+
+2. Add a new endpoint:
+   ```
+   POST /api/analyses/:id/sync
+   ```
+   - Read all records from the `records` table where `sourceAnalysisId === id`.
+   - Call `storage.updateAnalysisRecords(id, currentRecords)` to overwrite the JSONB snapshot.
+   - Return the updated analysis or 404 if the analysis does not exist.
+   - This endpoint must be protected by `requireAuth`.
+
+### Frontend — `client/src/pages/home.tsx`
+
+3. Add a new mutation `syncAnalysisMutation`:
+   ```ts
+   const syncAnalysisMutation = useMutation({
+     mutationFn: async (analysisId: string) => {
+       return apiRequest("POST", `/api/analyses/${analysisId}/sync`);
+     },
+     onSuccess: () => {
+       queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+     },
+   });
+   ```
+
+4. Modify `updateRecordMutation` `onSuccess`: after the existing logic, if `openedAnalysisId` is not null, call `syncAnalysisMutation.mutate(openedAnalysisId)`.
+
+5. Modify `updateCategoryMutation` `onSuccess`: after the existing logic, if `openedAnalysisId` is not null, call `syncAnalysisMutation.mutate(openedAnalysisId)`. This already handles bulk changes (multiple records selected at once) because `updateCategoryMutation` fires once for the entire batch and the sync runs after the batch completes.
+
+6. Remove the "Salva" button and its surrounding `AlertDialog` block. This is the section in the analysis header (around line 772–794) that contains:
+   - The `<AlertDialog>` wrapping the `<Button>` with `data-testid="button-archive-current"` and the `<Save>` icon
+   - The `AlertDialogContent` with title "Archiviare l'analisi corrente?"
+   - The `AlertDialogAction` calling `handleArchiveCurrent`
+
+7. Remove `archiveCurrentMutation` (the mutation defined around line 247) and `handleArchiveCurrent` callback (around line 544), since they are no longer used.
+
+8. Remove the `Save` import from `lucide-react` (line 18) if it is no longer referenced anywhere else in the file.
+
+9. Do NOT show any toast or visual feedback when autosave completes successfully. Only show error toasts if the sync fails.
+
+### No visual feedback on success
+
+- The `syncAnalysisMutation` must NOT trigger any toast on success.
+- On error, show a toast: `{ title: "Errore", description: "Errore durante il salvataggio automatico", variant: "destructive" }`.
+
+## Constraints
+
+- Do not modify the anomaly detection logic in `storage.ts` (`checkAnomaly` method).
+- Do not modify the `DataTable` component (`data-table.tsx`) — all changes are in `home.tsx`, `routes.ts`, and `storage.ts`.
+- Do not modify the `handleOpenAnalysis` function — it already correctly loads records and sets `openedAnalysisId`.
+- Do not modify the import flow or `POST /api/records/archive` endpoint — it is still used during the initial import/naming step.
+- Preserve all existing `data-testid` attributes on elements that remain.
+
+## Expected behavior
+
+1. User opens a saved analysis → records load, `openedAnalysisId` is set.
+2. User changes category (A↔B) on a single record → record updates in DB → analysis JSONB is automatically synced (no duplicate created).
+3. User selects multiple records and changes category in bulk → all records update → analysis JSONB is synced once after the batch.
+4. User edits `compensoOperatore` on a record → record updates → analysis JSONB is synced.
+5. No "Salva" button is visible in the analysis header.
+6. No toast appears on successful autosave. Error toast appears only on failure.
+7. Navigating back to "Analisi salvate" shows the updated data in the analysis without any duplicates.
+
+## Files involved
+
+- `server/storage.ts` — new `updateAnalysisRecords` method
+- `server/routes.ts` — new `POST /api/analyses/:id/sync` endpoint
+- `client/src/pages/home.tsx` — new sync mutation, trigger autosave on edit, remove Save button

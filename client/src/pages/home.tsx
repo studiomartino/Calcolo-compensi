@@ -15,8 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, Save, FileBarChart, UserCheck, Plus } from "lucide-react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ArrowLeft, Table, BarChart3, Upload, Archive, FileSpreadsheet, Users as UsersIcon, FileBarChart, UserCheck, Plus } from "lucide-react";
 import * as XLSX from "xlsx";
 import type { CompensoRecord, ColumnMapping, Analysis, CategoriaCompenso, Operator, OperatorAlias } from "@shared/schema";
 
@@ -126,6 +125,22 @@ export default function Home({ userRole }: HomeProps) {
     },
   });
 
+  const syncAnalysisMutation = useMutation({
+    mutationFn: async (analysisId: string) => {
+      return apiRequest("POST", `/api/analyses/${analysisId}/sync`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Errore durante il salvataggio automatico",
+        variant: "destructive",
+      });
+    },
+  });
+
   const updateCategoryMutation = useMutation({
     mutationFn: async ({ ids, category }: { ids: string[]; category: CategoriaCompenso }) => {
       const response = await apiRequest("PATCH", "/api/records/bulk/update", { ids, updates: { categoriaCompenso: category } });
@@ -137,6 +152,9 @@ export default function Home({ userRole }: HomeProps) {
         const updatedMap = new Map(data.records.map(r => [r.id, r]));
         return oldRecords.map(record => updatedMap.get(record.id) || record);
       });
+      if (openedAnalysisId) {
+        syncAnalysisMutation.mutate(openedAnalysisId);
+      }
     },
   });
 
@@ -150,6 +168,9 @@ export default function Home({ userRole }: HomeProps) {
         title: "Record aggiornato",
         description: "Le modifiche sono state salvate",
       });
+      if (openedAnalysisId) {
+        syncAnalysisMutation.mutate(openedAnalysisId);
+      }
     },
   });
 
@@ -239,30 +260,6 @@ export default function Home({ userRole }: HomeProps) {
       toast({
         title: "Errore",
         description: "Si è verificato un errore durante il rinomino",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const archiveCurrentMutation = useMutation({
-    mutationFn: async (name?: string) => {
-      return apiRequest("POST", "/api/records/archive", name ? { name } : {});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/analyses"] });
-      setCurrentDateRange("");
-      setCurrentAnalysisName("");
-      setCurrentView("analyses");
-      toast({
-        title: "Analisi archiviata",
-        description: "L'analisi corrente è stata archiviata con successo",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Errore",
-        description: "Si è verificato un errore durante l'archiviazione",
         variant: "destructive",
       });
     },
@@ -541,10 +538,6 @@ export default function Home({ userRole }: HomeProps) {
     }
   }, [queryClient, toast]);
 
-  const handleArchiveCurrent = useCallback(() => {
-    archiveCurrentMutation.mutate(currentAnalysisName || undefined);
-  }, [archiveCurrentMutation, currentAnalysisName]);
-
   const handleNameDialogConfirm = useCallback(async () => {
     try {
       const response = await apiRequest("POST", "/api/records/archive", {
@@ -769,29 +762,6 @@ export default function Home({ userRole }: HomeProps) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm" data-testid="button-archive-current" className="h-8 text-xs">
-                      <Save className="mr-1.5 h-3.5 w-3.5" />
-                      Salva
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Archiviare l'analisi corrente?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        L'analisi corrente con {records.length} record verrà spostata nell'archivio.
-                        I dati saranno rimossi dalla vista corrente ma resteranno accessibili nell'archivio.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Annulla</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleArchiveCurrent} data-testid="button-confirm-archive">
-                        Archivia
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
                 <Sheet open={isReportOpen} onOpenChange={setIsReportOpen}>
                   <SheetTrigger asChild>
                     <Button size="sm" data-testid="button-open-reports" className="h-8 text-xs">

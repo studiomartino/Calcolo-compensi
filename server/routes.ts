@@ -544,6 +544,20 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/analyses/:id/sync", requireAuth, async (req, res) => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const currentRecords = await storage.getRecordsBySourceAnalysisId(id);
+      const updated = await storage.updateAnalysisRecords(id, currentRecords);
+      if (!updated) {
+        return res.status(404).json({ error: "Analisi non trovata" });
+      }
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Errore durante la sincronizzazione" });
+    }
+  });
+
   app.delete("/api/analyses/:id", requireAuth, async (req, res) => {
     try {
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
